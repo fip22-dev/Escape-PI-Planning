@@ -12,7 +12,7 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 - Wird die Spielfigur von einer der sechs Hauptfiguren entdeckt, erscheint ein rollenspezifischer Dialog. Danach startet der Versuch im PI-Einführungsraum neu.
 - Wiederholungsdialoge können übersprungen werden; während eines Dialogs steht der Timer still.
 - Die Karte enthält sieben benannte Teamzimmer, einen Pausenraum, fünf kleine Meeting-Räume, den PI-Einführungsraum und drei Quergänge.
-- **37 neutrale Personen** verteilen sich über die gesamte Etage. Sie sollen künftig als körperliche Hindernisse die Spielfigur und die Sicht der suchenden Rollen blockieren, lösen aber selbst keinen Alarm aus. Im aktuellen Graybox ist diese Blockierung noch nicht umgesetzt.
+- **37 neutrale Personen** verteilen sich über die gesamte Etage. Alle bewegen sich auf festen Routen innerhalb ihres jeweiligen Raums oder Gangs und blockieren einander sowie die Spielfigur. Neutrale Personen lösen selbst keinen Alarm aus. Ihre dynamische Sichtblockierung für Suchende ist noch nicht umgesetzt.
 - P&T bedeutet **People & Transformation**.
 - Kamera und Spielwelt bleiben in fester Draufsicht; die Kamera folgt der Spielfigur.
 
@@ -65,9 +65,9 @@ Bereits umgesetzt:
 - Mitlaufende Kamera und 16×16-Pixel-Kacheln; der Grundausschnitt entspricht ungefähr 20×15 Kacheln.
 - Raum- und Ausgangsbeschriftungen mit fetter 9-Pixel-Schrift und deckendem dunklem Hintergrund. Raumnamen stehen oberhalb der Raumfläche, bei M365 wegen des knappen Abstands unterhalb. Meeting 1–5 beginnen linksbündig am linken äusseren Wandrand; PI-Einführung steht auf der dunklen Fläche rechts neben dem Eingang und oberhalb des Raums. Der Steuerungshinweis steht ausschliesslich im Seitenfuss ausserhalb des Spielfelds. Die Kamera rundet auf ganze Pixel. Die Darstellung bleibt durch die 320×240-Spielauflösung pixelig; die Platzierung ist vom Nutzer bestätigt. Teilweise verschwommene Schrift bleibt als offener Darstellungsfehler bestehen.
 - Sieben Teamzimmer, Pausenraum, fünf Meeting-Räume und PI-Einführungsraum.
-- 37 statische neutrale Platzhalter an den unten beschriebenen Stellen.
+- 37 neutrale Personen an den unten beschriebenen Stellen; alle bewegen sich auf festen, begrenzten Raum- oder Gangrouten.
 
-Noch nicht im Spielcode umgesetzt: Timer, Sieg- und Ablaufzustand, sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, bewegliche neutrale Personen, Sprechblasen und finale Pixelgrafik oder Audio.
+Noch nicht im Spielcode umgesetzt: Timer, Sieg- und Ablaufzustand, sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, Sprechblasen und finale Pixelgrafik oder Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -132,7 +132,7 @@ Aktuelle, im Browser visuell abgenommene Platzierung auf `feature/room-objects`:
 
 Zusätzliche Büroausstattung: Jeder Teamraum erhält ein Whiteboard mit bunten Karten an der oberen Wand und ein niedrig gezeichnetes Sideboard an der unteren Wand. In allen vier Westgang-Teams steht das Sideboard unten links und eine Pflanze unten rechts. Die Sideboards blockieren gemäss Spielregel trotzdem die Sicht. Im Workplace Device & Print Solutions Team steht zusätzlich eine Druckerstation rechts neben dem Sideboard; eine weitere Druckerstation steht ganz rechts im oberen Westgang. Neben jeder der vier Kaffeemaschinen steht ein Abfalleimer. Die Teamtische zeigen Laptop, Unterlagen und Kaffeebecher; die beiden Pausentische zeigen Essen und Kaffeetassen. Diese Details sind reine Dekoration. Zusätzliche Wegweiser oder Ausgangsschilder werden nicht ergänzt; die bestehende Ausgangsbeschriftung bleibt erhalten.
 
-Sieben zusätzliche Pflanzen stehen in den äusseren Randnischen der ein Kachel breiteren Abschnitte von West- und Hauptgang. Der Drucker im oberen Westgang steht an der äussersten rechten Gangposition. Türfelder, durchgehende Laufwege und Startposition bleiben frei. Neutrale Platzhalter, deren bisherige Position von soliden Möbeln belegt wird, werden auf freie Felder desselben Raums versetzt. Es bleiben insgesamt 37 Personen. Die visuelle Browserabnahme dieser Platzierung wurde vom Nutzer bestätigt; Laufwege und Haltepunkte werden noch konkretisiert.
+Sieben zusätzliche Pflanzen stehen in den äusseren Randnischen der ein Kachel breiteren Abschnitte von West- und Hauptgang. Der Drucker im oberen Westgang steht an der äussersten rechten Gangposition. Türfelder, durchgehende Laufwege und Startposition bleiben frei. Neutrale Platzhalter, deren bisherige Position von soliden Möbeln belegt wird, werden auf freie Felder desselben Raums versetzt. Es bleiben insgesamt 37 Personen. Die visuelle Browserabnahme dieser Platzierung sowie der festen Laufwege und Haltezeiten wurde vom Nutzer bestätigt.
 
 ## Neutrale Personen
 
@@ -144,19 +144,16 @@ Insgesamt **37 neutrale Personen**, über die ganze Karte verteilt:
 - 5 im PI-Einführungsraum.
 - 6 in den Gängen und Quergängen.
 
-Im Graybox stehen sie als unbewegliche, noch durchlässige Platzhalter. Künftig bewegen sich neutrale Personen auf einfachen Laufwegen und sind körperliche Hindernisse: Die Spielfigur kann nicht durch sie hindurchgehen, und sie blockieren die Sicht der suchenden Rollen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Bewegung, Kollision und dynamische Sichtdeckung sind noch umzusetzen. Laufwege und Ausweichverhalten müssen verhindern, dass Türen oder Gänge dauerhaft versperrt werden.
+Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen aufeinander warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Automatisierte Routentests sind erfolgreich; die visuelle Abnahme aller neutralen Bewegungsrouten wurde vom Nutzer bestätigt. Dynamische Sichtdeckung ist noch nicht umgesetzt.
 
-### Vereinbarte Laufwegplanung – noch nicht implementiert
+### Laufwegplanung für den Bewegungsprototyp
 
-- **Teamzimmer:** kurze Wege innerhalb des jeweiligen Raums.
-- **Meeting-Räume:** kleine Bewegungsbereiche; Türfelder bleiben als Durchgänge frei und sind keine Haltepunkte.
-- **Pausenraum:** Wege zwischen Sitzplätzen und Kaffeemaschine.
-- **PI-Einführung:** kurze Wege zwischen den späteren Tischgruppen.
-- **Gänge und Quergänge:** einzelne Personen auf festen Strecken mit zeitversetzten Pausen.
+- **Team-, Meeting-, Pausen- und PI-Räume:** Jede Person erhält eine reproduzierbare Route innerhalb ihres Raums. Die fünf Pausenraumrouten sind voneinander getrennt. Meeting 2 behält eine Schleife um den Tisch.
+- **Gänge und Quergänge:** Jede Person erhält eine reproduzierbare Route auf Gangflächen und bleibt von Türfeldern und Seitenräumen getrennt.
 
-Bei belegten Wegen warten Personen oder weichen aus, ohne sich, die Spielfigur oder Suchende zu durchlaufen. Türen dürfen kurz passiert, aber nicht dauerhaft versperrt werden. Konkrete Wegpunkte, Haltezeiten und Ausweichplätze werden nach der Möbelplatzierung festgelegt und im Spiel geprüft.
+Die Bewegung ist bewusst langsam: 650 ms pro Kachelschritt und anschliessend 700 ms Pause. Routen reichen bis zu vier Kacheln von der Startposition, soweit Raum und Möbel das zulassen. Solide Möbel, andere Personen und die Spielfigur blockieren die nächsten Kacheln. Die Spielfigur prüft sowohl die aktuelle als auch die während einer Bewegung reservierte Personenkachel. Bei belegtem Ziel wartet die Person 500 ms und versucht denselben Routenschritt erneut.
 
-Zuerst werden wenige Personen mit Bewegung und Kollision erprobt. Erst danach folgt der RTE-Prototyp, der diese Personen als dynamische Sichtblocker berücksichtigt. Die übrigen neutralen Personen und Sprechblasen werden anschliessend ergänzt. Alle diese Implementierungsschritte sind offen.
+Die Bewegungsrouten wurden im Browser visuell abgenommen. Als nächstes folgt der RTE-Prototyp, der Personen als dynamische Sichtblocker berücksichtigt; Ausweichrouten für beengte oder stark belegte Felder werden anhand des Spieltests ergänzt.
 
 ## Neutrale Sprechblasen – Entwurf
 
@@ -212,7 +209,6 @@ Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei
 
 ## Noch offene Designentscheidungen
 
-- Im nächsten Branch Routen, Haltepunkte und Ausweichregeln für neutrale Personen festlegen und gemeinsam mit einem kleinen Bewegungs-/Kollisionstest erproben.
 - Die tatsächliche Sichtwirkung der Möbel mit der späteren Suchenden-Logik prüfen; bisher sind Sichtblocker nur als Objekteigenschaft hinterlegt.
 - Nach dem ersten spielbaren Entdecker-Prototyp die vorgeschlagenen Routen, Startpositionen und Haltezeiten abstimmen.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
