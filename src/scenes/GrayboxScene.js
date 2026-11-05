@@ -1,6 +1,18 @@
 import Phaser from "phaser";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
+import {
+  canNeutralMoveToTile,
+  createNeutralPatrol,
+  BREAK_ROOM_ROUTES,
+  isTileOccupiedByPeople,
+  MEETING_TWO_ROUTE,
+  NEUTRAL_RETRY_PAUSE_MS,
+  NEUTRAL_START_POSITIONS,
+  NEUTRAL_STEP_DURATION_MS,
+  NEUTRAL_STEP_PAUSE_MS,
+  resolveNeutralStartPositions,
+} from "../game/neutralMovement.js";
 
 const COLORS = {
   wall: 0x303a3b,
@@ -112,47 +124,12 @@ export class GrayboxScene extends Phaser.Scene {
       })
       .setOrigin(0, 1);
 
-    // Statische Platzhalter für 37 neutrale Personen auf der ganzen Etage.
-    const neutralPositions = [
-      // Teamzimmer: zwei Personen pro Team, drei in zwei grösseren Teams.
-      { x: 4, y: 7 }, { x: 9, y: 9 },
-      { x: 4, y: 16 }, { x: 8, y: 20 }, { x: 10, y: 16 },
-      { x: 4, y: 28 }, { x: 9, y: 30 },
-      { x: 4, y: 36 }, { x: 9, y: 38 },
-      { x: 39, y: 7 }, { x: 44, y: 10 },
-      { x: 39, y: 19 }, { x: 44, y: 22 },
-      { x: 39, y: 31 }, { x: 44, y: 34 }, { x: 41, y: 33 },
-      // Pausenraum: fünf Personen.
-      { x: 19, y: 3 }, { x: 26, y: 3 }, { x: 19, y: 4 }, { x: 23, y: 4 }, { x: 26, y: 4 },
-      // Fünf kleine Sitzungszimmer: je eine Person.
-      { x: 24, y: 16 }, { x: 21, y: 26 }, { x: 30, y: 26 }, { x: 19, y: 37 }, { x: 28, y: 37 },
-      // PI-Einführungsraum: fünf Personen.
-      { x: 31, y: 42 }, { x: 37, y: 43 }, { x: 32, y: 50 }, { x: 40, y: 51 }, { x: 36, y: 49 },
-      // Gänge und Quergänge: sechs Personen.
-      { x: 14, y: 12 }, { x: 14, y: 31 }, { x: 34, y: 13 }, { x: 34, y: 36 }, { x: 24, y: 8 }, { x: 27, y: 32 },
-    ];
-
-    const occupied = new Set();
-    this.neutralPeople = neutralPositions.map(position => {
-      let { x, y } = position;
-      const room = rooms.find(room => x >= room.x && x < room.x + room.width
-        && y >= room.y && y < room.y + room.height);
-      const bounds = room ?? (y >= 40 ? { x: 29, y: 40, width: 14, height: 12 } : null);
-      if (objectAt(this.roomObjects, x, y, "blocksMovement")) {
-        const candidates = [];
-        for (let cy = bounds.y; cy < bounds.y + bounds.height; cy += 1) {
-          for (let cx = bounds.x; cx < bounds.x + bounds.width; cx += 1) {
-            if (grid[cy][cx] !== TILE_TYPES.DOOR && !occupied.has(`${cx},${cy}`)
-              && !neutralPositions.some(p => p.x === cx && p.y === cy)
-              && !objectAt(this.roomObjects, cx, cy, "blocksMovement")) {
-              candidates.push({ x: cx, y: cy });
-            }
-          }
-        }
-        candidates.sort((a, b) => (Math.abs(a.x - x) + Math.abs(a.y - y)) - (Math.abs(b.x - x) + Math.abs(b.y - y)));
-        ({ x, y } = candidates[0]);
-      }
-      occupied.add(`${x},${y}`);
+    // Alle 37 neutralen Personen erhalten eine raum- oder ganggebundene Route.
+    const neutralPositions = NEUTRAL_START_POSITIONS;
+    const resolvedStarts = resolveNeutralStartPositions(neutralPositions, {
+      rooms, grid, objects: this.roomObjects,
+    });
+    this.neutralPeople = resolvedStarts.map(({ x, y, bounds }, personIndex) => {
       const person = this.add.container((x + 0.5) * TILE_SIZE, (y + 0.5) * TILE_SIZE);
       const body = this.add.rectangle(0, 1, 8, 9, 0x71837f);
       body.setStrokeStyle(1, 0x394744);
@@ -160,12 +137,46 @@ export class GrayboxScene extends Phaser.Scene {
       const hair = this.add.rectangle(0, -8, 6, 2, 0x4d514d);
       person.add([body, head, hair]);
       person.setDepth(3);
-      return person;
+      return {
+        sprite: person,
+        tile: { x, y },
+        bounds,
+        nextTile: null,
+        patrol: null,
+        routeIndex: 0,
+        nextMoveAt: 0,
+      };
+    });
+
+    this.neutralPeople.forEach((person, personIndex) => {
+      const originalStart = neutralPositions[personIndex];
+      const breakRoomRoute = BREAK_ROOM_ROUTES[`${originalStart.x},${originalStart.y}`];
+      if (breakRoomRoute) {
+        person.patrol = {
+          route: breakRoomRoute,
+          bounds: person.bounds,
+          radius: Math.max(...breakRoomRoute.map(tile =>
+            Math.abs(tile.x - person.tile.x) + Math.abs(tile.y - person.tile.y))),
+        };
+      } else if (originalStart.x === 21 && originalStart.y === 26) {
+        person.patrol = { route: MEETING_TWO_ROUTE, bounds: person.bounds, radius: 5 };
+      } else {
+        person.patrol = createNeutralPatrol(person.tile, {
+          bounds: person.bounds,
+          grid,
+          objects: this.roomObjects,
+          otherStarts: this.neutralPeople.filter(other => other !== person).map(other => other.tile),
+          directionOffset: personIndex % 4,
+        });
+      }
+      person.routeIndex = person.patrol?.route.length > 1 ? 1 : 0;
+      person.nextMoveAt = 1800 + personIndex * 230;
     });
 
     const playerX = (start.x + 0.5) * TILE_SIZE;
     const playerY = (start.y + 0.5) * TILE_SIZE;
     this.player = this.add.container(playerX, playerY);
+    this.playerNextTile = null;
     const body = this.add.rectangle(0, 0, 10, 13, 0x3e7d9b);
     body.setStrokeStyle(2, 0xf4e5b8);
     const face = this.add.rectangle(0, -5, 5, 4, 0xf1c89b);
@@ -189,6 +200,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   update(time) {
+    this.updateNeutralPeople(time);
     if (this.isMoving || time - this.lastMoveAt < 105) return;
 
     const direction = this.readDirection();
@@ -197,12 +209,14 @@ export class GrayboxScene extends Phaser.Scene {
     const targetX = this.playerTile.x + direction.x;
     const targetY = this.playerTile.y + direction.y;
     if (this.grid[targetY]?.[targetX] === undefined || this.grid[targetY][targetX] === TILE_TYPES.WALL
-      || objectAt(this.roomObjects, targetX, targetY, "blocksMovement")) {
+      || objectAt(this.roomObjects, targetX, targetY, "blocksMovement")
+      || isTileOccupiedByPeople({ x: targetX, y: targetY }, this.neutralPeople)) {
       return;
     }
 
     this.isMoving = true;
     this.lastMoveAt = time;
+    this.playerNextTile = { x: targetX, y: targetY };
     this.tweens.add({
       targets: this.player,
       x: (targetX + 0.5) * TILE_SIZE,
@@ -211,9 +225,43 @@ export class GrayboxScene extends Phaser.Scene {
       ease: "Linear",
       onComplete: () => {
         this.playerTile = { x: targetX, y: targetY };
+        this.playerNextTile = null;
         this.isMoving = false;
       },
     });
+  }
+
+  updateNeutralPeople(time) {
+    for (const person of this.neutralPeople) {
+      if (!person.patrol || person.patrol.route.length < 2 || person.nextTile || time < person.nextMoveAt) continue;
+
+      const target = person.patrol.route[person.routeIndex];
+      if (!canNeutralMoveToTile(target, {
+        bounds: person.patrol.bounds,
+        grid: this.grid,
+        objects: this.roomObjects,
+        otherPeople: this.neutralPeople.filter(other => other !== person),
+        playerTiles: [this.playerTile, this.playerNextTile].filter(Boolean),
+      })) {
+        person.nextMoveAt = time + NEUTRAL_RETRY_PAUSE_MS;
+        continue;
+      }
+
+      person.nextTile = target;
+      this.tweens.add({
+        targets: person.sprite,
+        x: (target.x + 0.5) * TILE_SIZE,
+        y: (target.y + 0.5) * TILE_SIZE,
+        duration: NEUTRAL_STEP_DURATION_MS,
+        ease: "Linear",
+        onComplete: () => {
+          person.tile = target;
+          person.nextTile = null;
+          person.routeIndex = (person.routeIndex + 1) % person.patrol.route.length;
+          person.nextMoveAt = time + NEUTRAL_STEP_DURATION_MS + NEUTRAL_STEP_PAUSE_MS;
+        },
+      });
+    }
   }
 
   readDirection() {
