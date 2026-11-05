@@ -24,7 +24,11 @@ Der Ausgang ist um eine Kachel nach links verschoben. Kleine Beschriftungen steh
 
 Meeting 1 besitzt zwei Eingänge: oben mit kurzem Zugang von Q1 und unten zu Q2. Seine Beschriftung steht links neben dem oberen Eingang.
 
-Geplante nächste Entwicklung: Mit den Möbeln die neutralen Laufwege festlegen, danach zunächst wenige Personen mit Bewegung und Kollision testen. Dieser Test liegt vor dem RTE-Prototyp; die übrigen Personen und Sprechblasen folgen später. Aktuell bleiben alle 37 neutralen Personen statische Platzhalter.
+Auf `feature/room-objects` ist ein erster Möbelvorschlag umgesetzt: Sitzungstische, Stühle und kleinere Leinwände in Team-/Meeting-Räumen sowie Pflanzen in Gangverbreiterungen, Stuhlreihen und Leinwand im PI-Raum sowie Tische, Kaffeemaschinen und Pflanzen. Pflanzen, Tische und Kaffeemaschinen blockieren Bewegung und sind als Sichtblocker hinterlegt; Stühle und Leinwand sind passierbar und bieten keinen Sichtschutz. Die Suchenden-Sichtlogik fehlt noch.
+
+Als Nächstes den Möbel-/Pflanzenvorschlag im Browser prüfen und die neutralen Laufwege festlegen, danach zunächst wenige Personen mit Bewegung und Kollision testen. Dieser Test liegt vor dem RTE-Prototyp; die übrigen Personen und Sprechblasen folgen später. Aktuell bleiben alle 37 neutralen Personen statische Platzhalter.
+
+Ergänzt sind Whiteboards, Sideboards, eine Druckerstation, Abfalleimer neben den Kaffeemaschinen sowie Laptops, Unterlagen und Becher auf den Tischen. Sideboards und Drucker blockieren Bewegung und sind als Sichtblocker hinterlegt; Abfalleimer blockieren nur Bewegung. Whiteboards und Tischdetails erzeugen keine zusätzliche Bewegungs- oder Sichtblockierung. Zusätzliche Wegweiser und Ausgangsschilder sind nicht vorgesehen.
 
 ## Lokaler Start
 
@@ -44,6 +48,35 @@ npm run build
 Die automatisierten Kartentests starten mit `npm test`.
 
 ## Zusammenarbeit
+
+### Arbeit oder Tests auf einem anderen Client
+
+Vor dem Weiterarbeiten im VS-Code-Terminal:
+
+```sh
+git status --short --branch
+git fetch origin
+git branch -r --no-merged origin/main
+```
+
+Zusätzlich die [offenen Pull Requests](https://github.com/fip22-dev/Escape-PI-Planning/pulls) prüfen. Die Branchliste enthält auch veraltete oder bereits anders integrierte Branches; sie ist keine verlässliche Liste aktiver Arbeit. Den zur Aufgabe gehörenden Branch anhand des Pull Requests auswählen. Bestehende lokale Änderungen zuerst sichern und nicht überschreiben.
+
+Der Möbelstand liegt auf **`feature/room-objects`** und bleibt zur visuellen Abnahme ungemergt. Zum Abrufen auf einem anderen Client mit sauberem Arbeitsverzeichnis:
+
+```sh
+git switch feature/room-objects
+git pull --ff-only
+npm install
+npm test
+npm run build
+npm run dev
+```
+
+Beim ersten Wechsel legt Git normalerweise den lokalen Tracking-Branch für `origin/feature/room-objects` an. Falls das nicht eindeutig möglich ist, explizit `git switch --track origin/feature/room-objects` verwenden.
+
+Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zugriff. Beim blossen Öffnen des Spiels zählt dagegen der Stand des Servers oder Deployments; der Browser prüft oder wechselt keine Git-Branches. Die lokale Adresse `127.0.0.1` des Entwicklungsclients ist vom Phone aus nicht dessen Spielserver. Touch-Steuerung ist bisher nicht implementiert.
+
+### Entwicklungsregeln
 
 - Verbindliche Regeln für Repository-Abgleich, Warnmeldungen und laufende Dokumentationspflege stehen in [AGENTS.md](AGENTS.md).
 - Entwicklung erfolgt auf einem Feature-Branch.

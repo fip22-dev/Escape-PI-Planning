@@ -67,7 +67,7 @@ Bereits umgesetzt:
 - Sieben Teamzimmer, Pausenraum, fünf Meeting-Räume und PI-Einführungsraum.
 - 37 statische neutrale Platzhalter an den unten beschriebenen Stellen.
 
-Noch nicht im Spielcode umgesetzt: Timer, Sieg- und Ablaufzustand, sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, bewegliche neutrale Personen, Sprechblasen, Möbel und finale Pixelgrafik oder Audio.
+Noch nicht im Spielcode umgesetzt: Timer, Sieg- und Ablaufzustand, sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, bewegliche neutrale Personen, Sprechblasen und finale Pixelgrafik oder Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -103,6 +103,36 @@ Diese Werte werden beim Implementieren und Testen feinjustiert.
 - Der erste Dialog einer Rolle wird vollständig gezeigt. Wiederholungsdialoge können mit Enter, Leertaste oder Mausklick übersprungen werden.
 
 Der Sieg- und Ablaufzustand sowie der Timer sind noch zu implementieren.
+
+## Raumobjekte
+
+Verbindliche Regeln:
+
+| Objekt | Passierbar | Blockiert Sicht |
+|---|---|---|
+| Pflanze | Nein | Ja |
+| Tisch | Nein | Ja |
+| Kaffeemaschine | Nein | Ja |
+| Stuhl | Ja | Nein |
+| Leinwand | Ja | Nein |
+| Whiteboard | Ja | Nein |
+| Sideboard / Aktenschrank | Nein | Ja |
+| Druckerstation | Nein | Ja |
+| Abfalleimer | Nein | Nein |
+| Laptop, Unterlagen und Becher auf Tischen | Keine zusätzliche Kollision | Keine zusätzliche Sichtwirkung |
+
+Die Bewegungskollision ist implementiert. Die Sichtblockierung ist als Objekteigenschaft hinterlegt; ihre Wirkung wird erst mit der noch fehlenden Sichtlogik der Suchenden implementiert und geprüft.
+
+Erster Platzierungsvorschlag auf `feature/room-objects`:
+
+- Jeder der sieben Teamräume: ein Sitzungstisch mit acht Stühlen, eine drei Kacheln breite Leinwand an der oberen Wand und zwei Pflanzen in gegenüberliegenden Ecken.
+- Jeder der fünf Meeting-Räume: ein kleiner Sitzungstisch mit vier Stühlen, eine zwei Kacheln breite Leinwand links an der oberen Wand neben der Tür und eine Pflanze in der unteren linken Ecke.
+- PI-Einführung: vier Reihen mit je acht Stühlen, mit freien Zwischenräumen und mittlerem Gang. Eine fünf Kacheln breite Leinwand steht rechts neben der Tür. Links an der Wand stehen eine Kaffeemaschine und drei verteilt platzierte Pflanzen.
+- Pausenraum: zwei kleine Tische mit je vier Stühlen, drei Kaffeemaschinen an der oberen Wand sowie Pflanzen in den beiden unteren Ecken.
+
+Zusätzliche Büroausstattung: Jeder Teamraum erhält ein Whiteboard mit bunten Karten an der oberen Wand und ein niedrig gezeichnetes Sideboard an der unteren Wand. Die Sideboards blockieren gemäss Spielregel trotzdem die Sicht. Im Workplace Device & Print Solutions Team steht zusätzlich eine Druckerstation. Neben jeder der vier Kaffeemaschinen steht ein Abfalleimer. Alle 14 Sitzungstische beziehungsweise Pausentische erhalten Laptop, Unterlagen und Kaffeebecher als reine Tischdekoration. Zusätzliche Wegweiser oder Ausgangsschilder werden nicht ergänzt; die bestehende Ausgangsbeschriftung bleibt erhalten.
+
+Sieben zusätzliche Pflanzen stehen in den äusseren Randnischen der ein Kachel breiteren Abschnitte von West- und Hauptgang. Türfelder, durchgehende Laufwege und Startposition bleiben frei. Neutrale Platzhalter, deren bisherige Position von soliden Möbeln belegt wird, werden auf freie Felder desselben Raums versetzt. Es bleiben insgesamt 37 Personen. Die Pflanzenpositionen sind ein Vorschlag zur visuellen Abnahme; Laufwege und Haltepunkte werden anschliessend konkretisiert.
 
 ## Neutrale Personen
 
@@ -177,13 +207,13 @@ Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei
 - Neutrale Personen sind zurückhaltender gestaltet und erhalten kein Entdecker-Symbol.
 - Hintergrundmusik: heitere, leicht heimliche Chiptune-Schleife von ungefähr 30–45 Sekunden.
 - Wenige Soundeffekte für Schritte, Türen, Warnzeichen und Dialoge; eine Stummschaltung ist verfügbar.
-- Kaffeemaschine, Tische, Stühle und weitere Raumobjekte werden nach der Grundrissprüfung ergänzt. Für jedes Objekt wird festgelegt, ob es Dekoration ist, Bewegung blockiert oder Sicht beeinflusst.
+- Erster Möbelvorschlag mit einfachen eigenen Formen umgesetzt; finale Pixelgrafiken folgen später. Objektregeln und Platzierung stehen im Abschnitt Raumobjekte.
 - Pokémon-Figuren, Grafiken, Musik und Markenzeichen werden nicht übernommen. Inhalte werden selbst erstellt oder passend lizenziert.
 
 ## Noch offene Designentscheidungen
 
 - Bei den nächsten Möbel- und Bewegungstests die Positionen und Laufwege der 37 neutralen Personen feinjustieren.
-- Möbel und Raumobjekte platzieren und für jedes festlegen, ob es dekorativ ist, Bewegung blockiert oder Sicht beeinflusst.
+- Den implementierten Möbelvorschlag und die Pflanzenpositionen im Browser abstimmen; Objektregeln sind festgelegt.
 - Nach dem ersten spielbaren Entdecker-Prototyp die vorgeschlagenen Routen, Startpositionen und Haltezeiten abstimmen.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
 

@@ -6,16 +6,19 @@ Dieses Dokument hält Umsetzungsreihenfolge und Fortschritt fest. Spielregeln, K
 
 - Grundlage: Browser-Graybox mit WASD/Pfeiltasten, mitlaufender Kamera, sieben Teamzimmern, Pausenraum, fünf Meeting-Räumen und PI-Einführung.
 - 37 neutrale Figuren sind als statische Platzhalter über Teamzimmer, Nebenräume, PI-Einführungsraum und Gänge verteilt.
-- Timer, bewegliche Entdecker, Sicht- und Entdeckungslogik, Dialogabläufe, neutrale Laufwege, Sprechblasen, Möbel und finale Grafik/Audio sind noch nicht umgesetzt.
+- Timer, bewegliche Entdecker, Sicht- und Entdeckungslogik, Dialogabläufe, neutrale Laufwege, Sprechblasen und finale Grafik/Audio sind noch nicht umgesetzt.
 - Der aktuelle Grundriss gilt als abgestimmt. Personenpositionen und Laufwege können nach Browser-Spieltests angepasst werden.
 - Graybox-Korrekturen: Raumränder geschlossen; Öffnungen von Pausenraum, PI-Einführung und Ausgang zwei Kacheln breit, übrige Türen eine Kachel breit. Meeting 1 besitzt einen oberen und einen unteren Eingang.
+- Aktiver Möbelstand: `feature/room-objects`, zur geräteübergreifenden Prüfung vorgesehen und ausdrücklich ungemergt. Offen bleiben visuelle Abnahme und konkrete neutrale Laufwege. Vor Tests auf einem anderen Client Remote-Stand und offene Pull Requests prüfen; Anleitung in README und verbindliche Regeln in AGENTS.md.
 
 ## Umsetzungsreihenfolge
 
-Schritt 1 ist **Erledigt**; Schritte 2–10 sind **Offen**. Teilabschlüsse und abgeschlossene Schritte werden direkt am jeweiligen Schritt gekennzeichnet; erforderliche Prüfungen werden mitgeführt.
+Schritt 1 ist **Erledigt**; Schritt 2 ist **Teilweise erledigt**; Schritte 3–10 sind **Offen**. Teilabschlüsse und abgeschlossene Schritte werden direkt am jeweiligen Schritt gekennzeichnet; erforderliche Prüfungen werden mitgeführt.
 
 1. **Erledigt – Graybox-Spieltest:** Vom Nutzer bestätigt. Beschriftungen sind gut platziert; teilweise verschwommene Schrift wird separat als offener Darstellungsfehler geführt. Weitere Personenanpassungen erfolgen mit Möbeln und Laufwegen.
-2. **Offen – Raumobjekte und Laufwegplanung:** Kaffeemaschine, Tische, Stühle und weitere Objekte platzieren. Für jedes Objekt festlegen, ob es dekorativ ist, Bewegung blockiert oder Sicht beeinflusst. Bewegungsbereiche und erste Laufwege neutraler Personen passend zu Möbeln und Türen festlegen; konkrete Wegpunkte bleiben bis dahin offen.
+2. **Teilweise erledigt – Raumobjekte und Laufwegplanung:** Erster Möbelvorschlag und Objektregeln implementiert: Sitzungstische mit Stühlen und kleinen Leinwänden in allen Team-/Meeting-Räumen sowie Pflanzen in Gangverbreiterungen, Stuhlreihen und Leinwand rechts neben der Tür im PI-Raum, Kaffeemaschine und Pflanzen links sowie zwei Tische und drei Kaffeemaschinen im Pausenraum. Bewegungskollision aktiv; Sichtblocker-Eigenschaften hinterlegt. Offen: visuelle Abnahme, Pflanzenpositionen abstimmen und konkrete neutrale Laufwege mit Halte-/Ausweichpunkten festlegen.
+
+   Zusätzliche Büroobjekte sind ebenfalls implementiert: Whiteboards und Sideboards in Teamräumen, Druckerstation im Workplace Device & Print Solutions Team, vier Abfalleimer neben Kaffeemaschinen und Tischdetails. Keine zusätzlichen Wegweiser oder Ausgangsschilder. Sideboards/Drucker blockieren Bewegung und später Sicht; Abfalleimer nur Bewegung; Whiteboards und Tischdetails bieten keinen zusätzlichen Sichtschutz.
 3. **Offen – Erste neutrale Personen bewegen:** Zunächst wenige repräsentative Personen in Räumen und Gängen mit festen Routen, versetzten Pausen und körperlicher Kollision umsetzen. Warten beziehungsweise Ausweichen bei belegten Wegen erproben. Keine Überlappungen, dauerhaft versperrten Türen oder blockierten Quergänge zulassen. Diesen Test vor dem RTE-Prototyp abschliessen.
 4. **Offen – Spielschleife:** Fluchtstart, 180-Sekunden-Timer, Ausgang, Sieg- und Ablaufzustand sowie Neustart umsetzen.
 5. **Offen – Entdeckungsmechanik:** Zuerst die RTE als Testrolle mit Route, Blickrichtung, Sichtblockern, Warnzeichen und Entdeckungs-Auslöser einbauen. Bewegte neutrale Personen als dynamische Sichtdeckung einbeziehen und prüfen, dass sie die Spielfigur verdecken und nach dem Vorbeigehen wieder sichtbar machen. Danach einzeln P&T, BO, PM, PO und SM ergänzen. Für jede Rolle Route, Startposition und Haltezeiten prüfen.
@@ -34,6 +37,8 @@ Schritt 1 ist **Erledigt**; Schritte 2–10 sind **Offen**. Teilabschlüsse und 
 - Nach Review und Prüfung per Pull Request nach `main` mergen.
 
 ## Abgeschlossene Grundlagen
+
+- **Teilweise erledigt – Möbelvorschlag auf `feature/room-objects`:** Objektplatzierung, einfache Darstellung und Bewegungskollision implementiert. Pflanzen/Tische/Kaffeemaschinen blockieren Bewegung und sind als Sichtblocker markiert; Stühle/Leinwand bleiben passierbar ohne Sichtschutz. Neutrale Platzhalter auf soliden Möbeln werden im selben Raum versetzt. Acht Tests und Build erfolgreich: keine Möbelüberschneidungen, keine belegten Türen oder Wände, alle freien Bodenfelder weiterhin erreichbar. Browser-Abnahme und echte Sichtprüfung bleiben offen.
 
 - **Erledigt – Reihenfolge für neutrale Personen abgestimmt:** Laufwegplanung mit der Möbelplatzierung verbunden und erster Bewegungs-/Kollisionstest vor den RTE-Prototyp gezogen. Bereichsregeln im Game Design ergänzt und MD-Dateien auf gleiche Reihenfolge geprüft. Laufwege, Bewegung und Sichtdeckung sind weiterhin nicht implementiert.
 
@@ -56,3 +61,6 @@ Schritt 1 ist **Erledigt**; Schritte 2–10 sind **Offen**. Teilabschlüsse und 
   - **Geprüft:** Produktionsbuild erfolgreich; manueller Spieltest vom Nutzer bestätigt.
   - **Offen – Schriftschärfe:** Beschriftungen sind teilweise verschwommen. Textdarstellung und Skalierung untersuchen, verbessern und im Browser bei Stillstand und Kamerabewegung erneut prüfen. Schriftgrösse und bestätigte Positionen dabei erhalten.
 - **Erledigt – Lokalen Branch umbenannt:** `feature/graybox-refinements` beschreibt den tatsächlichen Umfang. Der Branch bündelt Graybox-Korrekturen, Kartentests und Dokumentationsregeln. Abschliessend vier Kartentests, Produktionsbuild und Diff-Prüfung erfolgreich; manueller Spieltest vom Nutzer bestätigt. Teilweise verschwommene Schrift bleibt offen.
+
+- **Teilweise erledigt – Kleine Leinwände und Gangpflanzen:** In sieben Teamräumen je drei Kacheln breite, in fünf Meeting-Räumen je zwei Kacheln breite Leinwand ergänzt (PI: fünf Kacheln). Sieben Pflanzen an äusseren Rändern der Gangverbreiterungen ergänzt. Acht Tests und Build erfolgreich; alle freien Bodenfelder bleiben erreichbar, Türfelder sind unbelegt. Visuelle Abnahme bleibt offen.
+- **Teilweise erledigt – Büroausstattung:** Sieben Whiteboards, sieben Sideboards, eine Druckerstation und vier Abfalleimer ergänzt. Alle 14 Tische mit Laptop, Unterlagen und Becher dekoriert. Acht Tests und Build erfolgreich; Objektregeln geprüft, keine unbeabsichtigten Möbelüberschneidungen, Türen frei und alle freien Bodenfelder erreichbar. Visuelle Abnahme und spätere Sichtlogik bleiben offen.
