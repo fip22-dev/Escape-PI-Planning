@@ -64,27 +64,33 @@ export class GrayboxScene extends Phaser.Scene {
     }
 
     for (const room of rooms) {
+      // Der knappe Abstand zum Mac-Raum reicht oberhalb von M365 nicht aus.
+      const below = room.label.startsWith("M365");
+      const leftAligned = /^Meeting [1-5]$/.test(room.label);
       this.add
         .text(
-          (room.x + room.width / 2) * TILE_SIZE,
-          (room.y + room.height / 2) * TILE_SIZE,
+          (leftAligned ? room.x - 1 : room.x + room.width / 2) * TILE_SIZE,
+          below ? (room.y + room.height) * TILE_SIZE + 2 : room.y * TILE_SIZE - 2,
           room.label,
           {
-            fontFamily: "monospace",
-            fontSize: "10px",
-            color: COLORS.ink,
-            backgroundColor: "#ffffff66",
-            padding: { x: 3, y: 2 },
+            fontFamily: "Arial, sans-serif",
+            fontSize: "9px",
+            fontStyle: "bold",
+            color: COLORS.text,
+            backgroundColor: "#24332b",
+            align: leftAligned ? "left" : "center",
+            padding: { x: 2, y: 1 },
           },
         )
-        .setOrigin(0.5)
+        .setOrigin(leftAligned ? 0 : 0.5, below ? 0 : 1)
         .setDepth(4);
     }
 
     this.add
-      .text(34 * TILE_SIZE + TILE_SIZE / 2, 0, "AUSGANG", {
-        fontFamily: "monospace",
-        fontSize: "8px",
+      .text(34 * TILE_SIZE, 0, "AUSGANG", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "9px",
+        fontStyle: "bold",
         color: COLORS.text,
         backgroundColor: "#24332b",
         padding: { x: 3, y: 2 },
@@ -92,14 +98,15 @@ export class GrayboxScene extends Phaser.Scene {
       .setOrigin(0.5, 0);
 
     this.add
-      .text(36 * TILE_SIZE, 44 * TILE_SIZE, "PI-Einführung", {
-        fontFamily: "monospace",
-        fontSize: "10px",
+      .text(38 * TILE_SIZE, 40 * TILE_SIZE - 2, "PI-Einführung", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "9px",
+        fontStyle: "bold",
         color: COLORS.text,
         backgroundColor: "#364a3b",
-        padding: { x: 4, y: 3 },
+        padding: { x: 2, y: 1 },
       })
-      .setOrigin(0.5, 0);
+      .setOrigin(0, 1);
 
     // Statische Platzhalter für 37 neutrale Personen auf der ganzen Etage.
     const neutralPositions = [
@@ -144,6 +151,7 @@ export class GrayboxScene extends Phaser.Scene {
     const worldWidth = MAP_WIDTH * TILE_SIZE;
     const worldHeight = MAP_HEIGHT * TILE_SIZE;
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
+    this.cameras.main.roundPixels = true;
     this.cameras.main.startFollow(this.player, false, 0.2, 0.2);
 
     this.inputKeys = this.input.keyboard.addKeys({
@@ -154,16 +162,6 @@ export class GrayboxScene extends Phaser.Scene {
     });
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.add
-      .text(6, 5, "GRAYBOX  |  WASD / PFEILE", {
-        fontFamily: "monospace",
-        fontSize: "8px",
-        color: COLORS.text,
-        backgroundColor: "#172326cc",
-        padding: { x: 3, y: 2 },
-      })
-      .setScrollFactor(0)
-      .setDepth(20);
   }
 
   update(time) {

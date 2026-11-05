@@ -12,13 +12,17 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 - Wird die Spielfigur von einer der sechs Hauptfiguren entdeckt, erscheint ein rollenspezifischer Dialog. Danach startet der Versuch im PI-Einführungsraum neu.
 - Wiederholungsdialoge können übersprungen werden; während eines Dialogs steht der Timer still.
 - Die Karte enthält sieben benannte Teamzimmer, einen Pausenraum, fünf kleine Meeting-Räume, den PI-Einführungsraum und drei Quergänge.
-- **37 neutrale Personen** verteilen sich über die gesamte Etage. Sie blockieren die Spielfigur nicht und lösen keinen Alarm aus.
+- **37 neutrale Personen** verteilen sich über die gesamte Etage. Sie sollen künftig als körperliche Hindernisse die Spielfigur und die Sicht der suchenden Rollen blockieren, lösen aber selbst keinen Alarm aus. Im aktuellen Graybox ist diese Blockierung noch nicht umgesetzt.
 - P&T bedeutet **People & Transformation**.
 - Kamera und Spielwelt bleiben in fester Draufsicht; die Kamera folgt der Spielfigur.
 
 ## Grundriss
 
-Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die Teamzimmer und Nebenräume sind Seitenräume mit je einer Tür. Kein Teamzimmer muss durchquert werden, um vom Start zum Ausgang zu gelangen. Gelbe Kacheln markieren die Türpositionen.
+Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die offenen Raumränder wurden am 05.11.2026 durch Aussenwände geschlossen. Die Teamzimmer und Nebenräume haben je einen Türdurchgang; Meeting 1 hat als Ausnahme zwei Eingänge. Kein Teamzimmer muss durchquert werden, um vom Start zum Ausgang zu gelangen. Gelbe Kacheln markieren die Türpositionen.
+
+Pausenraum, PI-Einführungsraum und Ausgang haben jeweils eine zwei Kacheln breite Öffnung. Die übrigen Türen sind eine Kachel breit. Bei den Seitenräumen führt vom gelben Türfeld am inneren Raumrand eine zusätzliche begehbare Kachel durch die neue Aussenwand zum Gang. Diese zusätzliche Tiefe erhält die vereinbarten Raumflächen; sie ist keine zweite Tür. Der Browser-Spieltest ist vom Nutzer bestätigt.
+
+Der Ausgang wurde um eine Kachel nach links auf die Spalten 33–34 (Zeile 2, nullbasierte Kartenkoordinaten) verschoben; seine Beschriftung ist darüber zentriert.
 
 ### Teamzimmer und Lage
 
@@ -31,6 +35,7 @@ Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die Teamzimmer und Neb
 
 - Der Pausenraum zweigt nördlich von Q1 ab.
 - Fünf kleine Räume mit den Kartenbeschriftungen **Meeting 1** bis **Meeting 5** liegen als Seitenräume rund um Q2 und Q3.
+- Meeting 1 besitzt zwei Eingänge: oben mit kurzem Zugang von Q1 und unten zu Q2. Beide bleiben passierbar; die Beschriftung steht links neben der oberen Tür.
 - Die Quergänge Q1, Q2 und Q3 bleiben frei begehbar und dienen als Abkürzungen und Ausweichwege.
 - Der PI-Einführungsraum liegt am südlichen Ende und ist direkt mit dem Hauptgang verbunden. Er ist vertikal angelegt, **14 Kacheln breit und 12 Kacheln lang**; die zwei zusätzlichen Kacheln liegen auf der rechten Seite.
 - Grundflächen und Türpositionen sind für den Graybox festgelegt. Nach dem Test können sie bei Bedarf angepasst werden.
@@ -58,6 +63,7 @@ Bereits umgesetzt:
 - Browser-Spielbasis mit Phaser und Vite.
 - Bewegung mit WASD und Pfeiltasten; Wände halten die Spielfigur auf, die gelben Türfelder sind passierbar.
 - Mitlaufende Kamera und 16×16-Pixel-Kacheln; der Grundausschnitt entspricht ungefähr 20×15 Kacheln.
+- Raum- und Ausgangsbeschriftungen mit fetter 9-Pixel-Schrift und deckendem dunklem Hintergrund. Raumnamen stehen oberhalb der Raumfläche, bei M365 wegen des knappen Abstands unterhalb. Meeting 1–5 beginnen linksbündig am linken äusseren Wandrand; PI-Einführung steht auf der dunklen Fläche rechts neben dem Eingang und oberhalb des Raums. Der Steuerungshinweis steht ausschliesslich im Seitenfuss ausserhalb des Spielfelds. Die Kamera rundet auf ganze Pixel. Die Darstellung bleibt durch die 320×240-Spielauflösung pixelig; die Platzierung ist vom Nutzer bestätigt. Teilweise verschwommene Schrift bleibt als offener Darstellungsfehler bestehen.
 - Sieben Teamzimmer, Pausenraum, fünf Meeting-Räume und PI-Einführungsraum.
 - 37 statische neutrale Platzhalter an den unten beschriebenen Stellen.
 
@@ -81,7 +87,7 @@ Die Routen von BO, PM und PO starten zeitversetzt. Die Figuren laufen durch die 
 ## Sicht und Entdeckung – Regeln für Version 0.1
 
 - Hauptfiguren entdecken nur in Blickrichtung, nicht rundherum.
-- Die vorgesehene Sichtweite beträgt ungefähr fünf Kacheln. Wände und geschlossene Türen blockieren die Sicht.
+- Die vorgesehene Sichtweite beträgt ungefähr fünf Kacheln. Wände, geschlossene Türen und neutrale Personen blockieren die Sicht. Neutrale Personen dienen damit auch als bewegliche Sichtdeckung; diese Funktion ist noch nicht implementiert.
 - Direkt neben einer Hauptfigur wird die Spielfigur auch ausserhalb ihrer Blickrichtung entdeckt.
 - Ein gelbes Ausrufezeichen warnt kurz vor der Entdeckung.
 - Bleibt die Spielfigur ungefähr 0,7 Sekunden im Sichtbereich, gilt sie als entdeckt.
@@ -108,7 +114,19 @@ Insgesamt **37 neutrale Personen**, über die ganze Karte verteilt:
 - 5 im PI-Einführungsraum.
 - 6 in den Gängen und Quergängen.
 
-Im Graybox stehen sie als unbewegliche Platzhalter. Später erhalten einige feste Plätze und andere einfache Laufwege. Sie blockieren die Spielfigur nicht, entdecken sie nicht und lösen keinen Alarm aus. Die Laufwege sollen verhindern, dass alle gleichzeitig denselben Gang verstopfen.
+Im Graybox stehen sie als unbewegliche, noch durchlässige Platzhalter. Künftig bewegen sich neutrale Personen auf einfachen Laufwegen und sind körperliche Hindernisse: Die Spielfigur kann nicht durch sie hindurchgehen, und sie blockieren die Sicht der suchenden Rollen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Bewegung, Kollision und dynamische Sichtdeckung sind noch umzusetzen. Laufwege und Ausweichverhalten müssen verhindern, dass Türen oder Gänge dauerhaft versperrt werden.
+
+### Vereinbarte Laufwegplanung – noch nicht implementiert
+
+- **Teamzimmer:** kurze Wege innerhalb des jeweiligen Raums.
+- **Meeting-Räume:** kleine Bewegungsbereiche; Türfelder bleiben als Durchgänge frei und sind keine Haltepunkte.
+- **Pausenraum:** Wege zwischen Sitzplätzen und Kaffeemaschine.
+- **PI-Einführung:** kurze Wege zwischen den späteren Tischgruppen.
+- **Gänge und Quergänge:** einzelne Personen auf festen Strecken mit zeitversetzten Pausen.
+
+Bei belegten Wegen warten Personen oder weichen aus, ohne sich, die Spielfigur oder Suchende zu durchlaufen. Türen dürfen kurz passiert, aber nicht dauerhaft versperrt werden. Konkrete Wegpunkte, Haltezeiten und Ausweichplätze werden nach der Möbelplatzierung festgelegt und im Spiel geprüft.
+
+Zuerst werden wenige Personen mit Bewegung und Kollision erprobt. Erst danach folgt der RTE-Prototyp, der diese Personen als dynamische Sichtblocker berücksichtigt. Die übrigen neutralen Personen und Sprechblasen werden anschliessend ergänzt. Alle diese Implementierungsschritte sind offen.
 
 ## Neutrale Sprechblasen – Entwurf
 
@@ -164,7 +182,7 @@ Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei
 
 ## Noch offene Designentscheidungen
 
-- Nach dem Browser-Spieltest die Positionen und Laufwege der 37 neutralen Personen feinjustieren.
+- Bei den nächsten Möbel- und Bewegungstests die Positionen und Laufwege der 37 neutralen Personen feinjustieren.
 - Möbel und Raumobjekte platzieren und für jedes festlegen, ob es dekorativ ist, Bewegung blockiert oder Sicht beeinflusst.
 - Nach dem ersten spielbaren Entdecker-Prototyp die vorgeschlagenen Routen, Startpositionen und Haltezeiten abstimmen.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
