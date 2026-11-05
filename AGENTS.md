@@ -11,6 +11,8 @@ Diese Regeln gelten für alle Arbeiten in diesem Repository.
 5. Falls der Remote-Abgleich scheitert, ausdrücklich melden, dass die Aktualität nicht bestätigt werden konnte. Gespeicherte Remote-Referenzen nicht als aktuellen Remote-Stand ausgeben.
 6. Bestehende Änderungen erhalten. Kein automatisches Überschreiben, Verwerfen, Reset, Merge oder Rebase zur Beseitigung einer Differenz. Sichere, unabhängige Arbeiten können fortgesetzt werden; bei Konflikten mit der Aufgabe zuerst die Klärung herbeiführen.
 7. Auf dem passenden Feature-Branch arbeiten. Vorhandene Branches prüfen und verwenden, wenn sie zur Aufgabe gehören. Neue Branches vom aktuellen `main` starten.
+8. Bei Arbeitsbeginn oder Gerätewechsel (auch bei einer vom Phone gestarteten Entwicklungssitzung) nach dem Fetch offene Pull Requests und Remote-Arbeitsbranches prüfen. `git branch -r --no-merged origin/main` liefert nur Kandidaten: Ein nicht enthaltener Branch kann bereits per Squash oder Rebase integriert oder veraltet sein. Status und Aufgabenbezug anhand von Pull Requests und Änderungen bestätigen. Relevante offene Arbeit sichtbar melden, bevor auf `main` getestet oder ein neuer Branch angelegt wird. Nicht automatisch auf irgendeinen offenen Branch wechseln; lokale Änderungen erhalten. Ohne GitHub-Zugriff die eingeschränkte Prüfung offenlegen.
+9. Für einen reinen Spielaufruf im Browser ist kein Git-Abgleich erforderlich. Ein Phone-Browser verwendet den Stand des Servers oder Deployments; er wählt keinen Git-Branch und aktualisiert keinen Code. Zum Testen eines Feature-Standes muss dessen Branch auf dem ausführenden Entwicklungsclient ausgecheckt und der Server mit diesem Stand gestartet sein.
 
 ## Bei jeder Änderung: Dokumentation mitführen
 

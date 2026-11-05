@@ -23,10 +23,14 @@ function reachableFrom(grid, start, blocked = new Set()) {
 }
 
 function doorTiles(room) {
-  return [
-    ...Array.from({ length: room.doorWidth ?? 1 }, (_, offset) => `${room.doorX + offset},${room.doorY}`),
-    ...(room.additionalDoors ?? []).map(door => `${door.x},${door.y}`),
-  ];
+  const doors = [];
+  for (let dy = 0; dy < (room.doorHeight ?? 1); dy += 1) {
+    for (let dx = 0; dx < (room.doorWidth ?? 1); dx += 1) {
+      doors.push(`${room.doorX + dx},${room.doorY + dy}`);
+    }
+  }
+  doors.push(...(room.additionalDoors ?? []).map(door => `${door.x},${door.y}`));
+  return doors;
 }
 
 test("every side room is reachable only through its designated entrances", () => {
@@ -61,10 +65,19 @@ test("Meeting 1 remains accessible through either entrance independently", () =>
   }
 });
 
-test("break room, PI room and exit have two adjacent traversable lanes", () => {
+test("team rooms, break room, PI room and exit have two adjacent traversable lanes", () => {
   const { grid, start } = createFloorPlan();
   const reachable = reachableFrom(grid, start);
-  for (const [x, y, tile] of [[23, 5, TILE_TYPES.DOOR], [34, 39, TILE_TYPES.DOOR], [33, 2, TILE_TYPES.EXIT]]) {
+  const teamDoors = [
+    [11, 8], [11, 18], [11, 29], [11, 37], [37, 8], [37, 20], [37, 32],
+  ];
+  for (const [x, y] of teamDoors) {
+    for (const offset of [0, 1]) {
+      assert.equal(grid[y + offset][x], TILE_TYPES.DOOR);
+      assert.ok(reachable.has(`${x},${y + offset}`));
+    }
+  }
+  for (const [x, y, tile] of [[22, 5, TILE_TYPES.DOOR], [34, 39, TILE_TYPES.DOOR], [33, 2, TILE_TYPES.EXIT]]) {
     for (const offset of [0, 1]) {
       assert.equal(grid[y][x + offset], tile);
       assert.ok(reachable.has(`${x + offset},${y}`));
