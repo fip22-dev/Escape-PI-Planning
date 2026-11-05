@@ -31,14 +31,14 @@ export function createFloorPlan() {
 
   // Teamzimmer und optionale Nebenräume liegen seitlich an den Gängen.
   const rooms = [
-    { label: "Windows\nClient Team", x: 2, y: 5, width: 10, height: 6, doorX: 11, doorY: 8 },
-    { label: "Workplace Device\n& Print Solutions\nTeam", x: 2, y: 14, width: 10, height: 8, doorX: 11, doorY: 18 },
-    { label: "Mac Workplace\nTeam", x: 2, y: 26, width: 10, height: 6, doorX: 11, doorY: 29 },
-    { label: "M365 Tenant &\nCollaboration Team", x: 2, y: 34, width: 10, height: 6, doorX: 11, doorY: 37 },
-    { label: "Windows Software\nTeam", x: 37, y: 5, width: 10, height: 7, doorX: 37, doorY: 8 },
-    { label: "Enterprise Mobile\nServices Team", x: 37, y: 17, width: 10, height: 7, doorX: 37, doorY: 20 },
-    { label: "Communication &\nMeetingroom\nSolutions Team", x: 37, y: 29, width: 10, height: 7, doorX: 37, doorY: 32 },
-    { label: "Pausenraum", x: 18, y: 2, width: 10, height: 4, doorX: 23, doorY: 5, doorWidth: 2 },
+    { label: "Windows\nClient Team", x: 2, y: 5, width: 10, height: 6, doorX: 11, doorY: 8, doorHeight: 2 },
+    { label: "Workplace Device\n& Print Solutions\nTeam", x: 2, y: 14, width: 10, height: 8, doorX: 11, doorY: 18, doorHeight: 2 },
+    { label: "Mac Workplace\nTeam", x: 2, y: 26, width: 10, height: 6, doorX: 11, doorY: 29, doorHeight: 2 },
+    { label: "M365 Tenant &\nCollaboration Team", x: 2, y: 34, width: 10, height: 6, doorX: 11, doorY: 37, doorHeight: 2 },
+    { label: "Windows Software\nTeam", x: 37, y: 5, width: 10, height: 7, doorX: 37, doorY: 8, doorHeight: 2 },
+    { label: "Enterprise Mobile\nServices Team", x: 37, y: 17, width: 10, height: 7, doorX: 37, doorY: 20, doorHeight: 2 },
+    { label: "Communication &\nMeetingroom\nSolutions Team", x: 37, y: 29, width: 10, height: 7, doorX: 37, doorY: 32, doorHeight: 2 },
+    { label: "Pausenraum", x: 18, y: 1, width: 10, height: 5, doorX: 22, doorY: 5, doorWidth: 2 },
     { label: "Meeting 1", x: 18, y: 13, width: 8, height: 5, doorX: 21, doorY: 13, additionalDoors: [{ x: 21, y: 17 }] },
     { label: "Meeting 2", x: 17, y: 23, width: 6, height: 5, doorX: 20, doorY: 23 },
     { label: "Meeting 3", x: 25, y: 23, width: 7, height: 5, doorX: 28, doorY: 23 },
@@ -64,9 +64,11 @@ export function createFloorPlan() {
       : room.doorX === room.x + room.width - 1 ? room.doorX + 1 : room.doorX;
     const doorwayY = room.doorY === room.y ? room.doorY - 1
       : room.doorY === room.y + room.height - 1 ? room.doorY + 1 : room.doorY;
-    for (let offset = 0; offset < (room.doorWidth ?? 1); offset += 1) {
-      grid[doorwayY][doorwayX + offset] = HALL;
-      grid[room.doorY][room.doorX + offset] = DOOR;
+    for (let dy = 0; dy < (room.doorHeight ?? 1); dy += 1) {
+      for (let dx = 0; dx < (room.doorWidth ?? 1); dx += 1) {
+        grid[doorwayY + dy][doorwayX + dx] = HALL;
+        grid[room.doorY + dy][room.doorX + dx] = DOOR;
+      }
     }
   }
 

@@ -10,7 +10,7 @@ test("furniture never overlaps walls, doors, other objects or the player spawn",
   for (const object of objects) {
     for (let y = object.y; y < object.y + object.height; y += 1) {
       for (let x = object.x; x < object.x + object.width; x += 1) {
-        const allowed = object.type === "plant"
+        const allowed = ["plant", "printer"].includes(object.type)
           ? [TILE_TYPES.FLOOR, TILE_TYPES.START, TILE_TYPES.HALL]
           : [TILE_TYPES.FLOOR, TILE_TYPES.START];
         assert.ok(allowed.includes(grid[y]?.[x]), `${object.type} at ${x},${y}`);

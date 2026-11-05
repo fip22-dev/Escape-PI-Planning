@@ -18,9 +18,9 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 
 ## Grundriss
 
-Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die offenen Raumränder wurden am 05.11.2026 durch Aussenwände geschlossen. Die Teamzimmer und Nebenräume haben je einen Türdurchgang; Meeting 1 hat als Ausnahme zwei Eingänge. Kein Teamzimmer muss durchquert werden, um vom Start zum Ausgang zu gelangen. Gelbe Kacheln markieren die Türpositionen.
+Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die offenen Raumränder wurden am 05.11.2026 durch Aussenwände geschlossen. Die Teamzimmer haben je einen zwei Kacheln breiten Türdurchgang; Nebenräume haben je einen Türdurchgang, Meeting 1 hat als Ausnahme zwei Eingänge. Kein Teamzimmer muss durchquert werden, um vom Start zum Ausgang zu gelangen. Gelbe Kacheln markieren die Türpositionen.
 
-Pausenraum, PI-Einführungsraum und Ausgang haben jeweils eine zwei Kacheln breite Öffnung. Die übrigen Türen sind eine Kachel breit. Bei den Seitenräumen führt vom gelben Türfeld am inneren Raumrand eine zusätzliche begehbare Kachel durch die neue Aussenwand zum Gang. Diese zusätzliche Tiefe erhält die vereinbarten Raumflächen; sie ist keine zweite Tür. Der Browser-Spieltest ist vom Nutzer bestätigt.
+Pausenraum, PI-Einführungsraum und Ausgang haben jeweils eine zwei Kacheln breite Öffnung. Die Teamzimmer-Türen sind ebenfalls zwei Kacheln breit, entlang der jeweiligen Seitenwand. Die übrigen Türen sind eine Kachel breit. Der Pausenraum-Eingang liegt bei Spalten 22–23 (nullbasierte Kartenkoordinaten), eine Kachel links von seiner vorherigen Position. Bei den Seitenräumen führt vom gelben Türfeld am inneren Raumrand eine zusätzliche begehbare Kachel durch die neue Aussenwand zum Gang. Diese zusätzliche Tiefe erhält die vereinbarten Raumflächen; sie ist keine zweite Tür. Der Browser-Spieltest ist vom Nutzer bestätigt.
 
 Der Ausgang wurde um eine Kachel nach links auf die Spalten 33–34 (Zeile 2, nullbasierte Kartenkoordinaten) verschoben; seine Beschriftung ist darüber zentriert.
 
@@ -123,16 +123,16 @@ Verbindliche Regeln:
 
 Die Bewegungskollision ist implementiert. Die Sichtblockierung ist als Objekteigenschaft hinterlegt; ihre Wirkung wird erst mit der noch fehlenden Sichtlogik der Suchenden implementiert und geprüft.
 
-Erster Platzierungsvorschlag auf `feature/room-objects`:
+Aktuelle, im Browser visuell abgenommene Platzierung auf `feature/room-objects`:
 
-- Jeder der sieben Teamräume: ein Sitzungstisch mit acht Stühlen, eine drei Kacheln breite Leinwand an der oberen Wand und zwei Pflanzen in gegenüberliegenden Ecken.
-- Jeder der fünf Meeting-Räume: ein kleiner Sitzungstisch mit vier Stühlen, eine zwei Kacheln breite Leinwand links an der oberen Wand neben der Tür und eine Pflanze in der unteren linken Ecke.
-- PI-Einführung: vier Reihen mit je acht Stühlen, mit freien Zwischenräumen und mittlerem Gang. Eine fünf Kacheln breite Leinwand steht rechts neben der Tür. Links an der Wand stehen eine Kaffeemaschine und drei verteilt platzierte Pflanzen.
-- Pausenraum: zwei kleine Tische mit je vier Stühlen, drei Kaffeemaschinen an der oberen Wand sowie Pflanzen in den beiden unteren Ecken.
+- Jeder der sieben Teamräume: ein Sitzungstisch mit acht Stühlen, zwei Pflanzen und ein zwei Kacheln breiter Eingang. In den vier links gelegenen Teamräumen hängt die drei Kacheln hohe Leinwand an der linken Wand; in Communication & Meetingroom Solutions, Windows Software und Enterprise Mobile hängt sie an der rechten Wand. Im Workplace Device & Print Solutions Team stehen Tisch und darunter platzierte neutrale Person je eine Kachel weiter südlich.
+- Alle fünf Meeting-Räume erhalten hochkant an der rechten Wand platzierte Leinwände. Meeting 1 erhält eine drei Kacheln hohe, Meeting 2–5 je eine zwei Kacheln hohe Leinwand.
+- PI-Einführung: 30 Stühle in fünf Reihen mit je einer Leerreihe dazwischen. Jede Reihe hat vier Stühle rechts und zwei zusätzliche links; der Stuhlblock endet eine Kachel vor der rechten Wand. Die linke Laufspur und der Zugang bleiben frei. Neutrale Personen stehen ausserhalb der belegten Stuhlreihen. Eine fünf Kacheln breite Leinwand steht rechts neben der Tür. Links an der Wand folgen von oben nach unten eine Kaffeemaschine direkt oberhalb eines senkrechten, drei Kacheln langen Tisches ohne Stühle mit Obst, Gemüse und Gipfeli sowie ein Papierkorb; eine Pflanze steht unter dem Papierkorb. Zwei weitere Pflanzen stehen verteilt im Raum.
+- Pausenraum: um eine Kachel nach Norden vergrössert, mit weiterhin südlichem Eingang. Er enthält zwei kleine Tische mit je vier Stühlen, drei Kaffeemaschinen und drei Abfalleimer an der oberen Wand sowie Pflanzen in den beiden unteren Ecken. Auf den Tischen liegen Essen und Kaffeetassen statt Laptop und Unterlagen.
 
-Zusätzliche Büroausstattung: Jeder Teamraum erhält ein Whiteboard mit bunten Karten an der oberen Wand und ein niedrig gezeichnetes Sideboard an der unteren Wand. Die Sideboards blockieren gemäss Spielregel trotzdem die Sicht. Im Workplace Device & Print Solutions Team steht zusätzlich eine Druckerstation. Neben jeder der vier Kaffeemaschinen steht ein Abfalleimer. Alle 14 Sitzungstische beziehungsweise Pausentische erhalten Laptop, Unterlagen und Kaffeebecher als reine Tischdekoration. Zusätzliche Wegweiser oder Ausgangsschilder werden nicht ergänzt; die bestehende Ausgangsbeschriftung bleibt erhalten.
+Zusätzliche Büroausstattung: Jeder Teamraum erhält ein Whiteboard mit bunten Karten an der oberen Wand und ein niedrig gezeichnetes Sideboard an der unteren Wand. In allen vier Westgang-Teams steht das Sideboard unten links und eine Pflanze unten rechts. Die Sideboards blockieren gemäss Spielregel trotzdem die Sicht. Im Workplace Device & Print Solutions Team steht zusätzlich eine Druckerstation rechts neben dem Sideboard; eine weitere Druckerstation steht ganz rechts im oberen Westgang. Neben jeder der vier Kaffeemaschinen steht ein Abfalleimer. Die Teamtische zeigen Laptop, Unterlagen und Kaffeebecher; die beiden Pausentische zeigen Essen und Kaffeetassen. Diese Details sind reine Dekoration. Zusätzliche Wegweiser oder Ausgangsschilder werden nicht ergänzt; die bestehende Ausgangsbeschriftung bleibt erhalten.
 
-Sieben zusätzliche Pflanzen stehen in den äusseren Randnischen der ein Kachel breiteren Abschnitte von West- und Hauptgang. Türfelder, durchgehende Laufwege und Startposition bleiben frei. Neutrale Platzhalter, deren bisherige Position von soliden Möbeln belegt wird, werden auf freie Felder desselben Raums versetzt. Es bleiben insgesamt 37 Personen. Die Pflanzenpositionen sind ein Vorschlag zur visuellen Abnahme; Laufwege und Haltepunkte werden anschliessend konkretisiert.
+Sieben zusätzliche Pflanzen stehen in den äusseren Randnischen der ein Kachel breiteren Abschnitte von West- und Hauptgang. Der Drucker im oberen Westgang steht an der äussersten rechten Gangposition. Türfelder, durchgehende Laufwege und Startposition bleiben frei. Neutrale Platzhalter, deren bisherige Position von soliden Möbeln belegt wird, werden auf freie Felder desselben Raums versetzt. Es bleiben insgesamt 37 Personen. Die visuelle Browserabnahme dieser Platzierung wurde vom Nutzer bestätigt; Laufwege und Haltepunkte werden noch konkretisiert.
 
 ## Neutrale Personen
 
@@ -212,8 +212,8 @@ Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei
 
 ## Noch offene Designentscheidungen
 
-- Bei den nächsten Möbel- und Bewegungstests die Positionen und Laufwege der 37 neutralen Personen feinjustieren.
-- Den implementierten Möbelvorschlag und die Pflanzenpositionen im Browser abstimmen; Objektregeln sind festgelegt.
+- Im nächsten Branch Routen, Haltepunkte und Ausweichregeln für neutrale Personen festlegen und gemeinsam mit einem kleinen Bewegungs-/Kollisionstest erproben.
+- Die tatsächliche Sichtwirkung der Möbel mit der späteren Suchenden-Logik prüfen; bisher sind Sichtblocker nur als Objekteigenschaft hinterlegt.
 - Nach dem ersten spielbaren Entdecker-Prototyp die vorgeschlagenen Routen, Startpositionen und Haltezeiten abstimmen.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
 

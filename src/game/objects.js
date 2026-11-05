@@ -12,17 +12,23 @@ export const OBJECT_RULES = {
 
 export function createRoomObjects(rooms) {
   const objects = [];
-  const add = (type, x, y, width = 1, height = 1) => {
-    objects.push({ type, x, y, width, height, ...OBJECT_RULES[type] });
+  const add = (type, x, y, width = 1, height = 1, extra = {}) => {
+    objects.push({ type, x, y, width, height, ...OBJECT_RULES[type], ...extra });
   };
   for (const room of rooms) {
     if (room.label === "Pausenraum") continue;
     const meeting = room.label.startsWith("Meeting");
-    // Kleine Leinwände links an der oberen Wand, neben statt auf den Türfeldern.
-    add("screen", room.x, room.y, meeting ? 2 : 3, 1);
+    const m365 = room.label.startsWith("M365");
+    const mac = room.label.startsWith("Mac Workplace");
+    const windowsClient = room.label.startsWith("Windows\nClient");
+    const workplaceDevice = room.label.startsWith("Workplace Device");
+    const leftWallScreen = !meeting && room.x < 30;
+    const screenHeight = room.label === "Meeting 1" ? 3 : meeting ? 2 : 3;
+    const screenX = leftWallScreen ? room.x : room.x + room.width - 1;
+    add("screen", screenX, room.y + 1, 1, screenHeight);
     const width = meeting ? 2 : 4;
     const x = room.x + Math.floor((room.width - width) / 2);
-    const y = room.y + 2;
+    const y = room.y + (room.label.startsWith("Workplace Device") ? 3 : 2);
     const height = meeting ? 1 : 2;
     add("table", x, y, width, height);
     for (let dx = 0; dx < width; dx += 1) {
@@ -30,34 +36,44 @@ export function createRoomObjects(rooms) {
       add("chair", x + dx, y + height);
     }
     // Ecken abseits der Tür; in kleinen Meeting-Räumen nur eine Pflanze.
-    add("plant", room.x, room.y + room.height - 1);
     if (!meeting) {
-      add("plant", room.x + room.width - 1, room.y);
+      const swappedFurniture = m365 || mac || windowsClient || workplaceDevice;
+      add("plant", swappedFurniture ? room.x + room.width - 1 : room.x,
+        room.y + room.height - 1);
+      add("plant", swappedFurniture ? room.x : room.x + room.width - 1,
+        swappedFurniture ? room.y : room.x >= 30 ? room.y + room.height - 1 : room.y);
       add("whiteboard", room.x + 4, room.y, 3, 1);
-      add("sideboard", room.x + room.width - 3, room.y + room.height - 1, 2, 1);
-      if (room.label.startsWith("Workplace Device")) {
-        add("printer", room.x + 1, room.y + room.height - 1);
+      add("sideboard", swappedFurniture ? room.x : room.x + room.width - 3,
+        room.y + room.height - 1, 2, 1);
+      if (workplaceDevice) {
+        add("printer", room.x + (swappedFurniture ? 2 : 1), room.y + room.height - 1);
       }
+    } else {
+      add("plant", room.x, room.y + room.height - 1);
     }
   }
   for (const x of [19, 25]) {
-    add("table", x, 4, 2, 1);
+    add("table", x, 4, 2, 1, { surface: "break" });
     for (const dx of [0, 1]) {
       add("chair", x + dx, 3);
       add("chair", x + dx, 5);
     }
   }
-  for (const x of [18, 22, 27]) add("coffee", x, 2);
-  for (const x of [19, 23, 26]) add("bin", x, 2);
+  for (const x of [18, 22, 27]) add("coffee", x, 1);
+  for (const x of [19, 23, 26]) add("bin", x, 1);
   add("plant", 18, 5);
   add("plant", 27, 5);
+  add("printer", 16, 2);
 
   add("screen", 37, 40, 5, 1);
   add("coffee", 29, 43);
-  add("bin", 29, 44);
-  for (const y of [40, 47, 51]) add("plant", 29, y);
-  for (const y of [44, 46, 48, 50]) {
-    for (const x of [31, 32, 33, 36, 37, 38, 40, 41]) add("chair", x, y);
+  add("table", 29, 44, 1, 3, { surface: "pi-snack" });
+  add("bin", 29, 47);
+  for (const y of [40, 48, 51]) add("plant", 29, y);
+  // Fünf Reihen mit einer Leerreihe dazwischen; zwei zusätzliche Plätze links.
+  // Die rechte Wand hat eine freie Kachel, die Laufspur links bleibt offen.
+  for (let y = 42; y <= 50; y += 2) {
+    for (let x = 36; x <= 41; x += 1) add("chair", x, y);
   }
   // Randnischen, wo die Aussenwände der Seitenräume den Gang wieder freigeben.
   for (const [x, y] of [[12, 3], [12, 12], [12, 24], [36, 3], [36, 13], [36, 25], [36, 38]]) {
