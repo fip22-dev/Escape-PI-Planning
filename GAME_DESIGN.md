@@ -1,33 +1,41 @@
 # Escape PI Planning – Game Design
 
-## Ziel
+## Spielziel
 
-Ein humorvolles 2D-Browserspiel in Draufsicht und Retro-Pixeloptik. Die Spielfigur versucht, während des PI Plannings das Gebäude zu verlassen.
+Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixeloptik. Die Spielfigur versucht, während des PI Plannings innerhalb des Zeitlimits den Ausgang zu erreichen. Sechs Hauptfiguren können sie entdecken; neutrale Personen beleben die Etage, lösen aber allein keinen Alarm aus.
 
-## Vereinbarte Eckpunkte
+## Festgelegte Eckpunkte für Version 0.1
 
-- Start ist der Raum PI-Einführung, in dem die Einführung zum PI stattfindet.
-- Es gibt sieben Team-Sitzungszimmer mit den Namen Windows Client Team, Windows Software Team, Workplace Device & Print Solutions Team, Enterprise Mobile Services Team, Mac Workplace Team, M365 Tenant & Collaboration Team sowie Communication & Meetingroom Solutions Team.
-- Die Karte hat einen Hauptgang, einen parallelen Westgang und drei Quergänge als Abkürzungen und Ausweichwege.
-- Teamzimmer sind Seitenräume. Keines muss durchquert werden, um vom Start zum Ausgang zu gelangen.
-- Ziel ist, den Ausgang innerhalb eines Timers zu erreichen.
-- Entdeckt eine der sechs Hauptfiguren die Spielfigur, erscheint ein Dialog. Danach beginnt der Versuch im Raum PI-Einführung neu.
-- Siebenunddreissig neutrale Personen verteilen sich auf Teamzimmer, Nebenräume, PI-Einführungsraum und Gänge. Sie lösen allein keinen Neustart aus.
-- P&T bedeutet People & Transformation.
-- Für Version 0.1 übernehmen wir als Vorschlag: Pfeiltasten und WASD, 180 Sekunden Spielzeit, überspringbare Wiederholungsdialoge, pixelige Retro-Grafik und eine dezente Chiptune-Atmosphäre.
+- Start im Raum **PI-Einführung**; der Ausgang liegt am nördlichen Ende des Hauptgangs.
+- Steuerung mit **Pfeiltasten oder WASD**.
+- Vorgesehener Timer: **180 Sekunden**. Er startet, wenn die Spielfigur die Flucht beginnt.
+- Wird die Spielfigur von einer der sechs Hauptfiguren entdeckt, erscheint ein rollenspezifischer Dialog. Danach startet der Versuch im PI-Einführungsraum neu.
+- Wiederholungsdialoge können übersprungen werden; während eines Dialogs steht der Timer still.
+- Die Karte enthält sieben benannte Teamzimmer, einen Pausenraum, fünf kleine Meeting-Räume, den PI-Einführungsraum und drei Quergänge.
+- **37 neutrale Personen** verteilen sich über die gesamte Etage. Sie blockieren die Spielfigur nicht und lösen keinen Alarm aus.
+- P&T bedeutet **People & Transformation**.
+- Kamera und Spielwelt bleiben in fester Draufsicht; die Kamera folgt der Spielfigur.
 
-## Kartenprinzip
+## Grundriss
 
-Der PI-Einführungsraum liegt am südlichen Ende und führt direkt in den Hauptgang. Der Ausgang liegt am nördlichen Ende des Hauptgangs. Der Westgang verläuft parallel dazu; drei Quergänge verbinden die beiden Gänge. Die Teamzimmer liegen mit Türen seitlich an den Gängen und sind keine Durchgangsräume.
+Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die Teamzimmer und Nebenräume sind Seitenräume mit je einer Tür. Kein Teamzimmer muss durchquert werden, um vom Start zum Ausgang zu gelangen. Gelbe Kacheln markieren die Türpositionen.
 
-Vorgeschlagene Zimmerverteilung:
+### Teamzimmer und Lage
 
-- Westgang: Windows Client Team im oberen Bereich, Workplace Device & Print Solutions Team im mittleren Bereich, Mac Workplace Team weiter unten und M365 Tenant & Collaboration Team im unteren Bereich. Die Zimmer haben leicht unterschiedliche Höhen und bleiben durch kurze Wandabschnitte voneinander getrennt.
-- Hauptgang: Windows Software Team im oberen Bereich, Enterprise Mobile Services Team mittig und Communication & Meetingroom Solutions Team im unteren Bereich.
-- Quergang Q1 liegt oben, Q2 in der Mitte und Q3 unten. Der Pausenraum zweigt nördlich von Q1 ab. Fünf kleine Sitzungszimmer liegen als Seitenräume rund um Q2 und Q3; die Quergänge bleiben frei begehbar.
-- Der PI-Einführungsraum verbindet sich direkt mit dem unteren Ende des Hauptgangs. Er ist vertikal angelegt, durchgehend vierzehn Kacheln breit und zwölf Kacheln lang; die zwei zusätzlichen Kacheln liegen auf der rechten Seite.
+- **Westgang:** Windows Client Team im oberen Bereich, Workplace Device & Print Solutions Team mittig, Mac Workplace Team weiter unten und M365 Tenant & Collaboration Team im unteren Bereich.
+- **Hauptgang:** Windows Software Team im oberen Bereich, Enterprise Mobile Services Team mittig und Communication & Meetingroom Solutions Team im unteren Bereich.
+- Die offiziellen Teamnamen bleiben genau in der vorgegebenen Schreibweise, einschliesslich **Communication & Meetingroom Solutions Team**.
+- Das Communication & Meetingroom Solutions Team hat eine Tür und ist kein Durchgangszimmer.
 
-Schematisch:
+### Nebenräume und PI-Einführung
+
+- Der Pausenraum zweigt nördlich von Q1 ab.
+- Fünf kleine Räume mit den Kartenbeschriftungen **Meeting 1** bis **Meeting 5** liegen als Seitenräume rund um Q2 und Q3.
+- Die Quergänge Q1, Q2 und Q3 bleiben frei begehbar und dienen als Abkürzungen und Ausweichwege.
+- Der PI-Einführungsraum liegt am südlichen Ende und ist direkt mit dem Hauptgang verbunden. Er ist vertikal angelegt, **14 Kacheln breit und 12 Kacheln lang**; die zwei zusätzlichen Kacheln liegen auf der rechten Seite.
+- Grundflächen und Türpositionen sind für den Graybox festgelegt. Nach dem Test können sie bei Bedarf angepasst werden.
+
+Vereinfachte Darstellung der Gangverbindungen; die Teamzimmer und Nebenräume liegen seitlich daran:
 
 ```text
                          AUSGANG
@@ -38,69 +46,78 @@ WESTGANG ═══════ Q1 ═════ HAUPTGANG
    │                         │
    └──────────── Q3 ═════════┤
                              │
-                       PI-START
+                       PI-EINFÜHRUNG
 ```
 
-Teamzimmer sind seitliche Abzweigungen an den Gängen. Ihre genaue Grundfläche und Türpositionen werden beim Kartenentwurf festgelegt. Communication & Meetingroom Solutions Team ist kein Durchgangszimmer. Die Figurenrouten nennen die Teamzimmer direkt beim Namen.
+## Stand des Prototyps
 
-## Perspektive und Kamera
+Der aktuelle Prototyp ist ein **Graybox**: Die Räume und Figuren sind einfache Platzhalter, mit denen wir Grundriss, Wege und Kamera prüfen.
 
-- Die Spielwelt wird in fester Draufsicht von oben dargestellt.
-- Die Kamera folgt der Spielfigur durch die Etage; sie dreht oder kippt sich nicht.
-- Als Startwert verwenden wir 16×16-Pixel-Kacheln und einen sichtbaren Ausschnitt von ungefähr 20×15 Kacheln. Diese Masse können wir im Karten-Prototyp anpassen.
+Bereits umgesetzt:
 
-## Figuren und Bewegung – Vorschlag für Version 0.1
+- Browser-Spielbasis mit Phaser und Vite.
+- Bewegung mit WASD und Pfeiltasten; Wände halten die Spielfigur auf, die gelben Türfelder sind passierbar.
+- Mitlaufende Kamera und 16×16-Pixel-Kacheln; der Grundausschnitt entspricht ungefähr 20×15 Kacheln.
+- Sieben Teamzimmer, Pausenraum, fünf Meeting-Räume und PI-Einführungsraum.
+- 37 statische neutrale Platzhalter an den unten beschriebenen Stellen.
 
-Die sechs Hauptfiguren können die Spielfigur entdecken. Die Laufwege sind fest und wiederholen sich, damit sie erlernbar sind. Die Figuren bewegen sich mit ungefähr ein bis zwei Kacheln pro Sekunde und bleiben an Teamzimmern oder Kreuzungen kurz stehen.
+Noch nicht im Spielcode umgesetzt: Timer, Sieg- und Ablaufzustand, sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, bewegliche neutrale Personen, Sprechblasen, Möbel und finale Pixelgrafik oder Audio.
 
-| Figur | Laufweg | Halt |
+## Hauptfiguren und Routen – Entwurf für Version 0.1
+
+Die sechs Hauptfiguren sollen erkennbare Rollen haben und feste, wiederholbare Routen nutzen. Die nachfolgenden Wege und Haltezeiten sind Startwerte für den nächsten spielbaren Prototyp und müssen im Spiel geprüft werden.
+
+| Figur | Vorgesehener Laufweg | Halt |
 |---|---|---|
-| RTE | Patrouilliert zwischen PI-Einführungsraum und Ausgang auf dem Hauptgang. Wechselt bei Q1 oder Q3 in den Westgang und zurück. | 2 Sekunden an Kreuzungen, 4 Sekunden beim Ausgang |
-| P&T | Macht ausgewählte Check-ins: Windows Client Team → Enterprise Mobile Services Team → Communication & Meetingroom Solutions Team → zurück. Muss nicht jedes Teamzimmer besuchen. | 5 Sekunden pro Check-in |
-| BO | Besucht alle sieben Teams in der Reihenfolge der obigen Liste und beginnt danach wieder beim Windows Client Team. | 4 Sekunden pro Team |
-| PM | Besucht alle sieben Teams in umgekehrter Reihenfolge und beginnt danach wieder beim Communication & Meetingroom Solutions Team. | 4 Sekunden pro Team |
-| PO | Besucht die Teams in einer abweichenden Runde: Enterprise Mobile Services Team → Windows Client Team → Mac Workplace Team → Windows Software Team → M365 Tenant & Collaboration Team → Workplace Device & Print Solutions Team → Communication & Meetingroom Solutions Team → zurück zum Enterprise Mobile Services Team. | 4 Sekunden pro Team |
+| RTE | Patrouilliert zwischen PI-Einführung und Ausgang auf dem Hauptgang. Wechselt bei Q1 oder Q3 in den Westgang und zurück. | 2 Sekunden an Kreuzungen, 4 Sekunden beim Ausgang |
+| P&T | Ausgewählte Check-ins: Windows Client Team → Enterprise Mobile Services Team → Communication & Meetingroom Solutions Team → zurück. Besucht nicht alle Teams. | 5 Sekunden pro Check-in |
+| BO | Besucht alle sieben Teams in der Reihenfolge der Teamliste oben und beginnt wieder beim Windows Client Team. | 4 Sekunden pro Team |
+| PM | Besucht alle sieben Teams in umgekehrter Reihenfolge und beginnt wieder beim Communication & Meetingroom Solutions Team. | 4 Sekunden pro Team |
+| PO | Enterprise Mobile Services Team → Windows Client Team → Mac Workplace Team → Windows Software Team → M365 Tenant & Collaboration Team → Workplace Device & Print Solutions Team → Communication & Meetingroom Solutions Team → zurück. | 4 Sekunden pro Team |
 | SM | Kontrolliert den unteren Bereich: Mac Workplace Team → Q3 → Communication & Meetingroom Solutions Team → M365 Tenant & Collaboration Team → Q2 → zurück. | 3 Sekunden an Türen und Kreuzungen |
 
-Die drei Rundgänge von BO, PM und PO starten zeitversetzt, damit sie sich nicht gleichzeitig an einem Ort sammeln. Beim Neustart werden alle Figuren auf ihre festen Startpositionen und Zeitversätze zurückgesetzt. Die Wegpunkte führen über die Gänge; die Zimmer selbst sind Besuche mit einem kurzen Halt an der Tür oder im Zimmer.
+Die Routen von BO, PM und PO starten zeitversetzt. Die Figuren laufen durch die Gänge; ein Teamzimmerbesuch endet an der Tür oder führt kurz in den Raum. Beim Neustart werden Startpositionen und Zeitversätze zurückgesetzt. Die genaue Wegführung und die Positionen der 37 neutralen Personen bleiben Gegenstand des Spieltests.
 
-## Sicht und Entdeckung – Vorschlag für Version 0.1
+## Sicht und Entdeckung – Regeln für Version 0.1
 
-- Eine Hauptfigur sieht nur in Blickrichtung, nicht rundherum.
-- Die Sicht reicht ungefähr fünf Kacheln weit und wird durch Wände und geschlossene Türen blockiert.
-- Wer direkt neben einer Hauptfigur steht, wird auch ausserhalb ihrer Blickrichtung entdeckt.
-- Ein gelbes Ausrufezeichen warnt kurz, bevor die Entdeckung ausgelöst wird.
-- Bleibt die Spielfigur ungefähr 0,7 Sekunden im Sichtbereich, wird sie entdeckt. Danach erscheint der Dialog.
-- Neutrale Personen entdecken den Spieler nicht.
+- Hauptfiguren entdecken nur in Blickrichtung, nicht rundherum.
+- Die vorgesehene Sichtweite beträgt ungefähr fünf Kacheln. Wände und geschlossene Türen blockieren die Sicht.
+- Direkt neben einer Hauptfigur wird die Spielfigur auch ausserhalb ihrer Blickrichtung entdeckt.
+- Ein gelbes Ausrufezeichen warnt kurz vor der Entdeckung.
+- Bleibt die Spielfigur ungefähr 0,7 Sekunden im Sichtbereich, gilt sie als entdeckt.
+- Neutrale Personen entdecken die Spielfigur nicht.
 
-## Timer, Dialog und Neustart – Vorschlag für Version 0.1
+Diese Werte werden beim Implementieren und Testen feinjustiert.
 
-- Timer: 180 Sekunden.
-- Der Timer startet, sobald der Spieler nach der PI-Einführung die Flucht beginnt.
-- Während eines Dialogs steht die Uhr still.
-- Der erste Dialog einer Figur wird vollständig angezeigt. Bei Wiederholungen kann man mit Enter, Leertaste oder Mausklick überspringen.
-- Nach dem Dialog startet der Versuch im Raum PI-Einführung mit vollem Timer und zurückgesetzten Figuren.
+## Timer, Dialog und Neustart
 
-## Neutrale Personen – Vorschlag für Version 0.1
+- Timer: 180 Sekunden. Er beginnt, sobald die Flucht aus der PI-Einführung startet.
+- Bei Sieg wird der Timer gestoppt und der Ausgang als geschafft angezeigt; bei null Sekunden endet der Versuch.
+- Bei Entdeckung wird der Timer für den Dialog angehalten. Danach startet der Versuch im PI-Einführungsraum mit vollem Timer und zurückgesetzten Hauptfiguren neu.
+- Der erste Dialog einer Rolle wird vollständig gezeigt. Wiederholungsdialoge können mit Enter, Leertaste oder Mausklick übersprungen werden.
 
-Insgesamt siebenunddreissig neutrale Personen, verteilt über die ganze Etage:
+Der Sieg- und Ablaufzustand sowie der Timer sind noch zu implementieren.
 
-- vierzehn Personen in den Teamzimmern: zwei pro Team; Workplace Device & Print Solutions Team und Communication & Meetingroom Solutions Team erhalten je eine dritte Person
-- fünf Personen in den kleinen Sitzungszimmern: je eine pro Raum
-- fünf Personen im Pausenraum
-- fünf Personen im PI-Einführungsraum
-- sechs Personen in den Gängen und Quergängen
+## Neutrale Personen
 
-Im Graybox sind die siebenunddreissig neutralen Personen als statische Platzhalter sichtbar; ihre Laufwege und Sprechblasen werden später ergänzt. Sie blockieren den Spieler nicht und lösen keinen Alarm aus. Ihre Laufwege sollen nicht alle gleichzeitig durch denselben Gang führen.
+Insgesamt **37 neutrale Personen**, über die ganze Karte verteilt:
 
-## Neutrale Sprechblasen – Vorschläge für Version 0.1
+- 16 in den Teamzimmern: je zwei pro Team; Workplace Device & Print Solutions Team und Communication & Meetingroom Solutions Team erhalten je eine dritte Person.
+- 5 in den Meeting-Räumen: je eine pro Raum.
+- 5 im Pausenraum.
+- 5 im PI-Einführungsraum.
+- 6 in den Gängen und Quergängen.
+
+Im Graybox stehen sie als unbewegliche Platzhalter. Später erhalten einige feste Plätze und andere einfache Laufwege. Sie blockieren die Spielfigur nicht, entdecken sie nicht und lösen keinen Alarm aus. Die Laufwege sollen verhindern, dass alle gleichzeitig denselben Gang verstopfen.
+
+## Neutrale Sprechblasen – Entwurf
 
 Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die Spielfigur in ihre Nähe kommt.
 
-- Die Sprechblase bleibt ungefähr 2–3 Sekunden sichtbar.
-- Zwischen Sprechblasen gilt eine kurze globale Pause, damit nicht mehrere Figuren gleichzeitig reden.
-- Die Blasen sind nicht modal: Sie halten den Timer nicht an, blockieren keine Bewegung und lösen keinen Alarm aus.
-- Jede neutrale Figur erhält ein oder zwei Zeilen aus diesem Sprüche-Pool.
+- Eine Sprechblase bleibt ungefähr 2–3 Sekunden sichtbar.
+- Zwischen Sprechblasen gilt eine kurze globale Pause.
+- Sprechblasen sind nicht modal: Sie halten den Timer nicht an und blockieren keine Bewegung.
+- Jede neutrale Figur erhält ein oder zwei Zeilen aus dem Sprüche-Pool.
 
 1. „Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.“
 2. „Juhu, endlich Stories schätzen! Ich wollte schon immer Fibonacci-Karten nach Gefühl werfen.“
@@ -118,19 +135,13 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 14. „Mein Kaffee-Token ist aufgebraucht. Ist das ein Impediment?“
 15. „Ich wollte nur kurz Wasser holen. Jetzt bin ich Teil einer Abhängigkeit.“
 
-## Grafik und Sound – Vorschlag für Version 0.1
+## Beta-Feedback über GitHub Issues
 
-- Eigene Pixelgrafiken mit 16×16-Kacheln und einer reduzierten Farbpalette.
-- Spielfigur und Hauptfiguren erhalten klare Silhouetten; Accessoires und Namensschilder helfen, die sechs Entdecker zu erkennen.
-- Die Entdecker müssen auf den ersten Blick von neutralen Personen unterscheidbar sein: starke Kontur und Akzentfarbe plus ein dauerhaft sichtbares Rollen-Symbol oder Namensschild. Die Unterscheidung darf nicht allein von der Farbe abhängen.
-- Neutrale Personen erhalten eine zurückhaltendere Gestaltung und kein Entdecker-Symbol.
-- Eine heitere, leicht heimliche Chiptune-Schleife, ungefähr 30 bis 45 Sekunden lang, als Hintergrundmusik.
-- Wenige Soundeffekte für Schritte, Türen, Warnzeichen und Dialoge; eine Stummschaltung ist verfügbar.
-- Der Retro-Look ist eine Stil-Inspiration. Pokémon-Figuren, Grafiken, Musik oder Markenzeichen werden nicht übernommen; alle Inhalte werden selbst erstellt oder passend lizenziert.
+Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: **Fehler melden** und **Idee vorschlagen**. Als erste Lösung öffnen diese Aktionen passende GitHub-Issue-Formulare in einem neuen Browser-Tab. Das Spiel übermittelt keine Berichte automatisch; Tester prüfen und senden den ausgefüllten Bericht selbst ab. Die Umsetzung und nötigen Issue-Formulare sind in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) beschrieben.
 
-## Dialoge bei Entdeckung – Vorschläge für Version 0.1
+## Dialoge bei Entdeckung – Vorschläge
 
-Beim ersten Erwischtwerden bekommt jede Rolle einen eigenen Einstiegsdialog. Bei späteren Versuchen verwendet sie einen kurzen Running-Gag darüber, dass die Flucht noch als offener Punkt gilt. Wiederholungsdialoge sind überspringbar.
+Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei späteren Versuchen folgt ein kurzer Running-Gag zum noch offenen Fluchtpunkt.
 
 | Rolle | Erstes Erwischtwerden | Späterer Versuch |
 |---|---|---|
@@ -141,9 +152,21 @@ Beim ersten Erwischtwerden bekommt jede Rolle einen eigenen Einstiegsdialog. Bei
 | PO | „Ich habe deinen Flucht-Backlog priorisiert. Eine kleine Akzeptanzkriterien-Frage hätte ich noch.“ | „Das Ticket ‹Ausgang benutzen› ist noch offen. Akzeptanzkriterium: Du bist draussen. Status: fast.“ |
 | SM | „Erwischt! Ich wollte gerade eine kurze Retrospektive über deinen Fluchtversuch machen.“ | „Sind die DoR für deinen Abgang schon ready? Der Ausgang ist erst ready, wenn deine Flucht ready ist. Ich hätte dazu nur noch ein kleines Refinement.“ |
 
-## Noch beim Kartenentwurf festzulegen
+## Grafik und Audio – Entwurf
 
-- genaue Kachelmasse und Grundfläche der Teamzimmer
-- genaue Türpositionen, Möbel und Deckungsmöglichkeiten
-- finale Routenlängen und Startpositionen nach einem ersten spielbaren Prototyp
-- Dialogtexte der sechs Hauptfiguren
+- Eigene Pixelgrafiken auf Basis von 16×16-Kacheln und einer reduzierten Farbpalette.
+- Spielfigur, Entdecker und neutrale Personen erhalten klare Silhouetten. Die Entdecker tragen zusätzlich ein dauerhaft sichtbares Rollensymbol oder Namensschild; ihre Erkennbarkeit hängt nicht allein von Farbe ab.
+- Neutrale Personen sind zurückhaltender gestaltet und erhalten kein Entdecker-Symbol.
+- Hintergrundmusik: heitere, leicht heimliche Chiptune-Schleife von ungefähr 30–45 Sekunden.
+- Wenige Soundeffekte für Schritte, Türen, Warnzeichen und Dialoge; eine Stummschaltung ist verfügbar.
+- Kaffeemaschine, Tische, Stühle und weitere Raumobjekte werden nach der Grundrissprüfung ergänzt. Für jedes Objekt wird festgelegt, ob es Dekoration ist, Bewegung blockiert oder Sicht beeinflusst.
+- Pokémon-Figuren, Grafiken, Musik und Markenzeichen werden nicht übernommen. Inhalte werden selbst erstellt oder passend lizenziert.
+
+## Noch offene Designentscheidungen
+
+- Nach dem Browser-Spieltest die Positionen und Laufwege der 37 neutralen Personen feinjustieren.
+- Möbel und Raumobjekte platzieren und für jedes festlegen, ob es dekorativ ist, Bewegung blockiert oder Sicht beeinflusst.
+- Nach dem ersten spielbaren Entdecker-Prototyp die vorgeschlagenen Routen, Startpositionen und Haltezeiten abstimmen.
+- Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
+
+Die Umsetzungsreihenfolge und der Status der Arbeiten stehen in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
