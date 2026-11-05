@@ -77,17 +77,18 @@ Die drei Rundgänge von BO, PM und PO starten zeitversetzt, damit sie sich nicht
 
 ## Neutrale Personen – Vorschlag für Version 0.1
 
-Insgesamt zehn neutrale Personen:
+Insgesamt fünfzehn neutrale Personen:
 
-- eine Person in jedem der sieben Teamzimmer
-- drei Personen mit einfachen Laufwegen durch die Gänge
+- sieben Personen, je eine in jedem Teamzimmer
+- acht weitere Personen in den Gängen und im grossen PI-Raum; einige können feste Plätze haben, andere einfache Laufwege
 
-Sie beleben die Etage, blockieren den Spieler nicht und lösen keinen Alarm aus.
+Sie beleben die Etage, blockieren den Spieler nicht und lösen keinen Alarm aus. Ihre Laufwege sollen nicht alle gleichzeitig durch denselben Gang führen.
 
 ## Grafik und Sound – Vorschlag für Version 0.1
 
 - Eigene Pixelgrafiken mit 16×16-Kacheln und einer reduzierten Farbpalette.
-- Die sechs Hauptfiguren erhalten klar unterscheidbare Farben oder Accessoires.
+- Die Entdecker müssen auf den ersten Blick von neutralen Personen unterscheidbar sein: starke Kontur und Akzentfarbe plus ein dauerhaft sichtbares Rollen-Symbol oder Namensschild. Die Unterscheidung darf nicht allein von der Farbe abhängen.
+- Neutrale Personen erhalten eine zurückhaltendere Gestaltung und kein Entdecker-Symbol.
 - Eine ruhige, dezente Chiptune-Schleife als Hintergrundmusik.
 - Wenige Soundeffekte für Schritte, Türen, Warnzeichen und Dialoge.
 - Eine Stummschaltung ist verfügbar.
