@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
+import { timerWarningPresentation } from "../game/gameLoop.js";
 import {
   canNeutralMoveToTile,
   createNeutralPatrol,
@@ -30,6 +31,8 @@ const COLORS = {
   accent: "#e8794e",
 };
 
+const ESCAPE_TIME_MS = 180_000;
+
 export class GrayboxScene extends Phaser.Scene {
   constructor() {
     super("graybox");
@@ -42,6 +45,12 @@ export class GrayboxScene extends Phaser.Scene {
     this.playerTile = { ...start };
     this.isMoving = false;
     this.lastMoveAt = 0;
+    this.escapeStartedAt = null;
+    this.gameResult = null;
+    this.isPaused = false;
+    this.pauseChoiceYes = false;
+    this.resultChoiceYes = false;
+    this.pauseStartedAt = null;
 
     const graphics = this.add.graphics();
     for (let y = 0; y < MAP_HEIGHT; y += 1) {
@@ -196,10 +205,35 @@ export class GrayboxScene extends Phaser.Scene {
       rightD: Phaser.Input.Keyboard.KeyCodes.D,
     });
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.input.on("pointerdown", this.restartIfFinished, this);
+    this.handleWindowEscape = (event) => {
+      if ((event.key !== "Escape" && event.keyCode !== Phaser.Input.Keyboard.KeyCodes.ESC) || event.repeat) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      this.onEscapePressed();
+    };
+    window.addEventListener("keydown", this.handleWindowEscape, true);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      window.removeEventListener("keydown", this.handleWindowEscape, true);
+    });
+    this.input.keyboard.on("keydown-LEFT", this.onMenuDirection, this);
+    this.input.keyboard.on("keydown-RIGHT", this.onMenuDirection, this);
+    this.input.keyboard.on("keydown-ENTER", this.onConfirmPressed, this);
+    this.input.keyboard.on("keydown-SPACE", this.onConfirmPressed, this);
+
+    this.createGameHud();
 
   }
 
   update(time) {
+    if (this.gameResult) {
+      return;
+    }
+    if (this.isPaused) return;
+
+    this.updateGameTimer(time);
+    if (this.gameResult) return;
+
     this.updateNeutralPeople(time);
     if (this.isMoving || time - this.lastMoveAt < 105) return;
 
@@ -227,8 +261,198 @@ export class GrayboxScene extends Phaser.Scene {
         this.playerTile = { x: targetX, y: targetY };
         this.playerNextTile = null;
         this.isMoving = false;
+        this.onPlayerTileChanged(this.time.now, targetX, targetY);
       },
     });
+  }
+
+  restartIfFinished() {
+    if (this.gameResult === "win") this.scene.restart();
+  }
+
+  onEscapePressed() {
+    if (this.gameResult === "timeout") {
+      this.resultChoiceYes = false;
+      this.updateResultChoice();
+      return;
+    }
+    if (this.gameResult) return;
+    if (this.isPaused) this.resumeGame();
+    else this.pauseGame();
+  }
+
+  onMenuDirection() {
+    if (this.isPaused) {
+      this.pauseChoiceYes = !this.pauseChoiceYes;
+      this.updatePauseChoice();
+    } else if (this.gameResult === "timeout") {
+      this.resultChoiceYes = !this.resultChoiceYes;
+      this.updateResultChoice();
+    }
+  }
+
+  onConfirmPressed() {
+    if (this.isPaused) {
+      if (this.pauseChoiceYes) this.scene.restart();
+      else this.resumeGame();
+    } else if (this.gameResult === "timeout") {
+      if (this.resultChoiceYes) this.scene.restart();
+    } else if (this.gameResult === "win") {
+      this.scene.restart();
+    }
+  }
+
+  pauseGame() {
+    this.isPaused = true;
+    this.pauseChoiceYes = false;
+    this.pauseStartedAt = this.time.now;
+    this.tweens.pauseAll();
+    this.updatePauseChoice();
+    this.pausePanel.setVisible(true);
+    this.pauseHeading.setVisible(true);
+    this.pausePrompt.setVisible(true);
+    this.pauseYes.setVisible(true);
+    this.pauseNo.setVisible(true);
+    this.pauseHint.setVisible(true);
+  }
+
+  resumeGame() {
+    if (!this.isPaused) return;
+    const pausedFor = Math.max(0, this.time.now - this.pauseStartedAt);
+    if (this.escapeStartedAt !== null) this.escapeStartedAt += pausedFor;
+    this.isPaused = false;
+    this.pauseStartedAt = null;
+    this.pausePanel.setVisible(false);
+    this.pauseHeading.setVisible(false);
+    this.pausePrompt.setVisible(false);
+    this.pauseYes.setVisible(false);
+    this.pauseNo.setVisible(false);
+    this.pauseHint.setVisible(false);
+    this.tweens.resumeAll();
+  }
+
+  updatePauseChoice() {
+    if (!this.pauseYes || !this.pauseNo) return;
+    this.pauseYes.setText(`${this.pauseChoiceYes ? "> " : "  "}Ja`);
+    this.pauseNo.setText(`${this.pauseChoiceYes ? "  " : "> "}Nein`);
+    this.pauseYes.setColor(this.pauseChoiceYes ? "#f5f0dc" : "#b5c4ad");
+    this.pauseNo.setColor(this.pauseChoiceYes ? "#b5c4ad" : "#f5f0dc");
+  }
+
+  updateResultChoice() {
+    if (!this.resultYes || !this.resultNo) return;
+    this.resultYes.setText(`${this.resultChoiceYes ? "> " : "  "}Ja`);
+    this.resultNo.setText(`${this.resultChoiceYes ? "  " : "> "}Nein`);
+    this.resultYes.setColor(this.resultChoiceYes ? "#f5f0dc" : "#b5c4ad");
+    this.resultNo.setColor(this.resultChoiceYes ? "#b5c4ad" : "#f5f0dc");
+  }
+
+  confirmResultChoice(yes) {
+    this.resultChoiceYes = yes;
+    this.updateResultChoice();
+    if (yes) this.scene.restart();
+  }
+
+  createGameHud() {
+    this.hudPanel = this.add.rectangle(8, 8, 76, 30, 0x24332b, 0.96)
+      .setOrigin(0).setScrollFactor(0).setDepth(100);
+    this.hudLabel = this.add.text(14, 11, "ZEIT", {
+      fontFamily: "Arial, sans-serif",
+      fontSize: "8px",
+      fontStyle: "bold",
+      color: "#b5c4ad",
+    }).setScrollFactor(0).setDepth(101);
+    this.timerText = this.add.text(14, 20, "03:00", {
+      fontFamily: "Arial, sans-serif",
+      fontSize: "12px",
+      fontStyle: "bold",
+      color: "#f5f0dc",
+    }).setScrollFactor(0).setDepth(101);
+    this.resultPanel = this.add.rectangle(160, 120, 272, 88, 0x172326, 0.96)
+      .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(110).setVisible(false);
+    this.resultText = this.add.text(160, 103, "", {
+      fontFamily: "Arial, sans-serif",
+      fontSize: "11px",
+      fontStyle: "bold",
+      color: "#f5f0dc",
+      align: "center",
+      lineSpacing: 5,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
+    this.resultYes = this.add.text(122, 145, "Ja", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#b5c4ad",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
+    this.resultNo = this.add.text(198, 145, "Nein", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#f5f0dc",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
+    this.resultYes.on("pointerdown", () => this.confirmResultChoice(true));
+    this.resultNo.on("pointerdown", () => this.confirmResultChoice(false));
+
+    this.pausePanel = this.add.rectangle(160, 120, 272, 100, 0x172326, 0.97)
+      .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(110).setVisible(false);
+    this.pauseHeading = this.add.text(160, 84, "PAUSE", {
+      fontFamily: "Arial, sans-serif", fontSize: "12px", fontStyle: "bold", color: "#f5f0dc",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
+    this.pausePrompt = this.add.text(160, 106, "Versuch neu starten?", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#f5f0dc",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
+    this.pauseYes = this.add.text(122, 132, "Ja", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#b5c4ad",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
+    this.pauseNo = this.add.text(198, 132, "Nein", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#f5f0dc",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
+    this.pauseHint = this.add.text(160, 154, "← / → wählen · Enter bestätigen · Esc weiter", {
+      fontFamily: "Arial, sans-serif", fontSize: "7px", color: "#b5c4ad", align: "center",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
+    this.pauseYes.on("pointerdown", () => {
+      this.pauseChoiceYes = true;
+      this.updatePauseChoice();
+      this.scene.restart();
+    });
+    this.pauseNo.on("pointerdown", () => this.resumeGame());
+  }
+
+  updateGameTimer(time) {
+    if (this.escapeStartedAt === null) {
+      this.hudLabel.setText("BEREIT");
+      this.timerText.setText("03:00");
+      return;
+    }
+
+    const remaining = Math.max(0, ESCAPE_TIME_MS - (time - this.escapeStartedAt));
+    const seconds = Math.ceil(remaining / 1000);
+    this.timerText.setText(`${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`);
+    const warning = timerWarningPresentation(remaining, time);
+    this.timerText.setColor(warning.color).setAlpha(warning.alpha);
+    if (remaining === 0) this.finishGame("timeout");
+  }
+
+  onPlayerTileChanged(time, x, y) {
+    const tileType = this.grid[y]?.[x];
+    if (this.escapeStartedAt === null && tileType !== TILE_TYPES.START) {
+      this.escapeStartedAt = time;
+      this.hudLabel.setText("ZEIT ÜBRIG");
+    }
+    if (tileType === TILE_TYPES.EXIT) this.finishGame("win");
+  }
+
+  finishGame(result) {
+    if (this.gameResult) return;
+    this.gameResult = result;
+    this.isMoving = false;
+    this.playerNextTile = null;
+    this.tweens.killAll();
+    this.resultText.setText(result === "win"
+      ? "GESCHAFFT!\nDu hast das PI Planning verlassen.\nEnter zum Neustart"
+      : "Pech gehabt – Zeit abgelaufen.\nVersuch neu starten?");
+    this.resultPanel.setVisible(true);
+    this.resultText.setVisible(true);
+    if (result === "timeout") {
+      this.resultChoiceYes = false;
+      this.updateResultChoice();
+      this.resultYes.setVisible(true);
+      this.resultNo.setVisible(true);
+    }
   }
 
   updateNeutralPeople(time) {
