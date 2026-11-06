@@ -30,6 +30,12 @@ Laufwege und Kollisionen aller 37 Personen sind auf `feature/neutral-person-move
 
 Ergänzt sind Whiteboards, Sideboards, eine Druckerstation, Abfalleimer neben den Kaffeemaschinen sowie Laptops, Unterlagen und Becher auf den Tischen. Sideboards und Drucker blockieren Bewegung und Sicht; Abfalleimer blockieren nur Bewegung. Whiteboards und Tischdetails erzeugen keine zusätzliche Bewegungs- oder Sichtblockierung. Zusätzliche Wegweiser und Ausgangsschilder sind nicht vorgesehen.
 
+## Mobile Steuerung
+
+Die mobile Version entspricht der vom Nutzer bestätigten Demo: Richtungstasten antippen für einzelne Schritte oder gedrückt halten zum Laufen. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
+
+Prüfung: Bewegung, Pause und Neustart im Browser geprüft, 23 vorhandene Tests und Produktionsbuild erfolgreich. Der Nutzer hat die mobile Demo bestätigt.
+
 ## Lokaler Start
 
 Voraussetzung: Node.js und npm (die aktuelle Vite-Version benötigt Node.js 20.19+ oder 22.12+; lokal wurde mit Node.js 24.22.2 geprüft).
@@ -74,7 +80,7 @@ npm run dev
 
 Beim ersten Wechsel legt Git normalerweise den lokalen Tracking-Branch für `origin/feature/room-objects` an. Falls das nicht eindeutig möglich ist, explizit `git switch --track origin/feature/room-objects` verwenden.
 
-Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zugriff. Beim blossen Öffnen des Spiels zählt dagegen der Stand des Servers oder Deployments; der Browser prüft oder wechselt keine Git-Branches. Die lokale Adresse `127.0.0.1` des Entwicklungsclients ist vom Phone aus nicht dessen Spielserver. Touch-Steuerung ist bisher nicht implementiert.
+Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zugriff. Beim blossen Öffnen des Spiels zählt dagegen der Stand des Servers oder Deployments; der Browser prüft oder wechselt keine Git-Branches. Die lokale Adresse `127.0.0.1` des Entwicklungsclients ist vom Phone aus nicht dessen Spielserver. Touch-Steuerung ist implementiert: vier Richtungstasten zum Antippen oder Halten sowie Pause/Weiter und direkter Neustart. Das Layout passt sich an Hoch- und Querformat an. WASD und Pfeiltasten bleiben verfügbar.
 
 ### Entwicklungsregeln
 

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { bindTouchControls } from "../touchControls.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
 import { timerWarningPresentation } from "../game/gameLoop.js";
@@ -221,6 +222,10 @@ export class GrayboxScene extends Phaser.Scene {
       rightD: Phaser.Input.Keyboard.KeyCodes.D,
     });
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.touchControls = bindTouchControls({
+      onPause: () => this.onEscapePressed(),
+      onRestart: () => this.scene.restart(),
+    });
     this.input.on("pointerdown", this.restartIfFinished, this);
     this.handleWindowEscape = (event) => {
       if ((event.key !== "Escape" && event.keyCode !== Phaser.Input.Keyboard.KeyCodes.ESC) || event.repeat) return;
@@ -231,6 +236,7 @@ export class GrayboxScene extends Phaser.Scene {
     window.addEventListener("keydown", this.handleWindowEscape, true);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       window.removeEventListener("keydown", this.handleWindowEscape, true);
+      this.touchControls.destroy();
     });
     this.input.keyboard.on("keydown-LEFT", this.onMenuDirection, this);
     this.input.keyboard.on("keydown-RIGHT", this.onMenuDirection, this);
@@ -694,6 +700,8 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   readDirection() {
+    const touchDirection = this.touchControls.readDirection();
+    if (touchDirection) return touchDirection;
     if (this.cursors.left.isDown || this.inputKeys.leftA.isDown) return { x: -1, y: 0 };
     if (this.cursors.right.isDown || this.inputKeys.rightD.isDown) return { x: 1, y: 0 };
     if (this.cursors.up.isDown || this.inputKeys.upW.isDown) return { x: 0, y: -1 };
@@ -781,3 +789,4 @@ export class GrayboxScene extends Phaser.Scene {
     }
   }
 }
+
