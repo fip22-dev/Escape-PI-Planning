@@ -113,6 +113,47 @@ export function canNeutralMoveToTile(tile, {
     && !playerTiles.some(playerTile => sameTile(tile, playerTile));
 }
 
+export function findPatrolDetour({ start, route, routeIndex, canMoveToTile }) {
+  if (!start || !Array.isArray(route) || route.length < 2) return null;
+
+  const directions = [
+    { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 },
+  ];
+  const startKey = `${start.x},${start.y}`;
+  const previous = new Map([[startKey, null]]);
+  const tiles = new Map([[startKey, start]]);
+  const queue = [start];
+
+  for (let cursor = 0; cursor < queue.length; cursor += 1) {
+    const current = queue[cursor];
+    for (const direction of directions) {
+      const next = { x: current.x + direction.x, y: current.y + direction.y };
+      const key = `${next.x},${next.y}`;
+      if (previous.has(key) || !canMoveToTile(next)) continue;
+      previous.set(key, `${current.x},${current.y}`);
+      tiles.set(key, next);
+      queue.push(next);
+    }
+  }
+
+  for (let offset = 0; offset < route.length; offset += 1) {
+    const targetIndex = (routeIndex + offset) % route.length;
+    let key = `${route[targetIndex].x},${route[targetIndex].y}`;
+    if (key === startKey || !previous.has(key)) continue;
+
+    const path = [];
+    while (key !== startKey) {
+      path.push(tiles.get(key));
+      key = previous.get(key);
+    }
+    path.reverse();
+    path[path.length - 1] = { ...path[path.length - 1], waitMs: route[targetIndex].waitMs ?? 0 };
+    return { path, resumeIndex: (targetIndex + 1) % route.length };
+  }
+
+  return null;
+}
+
 function manhattanDistance(first, second) {
   return Math.abs(first.x - second.x) + Math.abs(first.y - second.y);
 }

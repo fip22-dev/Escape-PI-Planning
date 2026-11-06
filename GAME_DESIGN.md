@@ -2,17 +2,17 @@
 
 ## Spielziel
 
-Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixeloptik. Die Spielfigur versucht, während des PI Plannings innerhalb des Zeitlimits den Ausgang zu erreichen. Sechs Hauptfiguren können sie entdecken; neutrale Personen beleben die Etage, lösen aber allein keinen Alarm aus.
+Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixeloptik. Die Spielfigur versucht, während des PI Plannings innerhalb des Zeitlimits den Ausgang zu erreichen. 15 Suchende können sie entdecken; neutrale Personen beleben die Etage, lösen aber allein keinen Alarm aus.
 
 ## Festgelegte Eckpunkte für Version 0.1
 
 - Start im Raum **PI-Einführung**; der Ausgang liegt am nördlichen Ende des Hauptgangs.
 - Steuerung mit **Pfeiltasten oder WASD**.
 - Vorgesehener Timer: **180 Sekunden**. Er startet, wenn die Spielfigur die Flucht beginnt.
-- Wird die Spielfigur von einer der sechs Hauptfiguren entdeckt, erscheint ein rollenspezifischer Dialog. Danach startet der Versuch im PI-Einführungsraum neu.
+- Wird die Spielfigur von einem der 15 Suchenden entdeckt, erscheint ein rollenspezifischer Dialog. Die sieben Product Owner werden dabei über ihr Teamkürzel unterschieden; Scrum Master wird ausgeschrieben. Danach startet der Versuch im PI-Einführungsraum neu.
 - Wiederholungsdialoge können übersprungen werden; während eines Dialogs steht der Timer still.
 - Die Karte enthält sieben benannte Teamzimmer, einen Pausenraum, fünf kleine Meeting-Räume, den PI-Einführungsraum und drei Quergänge.
-- **37 neutrale Personen** verteilen sich über die gesamte Etage. Alle bewegen sich auf festen Routen innerhalb ihres jeweiligen Raums oder Gangs und blockieren einander sowie die Spielfigur. Neutrale Personen lösen selbst keinen Alarm aus. Ihre dynamische Sichtblockierung für Suchende ist noch nicht umgesetzt.
+- **37 neutrale Personen** verteilen sich über die gesamte Etage. Alle bewegen sich auf festen Routen innerhalb ihres jeweiligen Raums oder Gangs und blockieren einander sowie die Spielfigur. Neutrale Personen lösen selbst keinen Alarm aus. Für den RTE-Piloten blockieren sie dynamisch die Sicht.
 - P&T bedeutet **People & Transformation**.
 - Kamera und Spielwelt bleiben in fester Draufsicht; die Kamera folgt der Spielfigur.
 
@@ -69,11 +69,13 @@ Bereits umgesetzt:
 
 Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des PI-Einführungsraums. Am Ausgang erscheint der Siegzustand; bei null Sekunden erscheint „Pech gehabt – Zeit abgelaufen“ mit einer Ja/Nein-Abfrage für den Neustart. ESC pausiert Timer und Figuren. Im Pausenmenü startet Ja den Versuch neu; Nein oder ESC setzt ihn fort. Bei Zeitablauf startet Ja neu, Nein lässt den Ablaufbildschirm stehen. Die Auswahl geht per Pfeiltasten und Enter oder per Klick. Der Timer steht vor dem Fluchtstart auf 03:00; die letzten 30 Sekunden sind rot, die letzten 15 Sekunden blinken rot. **Geprüft:** 19 automatisierte Tests, Produktionsbuild sowie Browserprüfung von Pause, Auswahl, Neustart, Sieg und Ablaufmeldung mit verkürztem Entwicklertimer. Escape wurde im eingebetteten VSC-Browser direkt im Fenster abgefangen; Öffnen, Fortsetzen und erneutes Öffnen wurden dort bestätigt. Der Nutzer bestätigte anschliessend den sauberen ESC-Test in Safari; der Produktivtimer ist 180 Sekunden.
 
-Noch nicht im Spielcode umgesetzt: sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, Sprechblasen und finale Pixelgrafik oder Audio.
+**Erledigt:** Alle 15 Suchenden patrouillieren auf den festgelegten Routen. Jede prüft eine kardinale Sichtlinie bis fünf Kacheln; Wände, solide sichtblockierende Objekte und neutrale Personen unterbrechen die Sicht. Bei Sichtkontakt erscheint ein gelbes Ausrufezeichen, das nach 300 ms auf Rot wechselt; bleibt die Spielfigur insgesamt 600 ms sichtbar, zeigt die Meldung die entdeckende Rolle. Bei wiederholter Blockade berechnet jede Suchfigur einen freien Umweg; neutrale Personen tun dasselbe innerhalb ihres Bereichs. Anschliessend setzen sie die Route am nächsten erreichbaren Routenfeld fort. **Prüfung:** 23 automatisierte Tests prüfen alle Suchendenrouten, PO-Raumstarts und -Rückkehr, Warnstufen und Umwege um blockierte Felder. Der Nutzer bestätigte den Browser-Spieltest der Mehrrollenansicht, der PO-Rückkehr, der Warnstufe und des Ausweichens bei Blockaden.
+
+**Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln, rollenspezifische Erst- und Wiederholungsdialoge mit pausiertem Timer und reproduzierbarem Neustart, neutrale Sprechblasen sowie finale Pixelgrafik und Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
-Die sechs Hauptfiguren sollen erkennbare Rollen haben und feste, wiederholbare Routen nutzen. Die nachfolgenden Wege und Haltezeiten sind Startwerte für den nächsten spielbaren Prototyp und müssen im Spiel geprüft werden.
+Die Suchenden haben erkennbare Rollen und feste, wiederholbare Routen. Die Reihenfolgen und Haltezeiten folgen dieser Tabelle. Startkacheln und Türfelder wurden passend zum Grundriss konkretisiert; die vollständigen Kachelpfade werden im Spielcode auf den begehbaren Gängen berechnet.
 
 | Figur | Vorgesehener Laufweg | Halt |
 |---|---|---|
@@ -81,18 +83,40 @@ Die sechs Hauptfiguren sollen erkennbare Rollen haben und feste, wiederholbare R
 | P&T | Ausgewählte Check-ins: Windows Client Team → Enterprise Mobile Services Team → Communication & Meetingroom Solutions Team → zurück. Besucht nicht alle Teams. | 5 Sekunden pro Check-in |
 | BO | Besucht alle sieben Teams in der Reihenfolge der Teamliste oben und beginnt wieder beim Windows Client Team. | 4 Sekunden pro Team |
 | PM | Besucht alle sieben Teams in umgekehrter Reihenfolge und beginnt wieder beim Communication & Meetingroom Solutions Team. | 4 Sekunden pro Team |
-| PO | Enterprise Mobile Services Team → Windows Client Team → Mac Workplace Team → Windows Software Team → M365 Tenant & Collaboration Team → Workplace Device & Print Solutions Team → Communication & Meetingroom Solutions Team → zurück. | 4 Sekunden pro Team |
-| SM | Kontrolliert den unteren Bereich: Mac Workplace Team → Q3 → Communication & Meetingroom Solutions Team → M365 Tenant & Collaboration Team → Q2 → zurück. | 3 Sekunden an Türen und Kreuzungen |
+| PO (7 Figuren) | Je eine Figur mit Teamkürzel: WCL (Windows Client), WSW (Windows Software), WDPS (Workplace Device & Print Solutions), EMS (Enterprise Mobile Services), MAC (Mac Workplace), M365 und CMS (Communication & Meetingroom Solutions). Jede startet im eigenen Teamzimmer, patrouilliert im angrenzenden Gangbereich und kehrt durch die eigene Tür zurück. | 4 Sekunden an Team- und Gangstopps; 2,5 Sekunden im eigenen Raum |
+| Scrum Master (4 Figuren) | Kontrollieren den unteren Bereich zwischen Mac Workplace, Q3, Communication & Meetingroom, M365 und Q2. Die vier starten an unterschiedlichen Gangfeldern und beginnen die Runde an versetzten Punkten. | 3 Sekunden an Türen und Kreuzungen |
 
-Die Routen von BO, PM und PO starten zeitversetzt. Die Figuren laufen durch die Gänge; ein Teamzimmerbesuch endet an der Tür oder führt kurz in den Raum. Beim Neustart werden Startpositionen und Zeitversätze zurückgesetzt. Die genaue Wegführung und die Positionen der 37 neutralen Personen bleiben Gegenstand des Spieltests.
+Die Routen von BO, PM, allen sieben PO und allen vier Scrum Mastern starten zeitversetzt. Nur die PO betreten ein Teamzimmer: Sie beginnen und enden jeweils im eigenen Raum. Ihre Gangrouten sind nach den drei Querbereichen Q1, Q2 und Q3 aufgeteilt, damit nicht alle sieben dieselbe grosse Runde laufen. Beim Neustart werden Startpositionen und Zeitversätze zurückgesetzt. Der Nutzer hat die Spieldichte und das Ausweichen bei Blockaden in der Mehrrollenansicht im Browser bestätigt.
+
+### Konkrete Start- und Türkacheln im Prototyp
+
+Die Koordinaten sind nullbasiert. Teamstopps liegen auf der Gangseite direkt vor dem Türfeld. Die PO starten auf freien Kacheln im eigenen Teamzimmer und kehren auf dieselbe Kachel zurück; ihr automatisch berechneter Pfad darf nur den eigenen Raum sowie die Gänge und Türfelder nutzen. Die übrigen Suchenden bleiben auf Gängen und Ausgang.
+
+| Rolle | Startkachel | Teamstopps / Quergänge | Startversatz | Halt |
+|---|---:|---|---:|---:|
+| RTE | (34, 38) | Q3 (34, 32) → Westgang (14, 32) → Q1 (34, 8) → Westgang (14, 8) → Ausgang (34, 2) → zurück | 1,5 s | 2 s an Kreuzungen, 4 s am Ausgang |
+| P&T | (14, 8) | Windows Client (12, 8) → Enterprise Mobile Services (36, 20) → Communication & Meetingroom (36, 32) → zurück | 1,5 s | 5 s |
+| BO | (14, 9) | Windows Client (12, 9) → Windows Software (36, 8) → Workplace Device (12, 18) → Enterprise Mobile Services (36, 20) → Mac Workplace (12, 29) → M365 (12, 37) → Communication & Meetingroom (36, 32) → zurück | 6 s | 4 s |
+| PM | (34, 33) | Communication & Meetingroom (36, 32) → M365 (12, 37) → Mac Workplace (12, 29) → Enterprise Mobile Services (36, 20) → Workplace Device (12, 18) → Windows Software (36, 8) → Windows Client (12, 8) → zurück | 12 s | 4 s |
+| PO · WCL | (10, 8), innen | Eigene Tür (12, 8) → Q1 West (14, 8) → Q1 Mitte-West (20, 8) → Q1 Mitte (24, 8) → zurück durch eigene Tür in Windows Client | 18 s | 4 s an Stopps, 2,5 s im Raum |
+| PO · WSW | (38, 8), innen | Eigene Tür (36, 8) → Hauptgang (34, 8) → Q1 Mitte-Ost (28, 8) → Q1 Mitte (24, 8) → zurück durch eigene Tür in Windows Software | 20,5 s | 4 s an Stopps, 2,5 s im Raum |
+| PO · WDPS | (10, 18), innen | Eigene Tür (12, 18) → Westgang (14, 18) → Q2 West (18, 20) → Q2 Mitte (24, 20) → zurück durch eigene Tür in Workplace Device | 23 s | 4 s an Stopps, 2,5 s im Raum |
+| PO · EMS | (38, 20), innen | Eigene Tür (36, 20) → Hauptgang (34, 20) → Q2 Ost (28, 20) → Q2 Mitte (24, 20) → zurück durch eigene Tür in Enterprise Mobile Services | 25,5 s | 4 s an Stopps, 2,5 s im Raum |
+| PO · MAC | (10, 29), innen | Eigene Tür (12, 29) → Westgang (14, 29) → Q3 West (18, 32) → Q3 Mitte (24, 32) → zurück durch eigene Tür in Mac Workplace | 28 s | 4 s an Stopps, 2,5 s im Raum |
+| PO · M365 | (10, 37), innen | Eigene Tür (12, 37) → Westgang (14, 37) → (14, 35) → Q3-Westzugang (14, 33) → zurück durch eigene Tür in M365 | 30,5 s | 4 s an Stopps, 2,5 s im Raum |
+| PO · CMS | (38, 32), innen | Eigene Tür (36, 32) → Hauptgang (34, 32) → Q3 Ost (28, 32) → Q3 Mitte (24, 32) → zurück durch eigene Tür in Communication & Meetingroom Solutions | 33 s | 4 s an Stopps, 2,5 s im Raum |
+| Scrum Master 1 | (14, 30) | Mac Workplace → Q3 → Communication & Meetingroom → M365 → Q2 → zurück | 9 s | 3 s |
+| Scrum Master 2 | (34, 30) | Q3 → Communication & Meetingroom → M365 → Q2 → Mac Workplace → zurück | 11,5 s | 3 s |
+| Scrum Master 3 | (14, 37) | Communication & Meetingroom → M365 → Q2 → Mac Workplace → Q3 → zurück | 14 s | 3 s |
+| Scrum Master 4 | (34, 20) | M365 → Q2 → Mac Workplace → Q3 → Communication & Meetingroom → zurück | 16,5 s | 3 s |
 
 ## Sicht und Entdeckung – Regeln für Version 0.1
 
 - Hauptfiguren entdecken nur in Blickrichtung, nicht rundherum.
-- Die vorgesehene Sichtweite beträgt ungefähr fünf Kacheln. Wände, geschlossene Türen und neutrale Personen blockieren die Sicht. Neutrale Personen dienen damit auch als bewegliche Sichtdeckung; diese Funktion ist noch nicht implementiert.
+- Die vorgesehene Sichtweite beträgt ungefähr fünf Kacheln. Im Graybox-Piloten blockieren Wände, solide sichtblockierende Objekte und neutrale Personen die Sicht. Alle Türöffnungen sind offen und durchsichtig; geschlossene Türen gibt es im aktuellen Grundriss nicht.
 - Direkt neben einer Hauptfigur wird die Spielfigur auch ausserhalb ihrer Blickrichtung entdeckt.
-- Ein gelbes Ausrufezeichen warnt kurz vor der Entdeckung.
-- Bleibt die Spielfigur ungefähr 0,7 Sekunden im Sichtbereich, gilt sie als entdeckt.
+- Ein gelbes Ausrufezeichen erscheint sofort und wechselt nach 300 ms ununterbrochenem Sichtkontakt auf Rot.
+- Bleibt die Spielfigur insgesamt 600 ms im Sichtbereich, gilt sie als entdeckt. Wird der Sichtkontakt unterbrochen, beginnt die Warnphase wieder bei Gelb.
 - Neutrale Personen entdecken die Spielfigur nicht.
 
 Diese Werte werden beim Implementieren und Testen feinjustiert.
@@ -125,7 +149,7 @@ Verbindliche Regeln:
 | Abfalleimer | Nein | Nein |
 | Laptop, Unterlagen und Becher auf Tischen | Keine zusätzliche Kollision | Keine zusätzliche Sichtwirkung |
 
-Die Bewegungskollision ist implementiert. Die Sichtblockierung ist als Objekteigenschaft hinterlegt; ihre Wirkung wird erst mit der noch fehlenden Sichtlogik der Suchenden implementiert und geprüft.
+Die Bewegungskollision und Sichtprüfung der Suchenden sind implementiert. Pflanzen, Tische, Sideboards, Drucker und Kaffeemaschinen blockieren Bewegung und Sicht. Abfalleimer blockieren Bewegung, nicht Sicht. Stühle, Leinwände, Whiteboards und Tischdetails blockieren weder Bewegung noch Sicht. Die Wirkung der Blocker wurde im Browser noch nicht vollständig manuell geprüft.
 
 Aktuelle, im Browser visuell abgenommene Platzierung auf `feature/room-objects`:
 
@@ -148,7 +172,7 @@ Insgesamt **37 neutrale Personen**, über die ganze Karte verteilt:
 - 5 im PI-Einführungsraum.
 - 6 in den Gängen und Quergängen.
 
-Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen aufeinander warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Automatisierte Routentests sind erfolgreich; die visuelle Abnahme aller neutralen Bewegungsrouten wurde vom Nutzer bestätigt. Dynamische Sichtdeckung ist noch nicht umgesetzt.
+Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Wiederholte Blockaden führen zu einer dynamischen Umleitung innerhalb des Bereichs; anschliessend wird die ursprüngliche Route an einem erreichbaren Feld fortgesetzt. Automatisierte Routentests und visuelle Abnahme der bisherigen Bewegungsrouten sind erfolgreich; die neue Umleitung muss noch gezielt im Browser geprüft werden. Die aktuelle und reservierte Position jeder neutralen Person blockiert dynamisch die Sichtlinie aller Suchenden.
 
 ### Laufwegplanung für den Bewegungsprototyp
 
@@ -157,7 +181,7 @@ Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Perso
 
 Die Bewegung ist bewusst langsam: 650 ms pro Kachelschritt und anschliessend 700 ms Pause. Routen reichen bis zu vier Kacheln von der Startposition, soweit Raum und Möbel das zulassen. Solide Möbel, andere Personen und die Spielfigur blockieren die nächsten Kacheln. Die Spielfigur prüft sowohl die aktuelle als auch die während einer Bewegung reservierte Personenkachel. Bei belegtem Ziel wartet die Person 500 ms und versucht denselben Routenschritt erneut.
 
-Die Bewegungsrouten wurden im Browser visuell abgenommen. Als nächstes folgt der RTE-Prototyp, der Personen als dynamische Sichtblocker berücksichtigt; Ausweichrouten für beengte oder stark belegte Felder werden anhand des Spieltests ergänzt.
+Die ursprünglichen Bewegungsrouten wurden im Browser visuell abgenommen. Der RTE-Pilot ergänzt Route, Sichtlinie und dynamische Sichtblockierung durch neutrale Personen. Bei wiederholter Blockade finden Suchende und neutrale Personen einen Umweg innerhalb ihres Bereichs. Der Nutzer bestätigte die manuelle Prüfung der Umleitung bei gegenseitigem Blockieren; die gezielte Prüfung der Möbel-Sichtblocker steht noch aus.
 
 ## Neutrale Sprechblasen – Entwurf
 
@@ -190,7 +214,7 @@ Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: 
 
 ## Dialoge bei Entdeckung – Vorschläge
 
-Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei späteren Versuchen folgt ein kurzer Running-Gag zum noch offenen Fluchtpunkt.
+Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdialog. Die sieben POs zeigen zusätzlich ihr Teamkürzel; alle vier Figuren tragen die ausgeschriebene Bezeichnung „Scrum Master“. Bei späteren Versuchen folgt ein kurzer Running-Gag zum noch offenen Fluchtpunkt.
 
 | Rolle | Erstes Erwischtwerden | Späterer Versuch |
 |---|---|---|
@@ -213,8 +237,7 @@ Beim ersten Erwischtwerden erhält jede Rolle einen eigenen Einstiegsdialog. Bei
 
 ## Noch offene Designentscheidungen
 
-- Die tatsächliche Sichtwirkung der Möbel mit der späteren Suchenden-Logik prüfen; bisher sind Sichtblocker nur als Objekteigenschaft hinterlegt.
-- Nach dem ersten spielbaren Entdecker-Prototyp die vorgeschlagenen Routen, Startpositionen und Haltezeiten abstimmen.
+- Die tatsächliche Sichtwirkung der Möbel im Browser gezielt prüfen.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
 
 Die Umsetzungsreihenfolge und der Status der Arbeiten stehen in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).

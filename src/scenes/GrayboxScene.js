@@ -3,8 +3,19 @@ import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from ".
 import { createRoomObjects, objectAt } from "../game/objects.js";
 import { timerWarningPresentation } from "../game/gameLoop.js";
 import {
+  canSearcherMoveToTile,
+  canSearcherSeePlayer,
+  createSearcherPatrols,
+  RTE_RETRY_PAUSE_MS,
+  RTE_SIGHT_RANGE,
+  RTE_STEP_DURATION_MS,
+  RTE_STEP_PAUSE_MS,
+  searcherDetectionPhase,
+} from "../game/searcherDetection.js";
+import {
   canNeutralMoveToTile,
   createNeutralPatrol,
+  findPatrolDetour,
   BREAK_ROOM_ROUTES,
   isTileOccupiedByPeople,
   MEETING_TWO_ROUTE,
@@ -41,6 +52,7 @@ export class GrayboxScene extends Phaser.Scene {
   create() {
     const { grid, rooms, start } = createFloorPlan();
     this.grid = grid;
+    this.rooms = rooms;
     this.roomObjects = createRoomObjects(rooms);
     this.playerTile = { ...start };
     this.isMoving = false;
@@ -153,6 +165,9 @@ export class GrayboxScene extends Phaser.Scene {
         nextTile: null,
         patrol: null,
         routeIndex: 0,
+        detourRoute: null,
+        detourResumeIndex: null,
+        blockedAttempts: 0,
         nextMoveAt: 0,
       };
     });
@@ -191,6 +206,7 @@ export class GrayboxScene extends Phaser.Scene {
     const face = this.add.rectangle(0, -5, 5, 4, 0xf1c89b);
     this.player.add([body, face]);
     this.player.setDepth(5);
+    this.createSearchers();
 
     const worldWidth = MAP_WIDTH * TILE_SIZE;
     const worldHeight = MAP_HEIGHT * TILE_SIZE;
@@ -235,6 +251,8 @@ export class GrayboxScene extends Phaser.Scene {
     if (this.gameResult) return;
 
     this.updateNeutralPeople(time);
+    this.updateSearchers(time);
+    if (this.gameResult) return;
     if (this.isMoving || time - this.lastMoveAt < 105) return;
 
     const direction = this.readDirection();
@@ -244,7 +262,7 @@ export class GrayboxScene extends Phaser.Scene {
     const targetY = this.playerTile.y + direction.y;
     if (this.grid[targetY]?.[targetX] === undefined || this.grid[targetY][targetX] === TILE_TYPES.WALL
       || objectAt(this.roomObjects, targetX, targetY, "blocksMovement")
-      || isTileOccupiedByPeople({ x: targetX, y: targetY }, this.neutralPeople)) {
+      || isTileOccupiedByPeople({ x: targetX, y: targetY }, [...this.neutralPeople, ...this.searchers])) {
       return;
     }
 
@@ -267,7 +285,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   restartIfFinished() {
-    if (this.gameResult === "win") this.scene.restart();
+    if (this.gameResult === "win" || this.gameResult === "caught") this.scene.restart();
   }
 
   onEscapePressed() {
@@ -297,9 +315,168 @@ export class GrayboxScene extends Phaser.Scene {
       else this.resumeGame();
     } else if (this.gameResult === "timeout") {
       if (this.resultChoiceYes) this.scene.restart();
-    } else if (this.gameResult === "win") {
+    } else if (this.gameResult === "win" || this.gameResult === "caught") {
       this.scene.restart();
     }
+  }
+
+  createSearchers() {
+    this.searchers = createSearcherPatrols({ grid: this.grid, objects: this.roomObjects, rooms: this.rooms }).map(config => {
+      const sprite = this.add.container((config.start.x + 0.5) * TILE_SIZE, (config.start.y + 0.5) * TILE_SIZE);
+      const body = this.add.rectangle(0, 1, 10, 12, config.color);
+      body.setStrokeStyle(2, 0xf1c84b);
+      const head = this.add.circle(0, -6, 3, 0xc8ad8e);
+      const hair = this.add.rectangle(0, -9, 6, 2, 0x4d514d);
+      const facingMarker = this.add.rectangle(0, -7, 2, 2, 0x273438);
+      const roleTag = this.add.text(0, -16, config.role, {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "6px",
+        fontStyle: "bold",
+        color: "#fff0a8",
+        backgroundColor: "#50372e",
+        padding: { x: 1, y: 1 },
+      }).setOrigin(0.5);
+      const warningIcon = this.add.text(0, -24, "!", {
+        fontFamily: "Arial, sans-serif",
+        fontSize: "12px",
+        fontStyle: "bold",
+        color: "#ffe066",
+        backgroundColor: "#50372e",
+        padding: { x: 2, y: 0 },
+      }).setOrigin(0.5).setVisible(false);
+      sprite.add([body, head, hair, facingMarker, roleTag, warningIcon]);
+      sprite.setDepth(4);
+
+      return {
+        ...config,
+        sprite,
+        warningIcon,
+        facingMarker,
+        tile: { ...config.start },
+        nextTile: null,
+        routeIndex: 0,
+        facing: { x: 0, y: -1 },
+        visibleSince: null,
+        detourRoute: null,
+        detourResumeIndex: null,
+        blockedAttempts: 0,
+        nextMoveAt: this.time.now + config.delayMs,
+      };
+    });
+    this.rte = this.searchers[0];
+  }
+
+  updateSearcherFacingMarker(searcher) {
+    const positions = {
+      "0,-1": [0, -7],
+      "1,0": [2, -6],
+      "0,1": [0, -4],
+      "-1,0": [-2, -6],
+    };
+    searcher.facingMarker.setPosition(...positions[`${searcher.facing.x},${searcher.facing.y}`]);
+  }
+
+  updateSearchers(time) {
+    this.searchers.forEach(searcher => this.updateSearcherPatrol(searcher, time));
+    for (const searcher of this.searchers) {
+      if (this.updateSearcherDetection(searcher, time)) return;
+    }
+  }
+
+  updateSearcherPatrol(searcher, time) {
+    const target = searcher.detourRoute?.[0] ?? searcher.route[searcher.routeIndex];
+    if (!target || searcher.nextTile || time < searcher.nextMoveAt) return;
+
+    const canMoveToTile = tile => canSearcherMoveToTile(tile, {
+      grid: this.grid,
+      objects: this.roomObjects,
+      homeRoom: searcher.homeRoom,
+      otherPeople: [
+        ...this.neutralPeople,
+        ...this.searchers.filter(other => other !== searcher),
+      ],
+      playerTiles: [this.playerTile, this.playerNextTile].filter(Boolean),
+    });
+    if (!canMoveToTile(target)) {
+      searcher.blockedAttempts += 1;
+      if (searcher.blockedAttempts >= 2) {
+        const detour = findPatrolDetour({
+          start: searcher.tile,
+          route: searcher.route,
+          routeIndex: searcher.routeIndex,
+          canMoveToTile,
+        });
+        if (detour) {
+          searcher.detourRoute = detour.path;
+          searcher.detourResumeIndex = detour.resumeIndex;
+          searcher.blockedAttempts = 0;
+        }
+      }
+      searcher.nextMoveAt = time + RTE_RETRY_PAUSE_MS;
+      return;
+    }
+
+    searcher.blockedAttempts = 0;
+    searcher.facing = {
+      x: Math.sign(target.x - searcher.tile.x),
+      y: Math.sign(target.y - searcher.tile.y),
+    };
+    this.updateSearcherFacingMarker(searcher);
+    searcher.nextTile = { x: target.x, y: target.y };
+    this.tweens.add({
+      targets: searcher.sprite,
+      x: (target.x + 0.5) * TILE_SIZE,
+      y: (target.y + 0.5) * TILE_SIZE,
+      duration: RTE_STEP_DURATION_MS,
+      ease: "Linear",
+      onComplete: () => {
+        searcher.tile = { x: target.x, y: target.y };
+        searcher.nextTile = null;
+        if (searcher.detourRoute) {
+          searcher.detourRoute.shift();
+          if (searcher.detourRoute.length === 0) {
+            searcher.routeIndex = searcher.detourResumeIndex;
+            searcher.detourRoute = null;
+            searcher.detourResumeIndex = null;
+          }
+        } else {
+          searcher.routeIndex = (searcher.routeIndex + 1) % searcher.route.length;
+        }
+        searcher.nextMoveAt = this.time.now + RTE_STEP_PAUSE_MS + (target.waitMs ?? 0);
+      },
+    });
+  }
+
+  updateSearcherDetection(searcher, time) {
+    const playerTiles = [this.playerTile, this.playerNextTile].filter(Boolean);
+    const observerTiles = [searcher.tile, searcher.nextTile].filter(Boolean);
+    const visible = observerTiles.some(observerTile => playerTiles.some(playerTile =>
+      canSearcherSeePlayer({
+        observerTile,
+        facing: searcher.facing,
+        playerTile,
+        grid: this.grid,
+        objects: this.roomObjects,
+        neutralPeople: this.neutralPeople,
+        maxRange: RTE_SIGHT_RANGE,
+      })));
+
+    if (!visible) {
+      searcher.visibleSince = null;
+      searcher.warningIcon.setVisible(false);
+      searcher.warningIcon.setColor("#ffe066");
+      return false;
+    }
+
+    if (searcher.visibleSince === null) searcher.visibleSince = time;
+    searcher.warningIcon.setVisible(true);
+    const phase = searcherDetectionPhase(time - searcher.visibleSince);
+    searcher.warningIcon.setColor(phase === "yellow" ? "#ffe066" : "#ff4d4f");
+    if (phase === "caught") {
+      this.finishGame("caught", searcher.role);
+      return true;
+    }
+    return false;
   }
 
   pauseGame() {
@@ -436,15 +613,18 @@ export class GrayboxScene extends Phaser.Scene {
     if (tileType === TILE_TYPES.EXIT) this.finishGame("win");
   }
 
-  finishGame(result) {
+  finishGame(result, caughtRole = null) {
     if (this.gameResult) return;
     this.gameResult = result;
+    this.caughtRole = caughtRole;
     this.isMoving = false;
     this.playerNextTile = null;
     this.tweens.killAll();
     this.resultText.setText(result === "win"
       ? "GESCHAFFT!\nDu hast das PI Planning verlassen.\nEnter zum Neustart"
-      : "Pech gehabt – Zeit abgelaufen.\nVersuch neu starten?");
+      : result === "caught"
+        ? `ERWISCHT!\n${caughtRole} hat dich entdeckt.\nEnter zum Neustart`
+        : "Pech gehabt – Zeit abgelaufen.\nVersuch neu starten?");
     this.resultPanel.setVisible(true);
     this.resultText.setVisible(true);
     if (result === "timeout") {
@@ -459,18 +639,34 @@ export class GrayboxScene extends Phaser.Scene {
     for (const person of this.neutralPeople) {
       if (!person.patrol || person.patrol.route.length < 2 || person.nextTile || time < person.nextMoveAt) continue;
 
-      const target = person.patrol.route[person.routeIndex];
-      if (!canNeutralMoveToTile(target, {
+      const target = person.detourRoute?.[0] ?? person.patrol.route[person.routeIndex];
+      const canMoveToTile = tile => canNeutralMoveToTile(tile, {
         bounds: person.patrol.bounds,
         grid: this.grid,
         objects: this.roomObjects,
-        otherPeople: this.neutralPeople.filter(other => other !== person),
+        otherPeople: [...this.neutralPeople.filter(other => other !== person), ...this.searchers],
         playerTiles: [this.playerTile, this.playerNextTile].filter(Boolean),
-      })) {
+      });
+      if (!canMoveToTile(target)) {
+        person.blockedAttempts += 1;
+        if (person.blockedAttempts >= 2) {
+          const detour = findPatrolDetour({
+            start: person.tile,
+            route: person.patrol.route,
+            routeIndex: person.routeIndex,
+            canMoveToTile,
+          });
+          if (detour) {
+            person.detourRoute = detour.path;
+            person.detourResumeIndex = detour.resumeIndex;
+            person.blockedAttempts = 0;
+          }
+        }
         person.nextMoveAt = time + NEUTRAL_RETRY_PAUSE_MS;
         continue;
       }
 
+      person.blockedAttempts = 0;
       person.nextTile = target;
       this.tweens.add({
         targets: person.sprite,
@@ -481,7 +677,16 @@ export class GrayboxScene extends Phaser.Scene {
         onComplete: () => {
           person.tile = target;
           person.nextTile = null;
-          person.routeIndex = (person.routeIndex + 1) % person.patrol.route.length;
+          if (person.detourRoute) {
+            person.detourRoute.shift();
+            if (person.detourRoute.length === 0) {
+              person.routeIndex = person.detourResumeIndex;
+              person.detourRoute = null;
+              person.detourResumeIndex = null;
+            }
+          } else {
+            person.routeIndex = (person.routeIndex + 1) % person.patrol.route.length;
+          }
           person.nextMoveAt = time + NEUTRAL_STEP_DURATION_MS + NEUTRAL_STEP_PAUSE_MS;
         },
       });
