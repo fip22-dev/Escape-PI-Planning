@@ -36,22 +36,73 @@ Die mobile Version entspricht der vom Nutzer bestätigten Demo: Richtungstasten 
 
 Prüfung: Bewegung, Pause und Neustart im Browser geprüft, 23 vorhandene Tests und Produktionsbuild erfolgreich. Der Nutzer hat die mobile Demo bestätigt.
 
-## Lokaler Start
+## Spiel auf Mobile und PC öffnen
 
-Voraussetzung: Node.js und npm (die aktuelle Vite-Version benötigt Node.js 20.19+ oder 22.12+; lokal wurde mit Node.js 24.22.2 geprüft).
+### Online-Demo – ohne Installation
+
+Die [Escape PI Planning – Demo](https://escape-pi-planning-demo-philippe.electgleam1.chatgpt.site/) lässt sich auf dem iPhone und am PC im Browser öffnen.
+
+1. Den Demo-Link öffnen; auf dem iPhone beispielsweise in Safari, am PC im Browser.
+2. Bei Aufforderung mit dem ChatGPT-Konto anmelden, dem die Demo gehört. Die Demo ist privat; andere Personen erhalten über den Link allein keinen Zugriff.
+3. Auf dem iPhone die eingeblendeten Richtungstasten antippen oder halten. **Pause / Weiter** und **Neustart** sind ebenfalls als Tasten verfügbar. Hoch- und Querformat werden unterstützt.
+4. Am PC mit **WASD oder Pfeiltasten** bewegen. **Esc** öffnet bzw. schliesst das Pausenmenü; alternativ die eingeblendeten Schaltflächen verwenden.
+
+Ein eigener Computer muss für den Online-Aufruf nicht eingeschaltet sein. Die Demo ist eine separat bereitgestellte Version und wird durch Änderungen auf GitHub nicht automatisch aktualisiert. Der GitHub-Repository-Link zeigt den Quellcode; er startet das Spiel nicht. GitHub Pages ist noch nicht eingerichtet.
+
+### PC – aktuellen GitHub-Stand lokal testen
+
+Voraussetzungen: Git, Node.js und npm (Node.js 20.19+ oder 22.12+; bisher mit Node.js 24.22.2 geprüft).
+
+Beim ersten Mal das Repository herunterladen:
+
+```sh
+git clone https://github.com/fip22-dev/Escape-PI-Planning.git
+cd Escape-PI-Planning
+```
+
+Bei einer bestehenden Kopie zuerst im Projektordner den Stand prüfen und eigene lokale Änderungen sichern. Für einen Test des freigegebenen Stands mit sauberem Arbeitsverzeichnis:
+
+```sh
+git status --short --branch
+git fetch origin
+git switch main
+git pull --ff-only
+```
+
+Danach Abhängigkeiten installieren und das Spiel starten:
 
 ```sh
 npm install
 npm run dev
 ```
 
-Vite zeigt nach dem Start die lokale Adresse im Terminal an. Für ein Produktionspaket:
+Die im Terminal angezeigte **Local**-Adresse im Browser desselben Computers öffnen. Das Terminal während des Spielens geöffnet lassen; mit **Ctrl+C** den Server beenden.
+
+### iPhone – lokalen PC-Stand im gleichen WLAN testen
+
+Diese Variante benötigt einen eingeschalteten Computer mit laufendem Spielserver. Für unterwegs stattdessen die Online-Demo verwenden.
+
+1. Computer und iPhone mit demselben WLAN verbinden.
+2. Im Projektordner auf dem Computer starten:
+
+   ```sh
+   npm run dev -- --host 0.0.0.0
+   ```
+
+3. Die von Vite angezeigte **Network**-Adresse in Safari auf dem iPhone eingeben. Die tatsächliche Adresse und den Port aus dem Terminal übernehmen, zum Beispiel `http://192.168.1.42:5173/`.
+4. Falls keine Verbindung möglich ist, die Firewall-Freigabe für Node.js im privaten Netzwerk und eine mögliche Geräteisolation des WLANs prüfen.
+
+`localhost` und `127.0.0.1` auf dem iPhone verweisen auf das iPhone selbst und erreichen den Computer nicht. Den Entwicklungsserver nur im vertrauenswürdigen lokalen Netzwerk verwenden.
+
+### Build und automatisierte Tests
+
+Ein Produktionspaket erstellen:
 
 ```sh
 npm run build
 ```
 
-Die automatisierten Kartentests starten mit `npm test`.
+Die automatisierten Tests starten mit `npm test`.
 
 ## Zusammenarbeit
 
@@ -67,18 +118,7 @@ git branch -r --no-merged origin/main
 
 Zusätzlich die [offenen Pull Requests](https://github.com/fip22-dev/Escape-PI-Planning/pulls) prüfen. Die Branchliste enthält auch veraltete oder bereits anders integrierte Branches; sie ist keine verlässliche Liste aktiver Arbeit. Den zur Aufgabe gehörenden Branch anhand des Pull Requests auswählen. Bestehende lokale Änderungen zuerst sichern und nicht überschreiben.
 
-Der Möbelstand liegt auf **`feature/room-objects`** und bleibt zur visuellen Abnahme ungemergt. Zum Abrufen auf einem anderen Client mit sauberem Arbeitsverzeichnis:
-
-```sh
-git switch feature/room-objects
-git pull --ff-only
-npm install
-npm test
-npm run build
-npm run dev
-```
-
-Beim ersten Wechsel legt Git normalerweise den lokalen Tracking-Branch für `origin/feature/room-objects` an. Falls das nicht eindeutig möglich ist, explizit `git switch --track origin/feature/room-objects` verwenden.
+Für Tests des freigegebenen Spielstands `main` verwenden; die Befehle stehen unter **Spiel auf Mobile und PC öffnen**. Ein Feature-Stand muss gezielt anhand des zugehörigen Pull Requests gewählt werden. Der frühere Möbelstand ist bereits in `main` integriert.
 
 Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zugriff. Beim blossen Öffnen des Spiels zählt dagegen der Stand des Servers oder Deployments; der Browser prüft oder wechselt keine Git-Branches. Die lokale Adresse `127.0.0.1` des Entwicklungsclients ist vom Phone aus nicht dessen Spielserver. Touch-Steuerung ist implementiert: vier Richtungstasten zum Antippen oder Halten sowie Pause/Weiter und direkter Neustart. Das Layout passt sich an Hoch- und Querformat an. WASD und Pfeiltasten bleiben verfügbar.
 
