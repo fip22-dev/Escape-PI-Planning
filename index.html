@@ -16,11 +16,24 @@
       <section class="game-shell" aria-label="Spielbereich">
         <div id="game-container"></div>
       </section>
+      <nav class="touch-controls" aria-label="Spielsteuerung">
+        <div class="direction-pad" aria-label="Bewegen">
+          <button type="button" data-direction="up" aria-label="Nach oben">▲</button>
+          <button type="button" data-direction="left" aria-label="Nach links">◀</button>
+          <button type="button" data-direction="down" aria-label="Nach unten">▼</button>
+          <button type="button" data-direction="right" aria-label="Nach rechts">▶</button>
+        </div>
+        <div class="touch-actions">
+          <button type="button" data-action="pause">Pause / Weiter</button>
+          <button type="button" data-action="restart">Neustart</button>
+        </div>
+      </nav>
       <footer class="controls">
-        <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> oder Pfeiltasten bewegen</span>
+        <span>Richtungstaste halten zum Laufen · auch mit WASD oder Pfeiltasten</span>
         <span>Die Kamera folgt deiner Spielfigur.</span>
       </footer>
     </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
+
