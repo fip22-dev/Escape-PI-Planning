@@ -67,7 +67,9 @@ Bereits umgesetzt:
 - Sieben Teamzimmer, Pausenraum, fünf Meeting-Räume und PI-Einführungsraum.
 - 37 neutrale Personen an den unten beschriebenen Stellen; alle bewegen sich auf festen, begrenzten Raum- oder Gangrouten.
 
-Noch nicht im Spielcode umgesetzt: Timer, Sieg- und Ablaufzustand, sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, Sprechblasen und finale Pixelgrafik oder Audio.
+Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des PI-Einführungsraums. Am Ausgang erscheint der Siegzustand; bei null Sekunden erscheint „Pech gehabt – Zeit abgelaufen“ mit einer Ja/Nein-Abfrage für den Neustart. ESC pausiert Timer und Figuren. Im Pausenmenü startet Ja den Versuch neu; Nein oder ESC setzt ihn fort. Bei Zeitablauf startet Ja neu, Nein lässt den Ablaufbildschirm stehen. Die Auswahl geht per Pfeiltasten und Enter oder per Klick. Der Timer steht vor dem Fluchtstart auf 03:00; die letzten 30 Sekunden sind rot, die letzten 15 Sekunden blinken rot. **Geprüft:** 19 automatisierte Tests, Produktionsbuild sowie Browserprüfung von Pause, Auswahl, Neustart, Sieg und Ablaufmeldung mit verkürztem Entwicklertimer. Escape wurde im eingebetteten VSC-Browser direkt im Fenster abgefangen; Öffnen, Fortsetzen und erneutes Öffnen wurden dort bestätigt. Der Nutzer bestätigte anschliessend den sauberen ESC-Test in Safari; der Produktivtimer ist 180 Sekunden.
+
+Noch nicht im Spielcode umgesetzt: sechs bewegliche Hauptfiguren, Sicht- und Entdeckungslogik, Dialoge, Sprechblasen und finale Pixelgrafik oder Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -98,11 +100,13 @@ Diese Werte werden beim Implementieren und Testen feinjustiert.
 ## Timer, Dialog und Neustart
 
 - Timer: 180 Sekunden. Er beginnt, sobald die Flucht aus der PI-Einführung startet.
-- Bei Sieg wird der Timer gestoppt und der Ausgang als geschafft angezeigt; bei null Sekunden endet der Versuch.
+- Bei Sieg wird der Timer gestoppt und der Ausgang als geschafft angezeigt; bei null Sekunden erscheint eine Ablaufmeldung mit Ja/Nein-Neustart.
+- ESC öffnet während des laufenden Versuchs ein Pausenmenü und hält Timer sowie Figuren an. Ja startet den Versuch neu, Nein oder ESC setzt ihn fort.
+- In den letzten 30 Sekunden ist die Timeranzeige rot; in den letzten 15 Sekunden blinkt sie rot.
 - Bei Entdeckung wird der Timer für den Dialog angehalten. Danach startet der Versuch im PI-Einführungsraum mit vollem Timer und zurückgesetzten Hauptfiguren neu.
 - Der erste Dialog einer Rolle wird vollständig gezeigt. Wiederholungsdialoge können mit Enter, Leertaste oder Mausklick übersprungen werden.
 
-Der Sieg- und Ablaufzustand sowie der Timer sind noch zu implementieren.
+Timer, Sieg, Ablaufzustand, Pausenmenü und Warnanzeige sind implementiert und geprüft. Die Ablaufmeldung wurde im Browser mit verkürztem Entwicklertimer geprüft; ESC öffnet und schliesst das Pausenmenü im eingebetteten VSC-Browser und wurde vom Nutzer zusätzlich in Safari bestätigt. Der Produktivtimer bleibt bei 180 Sekunden.
 
 ## Raumobjekte
 
