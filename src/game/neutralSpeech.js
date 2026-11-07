@@ -30,9 +30,12 @@ export function updateNeutralSpeech(state, now, people, playerTile, eligible = (
   })).filter(({ person, index, distance }) => distance <= 2 && now >= (state.personReadyAt[index] ?? 0)
     && !state.active.some(bubble => bubble.personIndex === index) && eligible(person));
   candidates.sort((a, b) => a.distance - b.distance || a.index - b.index);
-  for (const { index } of candidates) {
+  for (const { index, person } of candidates) {
+    // Named bounds are team, meeting and break rooms. Hall/PI bounds are unnamed.
+    const roomKey = person.bounds?.label ? `${person.bounds.x},${person.bounds.y}` : null;
+    if (roomKey !== null && state.active.some(bubble => bubble.roomKey === roomKey)) continue;
     const sayingIndex = (index + (random() < 0.5 ? 0 : 7)) % NEUTRAL_SAYINGS.length;
-    state.active.push({ personIndex: index, text: NEUTRAL_SAYINGS[sayingIndex], expiresAt: now + SPEECH_DURATION_MS });
+    state.active.push({ personIndex: index, roomKey, text: NEUTRAL_SAYINGS[sayingIndex], expiresAt: now + SPEECH_DURATION_MS });
     state.personReadyAt[index] = now + SPEECH_PERSON_COOLDOWN_MS;
   }
 }

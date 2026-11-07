@@ -41,3 +41,25 @@ test("pause shifts every bubble deadline and a new attempt resets all state", ()
   assert.equal(state.active.length, 0);
   assert.deepEqual(createNeutralSpeech(50000), { active: [], readyAt: 51500, personReadyAt: {} });
 });
+
+test("named rooms allow one speaker each while hall and PI allow concurrent speech", () => {
+  const room = { label: "Team", x: 1, y: 1 };
+  const otherRoom = { label: "Meeting", x: 10, y: 1 };
+  const people = [
+    { tile: { x: 1, y: 0 }, bounds: room },
+    { tile: { x: 2, y: 0 }, bounds: { ...room } },
+    { tile: { x: 0, y: 1 }, bounds: otherRoom },
+    { tile: { x: 1, y: 1 }, bounds: { area: "hall" } },
+    { tile: { x: 1, y: 1 }, bounds: { area: "hall" } },
+    { tile: { x: 1, y: 1 }, bounds: { x: 29, y: 40, width: 14, height: 12 } },
+    { tile: { x: 1, y: 1 }, bounds: { x: 29, y: 40, width: 14, height: 12 } },
+  ];
+  const state = createNeutralSpeech(0);
+  updateNeutralSpeech(state, 1500, people, { x: 0, y: 0 });
+  assert.deepEqual(state.active.map(b => b.personIndex).sort(), [0, 2, 3, 4, 5, 6]);
+  assert.equal(state.personReadyAt[1], undefined);
+  updateNeutralSpeech(state, 2999, people, { x: 0, y: 0 });
+  assert.equal(state.active.some(b => b.personIndex === 1), false);
+  updateNeutralSpeech(state, 3000, people, { x: 0, y: 0 });
+  assert.deepEqual(state.active.map(b => b.personIndex), [1]);
+});

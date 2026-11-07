@@ -248,3 +248,43 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
     return { active: state.active, cooldowns: state.personReadyAt };
   })).toEqual({ active: [], cooldowns: {} });
 });
+
+test("all side rooms show one speech bubble at a time; hall still allows two", async ({ page }) => {
+  const rooms = await page.evaluate(() => window.__game.scene.getScene("graybox").rooms);
+  expect(rooms).toHaveLength(13);
+  for (const room of [...rooms, { x: 12, y: 10, width: 5, height: 8, area: "hall" }]) {
+    await page.evaluate(room => {
+      const s = window.__game.scene.getScene("graybox");
+      // Controlled proximity setup; the actual speech and rendering code runs.
+      s.tweens.killAll();
+      s.updateSearchers = () => {};
+      s.neutralSpeech = { active: [], readyAt: s.time.now, personReadyAt: {} };
+      s.neutralPeople.forEach(p => { p.tile = { x: 0, y: 0 }; p.nextTile = null; p.nextMoveAt = Infinity; });
+      s.playerTile = { x: room.x + 2, y: room.y + 2 };
+      s.player.setPosition((s.playerTile.x + 0.5) * 16, (s.playerTile.y + 0.5) * 16);
+      for (const [i, dx] of [-1, 1].entries()) {
+        const p = s.neutralPeople[i];
+        p.bounds = { ...room };
+        p.tile = { x: s.playerTile.x + dx, y: s.playerTile.y };
+        p.sprite.setPosition((p.tile.x + 0.5) * 16, (p.tile.y + 0.5) * 16);
+      }
+      s.cameras.main.stopFollow();
+      s.cameras.main.centerOn(s.player.x, s.player.y);
+    }, room);
+    await page.clock.runFor(200);
+    const read = () => page.evaluate(() => {
+      const s = window.__game.scene.getScene("graybox");
+      return { speakers: s.neutralSpeech.active.map(b => b.personIndex),
+        visible: s.speechBubbles.filter(b => b.text.visible).length };
+    });
+    const first = await read();
+    expect(first.speakers.length, room.label ?? "hall").toBe(room.label ? 1 : 2);
+    expect(first.visible).toBe(room.label ? 1 : 2);
+    if (room.label) {
+      await page.clock.runFor(1500);
+      const next = await read();
+      expect(next.visible).toBe(1);
+      expect(next.speakers).not.toEqual(first.speakers);
+    }
+  }
+});
