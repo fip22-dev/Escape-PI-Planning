@@ -288,3 +288,35 @@ test("all side rooms show one speech bubble at a time; hall still allows two", a
     }
   }
 });
+
+test("opening patrol keeps RTE, product manager and second scrum master apart", async ({ page }, testInfo) => {
+  const opening = () => page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    const people = [s.searchers.find(p => p.role === "RTE"), s.searchers.find(p => p.role === "PM"),
+      s.searchers.filter(p => p.role === "Scrum Master")[1]];
+    return people.map(p => ({ x: p.sprite.x / 16, y: p.sprite.y / 16 }));
+  });
+  const verifySpacing = positions => {
+    for (const [i, p] of positions.entries()) {
+      for (const other of positions.slice(i + 1)) {
+        expect(Math.abs(p.x - other.x) + Math.abs(p.y - other.y)).toBeGreaterThanOrEqual(6);
+      }
+    }
+  };
+  verifySpacing(await opening());
+  await page.evaluate(() => {
+    const camera = window.__game.scene.getScene("graybox").cameras.main;
+    camera.stopFollow();
+    camera.centerOn(34 * 16, 35 * 16);
+  });
+  for (let i = 0; i < 8; i++) {
+    await page.clock.runFor(1000);
+    verifySpacing(await opening());
+  }
+  await page.screenshot({ path: testInfo.outputPath("opening-patrol-spacing.png"), fullPage: true });
+  await page.locator('[data-action="restart"]').click();
+  await page.clock.runFor(100);
+  const state = await sceneState(page);
+  expect(state.generation).toBe(2);
+  verifySpacing(await opening());
+});
