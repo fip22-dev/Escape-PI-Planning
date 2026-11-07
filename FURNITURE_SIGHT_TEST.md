@@ -4,7 +4,7 @@
 
 **Erledigt – Sichtregeln:** Die neun Möbeltypen verhalten sich wie im Spieldesign festgelegt. Pflanzen, Tische, Sideboards, Drucker und Kaffeemaschinen blockieren Sicht; Stühle, Leinwände, Whiteboards und Abfalleimer nicht. Alle 15 Suchenden nutzen diese Regeln einschliesslich aktueller und reservierter Kacheln. Kein Spielcode oder Möbelstandort wurde für diese Prüfung geändert.
 
-**Offen – Spielbare Deckung durch die Platzierung:** Tische bieten auf der aktuellen Karte nutzbare Deckung. Für Pflanzen, Sideboards und Drucker gibt es keine freie kardinale Sichtachse mit begehbaren Endpunkten innerhalb von fünf Kacheln. Eine Kaffeemaschine liegt auf vier solchen Achsen im Pausenraum, den keine Suchenden betreten dürfen. Ihre Sichtblocker-Eigenschaft ist korrekt, daraus entsteht dort aber noch keine eigenständige Deckungsmöglichkeit gegen die Suchenden. Ob diese Möbel künftig umgestellt werden sollen, ist eine offene Designentscheidung.
+**Offen, vorerst zurückgestellt – Spielbare Deckung durch die Platzierung:** Tische bieten auf der aktuellen Karte nutzbare Deckung. Für Pflanzen, Sideboards und Drucker gibt es keine freie kardinale Sichtachse mit begehbaren Endpunkten innerhalb von fünf Kacheln. Eine Kaffeemaschine liegt auf vier solchen Achsen im Pausenraum, den keine Suchenden betreten dürfen. Ihre Sichtblocker-Eigenschaft ist korrekt, daraus entsteht dort aber noch keine eigenständige Deckungsmöglichkeit gegen die Suchenden. Der Nutzer lässt diesen Befund vorerst unverändert stehen; eine mögliche Umstellung bleibt als zurückgestelltes To-do dokumentiert.
 
 ## Prüfumfang
 

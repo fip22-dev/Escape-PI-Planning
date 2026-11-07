@@ -73,7 +73,7 @@ Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des P
 
 **Erledigt und über PR #10 in `main` integriert:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
 
-**Erledigt:** Neutrale Sprechblasen sind auf `feature/neutral-speech-bubbles` implementiert und automatisiert im Browser geprüft; der Nutzer hat den bisherigen Stand bestätigt und die Verlängerung auf 1,7 Sekunden beauftragt. Die neue Dauer ist automatisiert geprüft. **Noch offen:** Designentscheidung über nutzbare Deckungspositionen weiterer Möbel sowie finale Pixelgrafik und Audio.
+**Erledigt:** Neutrale Sprechblasen sind implementiert und automatisiert im Browser geprüft; der Nutzer hat den bisherigen Stand bestätigt und die Verlängerung auf 1,7 Sekunden beauftragt. Die neue Dauer ist automatisiert geprüft. **Noch offen:** Designentscheidung über nutzbare Deckungspositionen weiterer Möbel sowie finale Pixelgrafik und Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -152,7 +152,7 @@ Verbindliche Regeln:
 | Abfalleimer | Nein | Nein |
 | Laptop, Unterlagen und Becher auf Tischen | Keine zusätzliche Kollision | Keine zusätzliche Sichtwirkung |
 
-Die Bewegungskollision und Sichtprüfung der Suchenden sind implementiert. Pflanzen, Tische, Sideboards, Drucker und Kaffeemaschinen blockieren Bewegung und Sicht. Abfalleimer blockieren Bewegung, nicht Sicht. Stühle, Leinwände, Whiteboards und Tischdetails blockieren weder Bewegung noch Sicht. Die Sichtregeln aller neun Möbeltypen wurden gezielt automatisiert im Browser geprüft; Tischdeckung auf der Originalkarte und das Hervortreten sind mit Screenshots kontrolliert. Pflanzen, Sideboards und Drucker besitzen im aktuellen Layout keine begehbare Sichtachse innerhalb von fünf Kacheln; Kaffeemaschinen bieten nur Achsen ohne zulässigen Suchenden-Standort. Die Entscheidung über nutzbare Deckungspositionen bleibt offen. Methodik und Ergebnisse: [FURNITURE_SIGHT_TEST.md](FURNITURE_SIGHT_TEST.md).
+Die Bewegungskollision und Sichtprüfung der Suchenden sind implementiert. Pflanzen, Tische, Sideboards, Drucker und Kaffeemaschinen blockieren Bewegung und Sicht. Abfalleimer blockieren Bewegung, nicht Sicht. Stühle, Leinwände, Whiteboards und Tischdetails blockieren weder Bewegung noch Sicht. Die Sichtregeln aller neun Möbeltypen wurden gezielt automatisiert im Browser geprüft; Tischdeckung auf der Originalkarte und das Hervortreten sind mit Screenshots kontrolliert. Pflanzen, Sideboards und Drucker besitzen im aktuellen Layout keine begehbare Sichtachse innerhalb von fünf Kacheln; Kaffeemaschinen bieten nur Achsen ohne zulässigen Suchenden-Standort. Der Nutzer akzeptiert die aktuelle Platzierung vorerst; zusätzliche nutzbare Deckungspositionen sind zurückgestellt. Methodik und Ergebnisse: [FURNITURE_SIGHT_TEST.md](FURNITURE_SIGHT_TEST.md).
 
 Aktuelle, im Browser visuell abgenommene Platzierung auf `feature/room-objects`:
 
@@ -244,7 +244,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 
 ## Noch offene Designentscheidungen
 
-- Entscheiden, ob Pflanzen, Sideboards, Drucker und Kaffeemaschinen so umgestellt werden sollen, dass sie im aktuellen Sichtmodell tatsächlich Deckung gegen Suchende bieten. Die Sichtregeln sind geprüft; die vorhandene Platzierung schränkt ihren Nutzen ein.
+- Vorerst zurückgestellt: Entscheiden, ob Pflanzen, Sideboards, Drucker und Kaffeemaschinen so umgestellt werden sollen, dass sie im aktuellen Sichtmodell tatsächlich Deckung gegen Suchende bieten. Die Sichtregeln sind geprüft; die vorhandene Platzierung schränkt ihren Nutzen ein.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
 
 Die Umsetzungsreihenfolge und der Status der Arbeiten stehen in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
