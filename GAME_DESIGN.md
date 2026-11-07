@@ -73,7 +73,7 @@ Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des P
 
 **Erledigt und über PR #10 in `main` integriert:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
 
-**Teilweise erledigt:** Neutrale Sprechblasen sind auf `feature/neutral-speech-bubbles` implementiert und automatisiert im Browser geprüft; manuelle Abnahme steht aus. **Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln sowie finale Pixelgrafik und Audio.
+**Erledigt:** Neutrale Sprechblasen sind auf `feature/neutral-speech-bubbles` implementiert und automatisiert im Browser geprüft; der Nutzer hat den bisherigen Stand bestätigt und die Verlängerung auf 1,7 Sekunden beauftragt. Die neue Dauer ist automatisiert geprüft. **Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln sowie finale Pixelgrafik und Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -190,7 +190,7 @@ Die ursprünglichen Bewegungsrouten wurden im Browser visuell abgenommen. Der RT
 
 Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die Spielfigur in ihre Nähe kommt.
 
-- Eine Sprechblase bleibt 1,5 Sekunden sichtbar; die Annäherungsdistanz beträgt höchstens zwei Kacheln im gleichen Raum beziehungsweise Gangbereich.
+- Eine Sprechblase bleibt 1,7 Sekunden sichtbar; die Annäherungsdistanz beträgt höchstens zwei Kacheln im gleichen Raum beziehungsweise Gangbereich.
 - In jedem Team-, Meeting- und Pausenraum spricht höchstens eine Person gleichzeitig; nach Ende ihrer Blase kann die nächste Person desselben Raums sprechen. In Gängen und PI-Einführung können mehrere Personen gleichzeitig sprechen. Jede erhält eine abgerundete Blase mit Rahmen und einer Spitze zur Person; nahe Textfelder werden nach Platzangebot versetzt. Keine globale Pause, mindestens 15 Sekunden zwischen Auslösungen derselben Person.
 - Sprechblasen sind nicht modal: Sie halten den Timer nicht an und blockieren keine Bewegung.
 - Jede neutrale Figur erhält zwei feste Sprüche aus dem folgenden Pool; bei Auslösung wird einer zufällig gewählt. Die Blase folgt der Figur innerhalb des sichtbaren Spielfelds, ohne die Zeitanzeige zu verdecken. Während der Pause ist sie ausgeblendet und ihre Laufzeit samt Cooldowns eingefroren. Bei Fang endet sie; Neustart setzt Auswahlzustand und Cooldowns zurück. Implementierung auf `feature/neutral-speech-bubbles`; Prüfung und manuelle Abnahme siehe Entwicklungsplan.

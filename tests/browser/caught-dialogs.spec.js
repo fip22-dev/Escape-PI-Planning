@@ -281,7 +281,7 @@ test("all side rooms show one speech bubble at a time; hall still allows two", a
     expect(first.speakers.length, room.label ?? "hall").toBe(room.label ? 1 : 2);
     expect(first.visible).toBe(room.label ? 1 : 2);
     if (room.label) {
-      await page.clock.runFor(1500);
+      await page.clock.runFor(1700);
       const next = await read();
       expect(next.visible).toBe(1);
       expect(next.speakers).not.toEqual(first.speakers);

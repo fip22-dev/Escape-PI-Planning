@@ -1,4 +1,4 @@
-export const SPEECH_DURATION_MS = 1500;
+export const SPEECH_DURATION_MS = 1700;
 export const SPEECH_PERSON_COOLDOWN_MS = 15_000;
 export const NEUTRAL_SAYINGS = [
   "Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.",
