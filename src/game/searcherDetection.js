@@ -59,7 +59,7 @@ const SCRUM_MASTER_STOPS = [
   { x: 12, y: 29 }, { x: 24, y: 32 }, { x: 36, y: 32 }, { x: 12, y: 37 }, { x: 24, y: 20 },
 ];
 const SCRUM_MASTER_STARTS = [
-  { x: 14, y: 30 }, { x: 14, y: 24 }, { x: 14, y: 37 }, { x: 34, y: 20 },
+  { x: 14, y: 30 }, { x: 28, y: 8 }, { x: 14, y: 37 }, { x: 34, y: 20 },
 ];
 
 const SCRUM_MASTER_PATROLS = Array.from({ length: 4 }, (_, index) => {
