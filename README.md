@@ -8,15 +8,15 @@ Ein humorvolles 2D-Browserspiel in Draufsicht: Während des PI Plannings versuch
 - Sieben Teamzimmer mit den Namen Windows Client Team, Windows Software Team, Workplace Device & Print Solutions Team, Enterprise Mobile Services Team, Mac Workplace Team, M365 Tenant & Collaboration Team und Communication & Meetingroom Solutions Team
 - Verbindung über einen Hauptgang, einen parallelen Westgang und drei Quergänge
 - Zusätzlicher Pausenraum bei Q1 und fünf kleine Sitzungszimmer bei Q2 und Q3
-- Sechs erkennbare Suchende mit eigenen Patrouillen; bei wiederholter Blockade finden sie Umwege
+- 15 erkennbare Suchende aus sechs Rollenfamilien mit eigenen Patrouillen; bei wiederholter Blockade finden sie Umwege
 - 37 neutrale Personen, verteilt über Teamzimmer, Nebenräume, PI-Einführung und Gänge
 - Timer, Dialoge bei Entdeckung und Neustart im PI-Raum
 
-Die vollständigen Spielregeln und Dialogvorschläge stehen in [GAME_DESIGN.md](GAME_DESIGN.md).
+Die vollständigen Spielregeln und Dialogtexte stehen in [GAME_DESIGN.md](GAME_DESIGN.md).
 
 ## Projektstatus
 
-Der Graybox-Prototyp zeigt die Etage mit sieben Teamzimmern, sechs Nebenräumen und 37 neutralen Personen. Alle Personen bewegen sich auf festen, raum- oder ganggebundenen Routen. Ein Kachelschritt dauert 650 ms, danach pausieren neutrale Personen 700 ms; ihre Wege reichen bis zu vier Kacheln weit. Die fünf Routen im Pausenraum sind voneinander getrennt, damit die Personen dort nicht an denselben Engstellen warten. Die Person in Meeting 2 läuft um den Tisch. Insgesamt patrouillieren 15 Suchende: RTE, P&T, BO, PM, sieben teambezogene PO (WCL, WSW, WDPS, EMS, MAC, M365 und CMS) sowie vier als „Scrum Master“ beschriftete Figuren. Jede PO startet und endet im eigenen Teamraum und patrouilliert im benachbarten Gangabschnitt. Bei Sichtkontakt wechselt die Warnung nach 300 ms auf Rot; nach 600 ms Sichtkontakt wird die Spielfigur entdeckt. Bei wiederholter Blockade suchen Suchende und neutrale Personen einen freien Umweg innerhalb ihres Bereichs und setzen ihre Route fort. Türen, solide Möbel und Personen blockieren die Wege; die Spielfigur kann auch während einer Bewegung keine aktuelle oder reservierte Personenkachel betreten. Die Spielschleife hat einen 180-Sekunden-Timer, Sieg am Ausgang, Ablaufmeldung und Neustart. ESC pausiert das Spiel; ein Ja/Nein-Menü bestätigt den Neustart. Die letzten 30 Sekunden erscheinen rot, die letzten 15 blinken rot. Der Nutzer hat die Mehrrollenansicht mit PO-Rückkehr und Ausweichwegen im Browser bestätigt; Routentests und Produktionsbuild sind erfolgreich. Rollenspezifische Dialoge, finale Pixelgrafiken und Musik werden schrittweise ergänzt.
+Der Graybox-Prototyp zeigt die Etage mit sieben Teamzimmern, sechs Nebenräumen und 37 neutralen Personen. Alle Personen bewegen sich auf festen, raum- oder ganggebundenen Routen. Ein Kachelschritt dauert 650 ms, danach pausieren neutrale Personen 700 ms; ihre Wege reichen bis zu vier Kacheln weit. Die fünf Routen im Pausenraum sind voneinander getrennt, damit die Personen dort nicht an denselben Engstellen warten. Die Person in Meeting 2 läuft um den Tisch. Insgesamt patrouillieren 15 Suchende: RTE, P&T, BO, PM, sieben teambezogene PO (WCL, WSW, WDPS, EMS, MAC, M365 und CMS) sowie vier als „Scrum Master“ beschriftete Figuren. Jede PO startet und endet im eigenen Teamraum und patrouilliert im benachbarten Gangabschnitt. Bei Sichtkontakt wechselt die Warnung nach 300 ms auf Rot; nach 600 ms Sichtkontakt wird die Spielfigur entdeckt. Bei wiederholter Blockade suchen Suchende und neutrale Personen einen freien Umweg innerhalb ihres Bereichs und setzen ihre Route fort. Türen, solide Möbel und Personen blockieren die Wege; die Spielfigur kann auch während einer Bewegung keine aktuelle oder reservierte Personenkachel betreten. Die Spielschleife hat einen 180-Sekunden-Timer, Sieg am Ausgang, Ablaufmeldung und Neustart. ESC pausiert das Spiel; ein Ja/Nein-Menü bestätigt den Neustart. Die letzten 30 Sekunden erscheinen rot, die letzten 15 blinken rot. Der Nutzer hat die Mehrrollenansicht mit PO-Rückkehr und Ausweichwegen im Browser bestätigt; Routentests und Produktionsbuild sind erfolgreich. Rollenspezifische Erst- und Wiederholungsdialoge mit Timerstillstand und reproduzierbarem Figurenneustart sind auf `feature/caught-dialogs` implementiert und automatisiert im Browser geprüft. Finale Pixelgrafiken und Musik bleiben offen.
 
 Die Raumränder sind geschlossen. Alle sieben Teamräume sowie Pausenraum, PI-Einführung und Ausgang haben zwei Kacheln breite Öffnungen; die übrigen Türen bleiben eine Kachel breit. Der Pausenraum-Eingang liegt eine Kachel weiter links. Der Browser-Spieltest wurde vom Nutzer bestätigt; teilweise verschwommene Schrift bleibt als offener Qualitätsmangel bestehen.
 
@@ -31,6 +31,10 @@ Laufwege und Kollisionen aller 37 Personen sind auf `feature/neutral-person-move
 Ergänzt sind Whiteboards, Sideboards, eine Druckerstation, Abfalleimer neben den Kaffeemaschinen sowie Laptops, Unterlagen und Becher auf den Tischen. Sideboards und Drucker blockieren Bewegung und Sicht; Abfalleimer blockieren nur Bewegung. Whiteboards und Tischdetails erzeugen keine zusätzliche Bewegungs- oder Sichtblockierung. Zusätzliche Wegweiser und Ausgangsschilder sind nicht vorgesehen.
 
 ## Mobile Steuerung
+
+Im Dialogfenster werden Rollen ausgeschrieben: Release Train Engineer, People & Transformation, Business Owner, Product Manager, Product Owner (mit Teamkürzel) und Scrum Master.
+
+Die Rollendialoge und der reproduzierbare Neustart auf `feature/caught-dialogs` sind zusätzlich zu den automatisierten Tests vom Nutzer im lokalen Browser-Spieltest am 07.11.2026 abgenommen. Eine gesonderte iPhone-/Safari-Prüfung dieses Feature-Stands bleibt offen.
 
 Die mobile Version entspricht der vom Nutzer bestätigten Demo: Richtungstasten antippen für einzelne Schritte oder gedrückt halten zum Laufen. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
 
@@ -103,6 +107,10 @@ npm run build
 ```
 
 Die automatisierten Tests starten mit `npm test`.
+
+Rollendialoge sind auf `feature/caught-dialogs` implementiert. Beim ersten Erwischtwerden wird der vollständige Text gezeigt, längere Texte werden seitenweise bestätigt. Wiederholungsdialoge lassen sich mit Enter, Leertaste oder Klick/Tippen im Spielfeld überspringen. Die Erinnerung gilt je Rollenfamilie für die aktuelle Spielsitzung und bleibt über Versuchsneustarts erhalten; ein Neuladen der Seite löscht sie. Während des Dialogs stehen Timer und Figuren still. Nach Bestätigung starten Spieler, alle 37 neutralen Personen und alle 15 Suchenden mit ursprünglichen Routen und Startpausen neu. Der externe Neustart-Button bestätigt während eines Dialogs dessen nächste Seite.
+
+Für reproduzierbare Browserprüfungen einmalig `npx playwright install chromium firefox` ausführen, danach `npm run test:browser`. Die Tests starten und beenden ihren eigenen lokalen Vite-Server auf Port 5181. Sie prüfen Chromium, Firefox und mobiles Chromium mit Touch-Eingaben. Testberichte/Screenshots liegen unter `test-results/`; bei Fehlern wird ein Playwright-Trace gespeichert. Der Testzugriff auf die Phaser-Szene wird ausschliesslich im Testbrowser eingebunden und ist nicht Teil der veröffentlichten Anwendung. Der finale Prüfstatus steht im Entwicklungsplan; ein reales iPhone/Safari ist damit nicht geprüft.
 
 ## Zusammenarbeit
 

@@ -7,9 +7,11 @@
     "test": "node --test src/game/*.test.js",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "phaser": "^3.90.0",
     "vite": "^8.3.6"
   }
