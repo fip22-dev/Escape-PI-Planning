@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { isolatedFurnitureCases, furnitureSightLayout } from "../helpers/furnitureSight.js";
 
 test.beforeEach(async ({ page }) => {
   // Test-only instrumentation: the shipped app exposes no game/debug globals.
@@ -27,6 +28,7 @@ test.beforeEach(async ({ page }) => {
   });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
+  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
   page.__errors = errors;
   await page.clock.install();
   await page.goto("/");
@@ -78,6 +80,8 @@ async function confirm(page, input) {
 }
 
 test("every searcher shows first and repeat dialogue, with complete reproducible restarts", async ({ page }, testInfo) => {
+  // Thirty rendered scene restarts can exceed 30 s on software-rendered Firefox.
+  test.setTimeout(60_000);
   const roles = await page.evaluate(() => window.__game.scene.getScene("graybox").searchers.map(s => s.role));
   expect(roles).toHaveLength(15);
   const baseline = (await sceneState(page)).initial;
@@ -319,4 +323,158 @@ test("opening patrol keeps RTE, product manager and second scrum master apart", 
   const state = await sceneState(page);
   expect(state.generation).toBe(2);
   verifySpacing(await opening());
+});
+
+test("furniture detection matrix covers all 15 searchers and moving tile reservations", async ({ page }) => {
+  const count = await page.evaluate(cases => {
+    const s = window.__game.scene.getScene("graybox");
+    // The synchronous matrix changes observer positions; pause automatic patrols.
+    s.scene.pause();
+    s.tweens.killAll();
+    const hall = s.grid[8][14];
+    s.grid = Array.from({ length: 16 }, () => Array(20).fill(hall));
+    s.neutralPeople = [];
+    const caught = [];
+    const finish = s.finishGame;
+    s.finishGame = (result, role) => caught.push({ result, role });
+    let checked = 0;
+    for (const searcher of s.searchers) {
+      for (const fixture of cases) {
+        s.roomObjects = [fixture.object];
+        searcher.tile = { x: 5, y: 6 };
+        searcher.nextTile = null;
+        searcher.facing = { x: 1, y: 0 };
+        searcher.visibleSince = null;
+        s.playerTile = { x: 6 + fixture.object.width, y: 6 };
+        s.playerNextTile = null;
+        const start = s.time.now;
+        s.updateSearcherDetection(searcher, start);
+        if (fixture.blocksSight) {
+          s.updateSearcherDetection(searcher, start + 1000);
+          if (searcher.warningIcon.visible || searcher.visibleSince !== null)
+            throw new Error(`${searcher.role}/${fixture.type}: hidden player produced a warning`);
+          searcher.facing = { x: -1, y: 0 };
+          s.playerNextTile = { x: 3, y: 6 };
+          s.updateSearcherDetection(searcher, start + 1100);
+          if (!searcher.warningIcon.visible) throw new Error("visible reserved player tile must warn");
+          s.playerNextTile = null;
+          searcher.facing = { x: 1, y: 0 };
+          searcher.nextTile = { x: s.playerTile.x + 1, y: 6 };
+          searcher.visibleSince = null;
+          s.updateSearcherDetection(searcher, start + 1200);
+          if (!searcher.warningIcon.visible) throw new Error("visible reserved observer tile must warn");
+          searcher.nextTile = null;
+          s.playerTile = { x: 3, y: 6 };
+          searcher.facing = { x: -1, y: 0 };
+        }
+        searcher.visibleSince = null;
+        const before = caught.length;
+        for (const [elapsed, color] of [[0, "#ffe066"], [299, "#ffe066"], [300, "#ff4d4f"], [599, "#ff4d4f"]]) {
+          s.updateSearcherDetection(searcher, start + 2000 + elapsed);
+          if (!searcher.warningIcon.visible || searcher.warningIcon.style.color !== color || caught.length !== before)
+            throw new Error(`${searcher.role}/${fixture.type}: invalid warning timing at ${elapsed}`);
+        }
+        s.updateSearcherDetection(searcher, start + 2600);
+        if (caught.length !== before + 1 || caught.at(-1).role !== searcher.role)
+          throw new Error(`${searcher.role}/${fixture.type}: detection failed after clearing cover`);
+        checked++;
+      }
+    }
+    s.finishGame = finish;
+    return checked;
+  }, isolatedFurnitureCases());
+  expect(count).toBe(15 * 9);
+});
+
+test("furniture cover in the rendered scene hides or reveals the player according to design", async ({ page }, testInfo) => {
+  for (const fixture of isolatedFurnitureCases()) {
+    await page.evaluate(fixture => {
+      const s = window.__game.scene.getScene("graybox");
+      s.tweens.killAll();
+      for (const child of s.children.list) child.setVisible(false);
+      s.add.rectangle(0, 0, 320, 240, 0x82918c).setOrigin(0).setDepth(0);
+      const floor = s.grid[8][14];
+      s.grid = Array.from({ length: 16 }, () => Array(20).fill(floor));
+      s.roomObjects = [fixture.object];
+      s.drawRoomObjects();
+      for (const p of s.neutralPeople) p.sprite.setVisible(false);
+      s.neutralPeople = [];
+      const observer = s.searchers[0];
+      s.searchers = [observer];
+      observer.tile = { x: 5, y: 6 };
+      observer.nextTile = null;
+      observer.nextMoveAt = Infinity;
+      observer.visibleSince = null;
+      observer.facing = { x: 1, y: 0 };
+      observer.sprite.setPosition(5.5 * 16, 6.5 * 16).setVisible(true);
+      s.updateSearcherFacingMarker(observer);
+      s.playerTile = { x: 6 + fixture.object.width, y: 6 };
+      s.playerNextTile = null;
+      s.player.setPosition((s.playerTile.x + 0.5) * 16, 6.5 * 16).setVisible(true);
+      s.cameras.main.stopFollow();
+      s.cameras.main.setBounds(0, 0, 320, 240).setScroll(0, 0);
+      s.hudPanel.setVisible(true); s.hudLabel.setVisible(true); s.timerText.setVisible(true);
+    }, fixture);
+    if (fixture.blocksSight) {
+      await page.clock.runFor(800);
+      expect((await sceneState(page)).result, fixture.type).toBeNull();
+      expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.visible)).toBe(false);
+      await page.screenshot({ path: testInfo.outputPath(`${fixture.type}-hidden.png`) });
+      await page.evaluate(() => {
+        const s = window.__game.scene.getScene("graybox");
+        s.playerTile = { x: 3, y: 6 };
+        s.player.setPosition(3.5 * 16, 6.5 * 16);
+        s.searchers[0].facing = { x: -1, y: 0 };
+        s.updateSearcherFacingMarker(s.searchers[0]);
+      });
+    }
+    await page.clock.runFor(100);
+    expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.style.color)).toBe("#ffe066");
+    await page.clock.runFor(300);
+    expect((await sceneState(page)).result).toBeNull();
+    expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.style.color)).toBe("#ff4d4f");
+    await page.clock.runFor(300);
+    expect((await sceneState(page)).result, fixture.type).toBe("caught");
+    await confirm(page, "Enter");
+  }
+});
+
+test("actual-map table cover blocks detection and clearing it restores warning and capture", async ({ page }, testInfo) => {
+  const layout = furnitureSightLayout();
+  const scenario = layout.cases.find(c => c.type === "table" && c.object.x === 5 && c.object.y === 7);
+  expect(scenario).toBeTruthy();
+  await testInfo.attach("furniture-map-sightlines", { body: JSON.stringify(layout.summary, null, 2), contentType: "application/json" });
+  await page.evaluate(scenario => {
+    const s = window.__game.scene.getScene("graybox");
+    s.tweens.killAll();
+    for (const p of [...s.neutralPeople, ...s.searchers]) p.sprite.setVisible(false);
+    s.neutralPeople = [];
+    const observer = s.searchers.find(p => p.role === "PO · WCL");
+    s.searchers = [observer];
+    observer.tile = scenario.observerTile;
+    observer.nextTile = null; observer.nextMoveAt = Infinity; observer.visibleSince = null;
+    observer.facing = scenario.facing;
+    observer.sprite.setPosition((observer.tile.x + 0.5) * 16, (observer.tile.y + 0.5) * 16).setVisible(true);
+    s.updateSearcherFacingMarker(observer);
+    s.playerTile = scenario.playerTile; s.playerNextTile = null;
+    s.player.setPosition((s.playerTile.x + 0.5) * 16, (s.playerTile.y + 0.5) * 16);
+    s.cameras.main.stopFollow(); s.cameras.main.centerOn(7 * 16, 8 * 16);
+  }, scenario);
+  await page.clock.runFor(1000);
+  expect((await sceneState(page)).result).toBeNull();
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.visible)).toBe(false);
+  await page.screenshot({ path: testInfo.outputPath("actual-table-hidden.png"), fullPage: true });
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.playerTile = { x: 4, y: 5 };
+    s.player.setPosition(4.5 * 16, 5.5 * 16);
+    s.searchers[0].facing = { x: 0, y: -1 };
+    s.updateSearcherFacingMarker(s.searchers[0]);
+  });
+  await page.clock.runFor(400);
+  expect((await sceneState(page)).result).toBeNull();
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.style.color)).toBe("#ff4d4f");
+  await page.screenshot({ path: testInfo.outputPath("actual-table-revealed.png"), fullPage: true });
+  await page.clock.runFor(300);
+  expect((await sceneState(page)).result).toBe("caught");
 });
