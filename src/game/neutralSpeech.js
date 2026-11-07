@@ -1,5 +1,4 @@
-export const SPEECH_DURATION_MS = 2500;
-export const SPEECH_GLOBAL_PAUSE_MS = 4000;
+export const SPEECH_DURATION_MS = 1500;
 export const SPEECH_PERSON_COOLDOWN_MS = 15_000;
 export const NEUTRAL_SAYINGS = [
   "Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.",
@@ -20,30 +19,26 @@ export const NEUTRAL_SAYINGS = [
 ];
 
 export function createNeutralSpeech(now) {
-  return { active: null, readyAt: now + 1500, personReadyAt: {} };
+  return { active: [], readyAt: now + 1500, personReadyAt: {} };
 }
 
 export function updateNeutralSpeech(state, now, people, playerTile, eligible = () => true, random = Math.random) {
-  if (state.active) {
-    if (now < state.active.expiresAt) return;
-    state.active = null;
-    state.readyAt = now + SPEECH_GLOBAL_PAUSE_MS;
-    return;
-  }
+  state.active = state.active.filter(bubble => now < bubble.expiresAt);
   if (now < state.readyAt) return;
   const candidates = people.map((person, index) => ({
     person, index, distance: Math.abs(person.tile.x - playerTile.x) + Math.abs(person.tile.y - playerTile.y),
-  })).filter(({ person, index, distance }) => distance <= 2 && now >= (state.personReadyAt[index] ?? 0) && eligible(person));
+  })).filter(({ person, index, distance }) => distance <= 2 && now >= (state.personReadyAt[index] ?? 0)
+    && !state.active.some(bubble => bubble.personIndex === index) && eligible(person));
   candidates.sort((a, b) => a.distance - b.distance || a.index - b.index);
-  if (!candidates.length) return;
-  const { index } = candidates[0];
-  const sayingIndex = (index + (random() < 0.5 ? 0 : 7)) % NEUTRAL_SAYINGS.length;
-  state.active = { personIndex: index, text: NEUTRAL_SAYINGS[sayingIndex], expiresAt: now + SPEECH_DURATION_MS };
-  state.personReadyAt[index] = now + SPEECH_PERSON_COOLDOWN_MS;
+  for (const { index } of candidates) {
+    const sayingIndex = (index + (random() < 0.5 ? 0 : 7)) % NEUTRAL_SAYINGS.length;
+    state.active.push({ personIndex: index, text: NEUTRAL_SAYINGS[sayingIndex], expiresAt: now + SPEECH_DURATION_MS });
+    state.personReadyAt[index] = now + SPEECH_PERSON_COOLDOWN_MS;
+  }
 }
 
 export function shiftNeutralSpeechTime(state, pausedFor) {
   state.readyAt += pausedFor;
-  if (state.active) state.active.expiresAt += pausedFor;
+  for (const bubble of state.active) bubble.expiresAt += pausedFor;
   for (const index of Object.keys(state.personReadyAt)) state.personReadyAt[index] += pausedFor;
 }

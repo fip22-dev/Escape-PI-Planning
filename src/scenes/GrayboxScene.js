@@ -531,7 +531,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   pauseGame() {
-    this.speechBubble.setVisible(false);
+    this.hideSpeechBubbles();
     this.isPaused = true;
     this.pauseChoiceYes = false;
     this.pauseStartedAt = this.time.now;
@@ -588,11 +588,14 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   createGameHud() {
-    this.speechBubble = this.add.text(0, 0, "", {
-      fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#20292a",
-      backgroundColor: "#f5f0dc", padding: { x: 6, y: 5 },
-      wordWrap: { width: 208 }, lineSpacing: 2,
-    }).setScrollFactor(0).setDepth(90).setVisible(false);
+    this.speechBubbles = this.neutralPeople.map(() => ({
+      tail: this.add.graphics().setScrollFactor(0).setDepth(89).setVisible(false),
+      shape: this.add.graphics().setScrollFactor(0).setDepth(90).setVisible(false),
+      text: this.add.text(0, 0, "", {
+        fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#20292a",
+        padding: { x: 6, y: 5 }, wordWrap: { width: 124 }, lineSpacing: 2,
+      }).setScrollFactor(0).setDepth(91).setVisible(false),
+    }));
     this.dialogPanel = this.add.rectangle(160, 120, 288, 152, 0x172326, 0.98)
       .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(120).setVisible(false);
     this.dialogHeading = this.add.text(28, 57, "", {
@@ -691,8 +694,8 @@ export class GrayboxScene extends Phaser.Scene {
   finishGame(result, caughtRole = null) {
     if (this.gameResult) return;
     this.gameResult = result;
-    this.neutralSpeech.active = null;
-    this.speechBubble.setVisible(false);
+    this.neutralSpeech.active = [];
+    this.hideSpeechBubbles();
     this.caughtRole = caughtRole;
     this.isMoving = false;
     this.playerNextTile = null;
@@ -789,18 +792,52 @@ export class GrayboxScene extends Phaser.Scene {
           && this.playerTile.y >= bounds.y && this.playerTile.y < bounds.y + bounds.height;
       return sameArea && camera.worldView.contains(person.sprite.x, person.sprite.y);
     });
-    const active = this.neutralSpeech.active;
-    if (!active) {
-      this.speechBubble.setVisible(false);
-      return;
+    this.hideSpeechBubbles();
+    const placed = [];
+    for (const active of this.neutralSpeech.active) {
+      const person = this.neutralPeople[active.personIndex];
+      if (!camera.worldView.contains(person.sprite.x, person.sprite.y)) continue;
+      const { text, shape, tail } = this.speechBubbles[active.personIndex];
+      if (text.text !== active.text) text.setText(active.text);
+      const tipX = person.sprite.x - camera.scrollX;
+      const tipY = person.sprite.y - camera.scrollY - 10;
+      const width = text.width;
+      const height = text.height;
+      const baseX = Math.max(8, Math.min(312 - width, tipX - width / 2));
+      const baseY = Math.max(42, Math.min(222 - height, tipY - height - 8));
+      let position = { x: baseX, y: baseY };
+      // Nearby speakers get separate boxes where the viewport permits it.
+      search: for (const x of [baseX, 8, 312 - width]) {
+        for (let y = baseY; y >= 42; y -= height + 6) {
+          if (placed.every(box => x + width + 4 <= box.x || x >= box.x + box.width + 4
+            || y + height + 4 <= box.y || y >= box.y + box.height + 4)) {
+            position = { x, y };
+            break search;
+          }
+        }
+      }
+      const { x, y } = position;
+      placed.push({ x, y, width, height });
+      const tailX = Math.max(x + 10, Math.min(x + width - 10, tipX));
+      const tailTipX = Math.max(tailX - 8, Math.min(tailX + 8, tipX));
+      const tailTipY = Math.min(tipY, y + height + 10);
+      shape.clear().fillStyle(0xf5f0dc, 1).lineStyle(1, 0x394744, 1)
+        .fillRoundedRect(x, y, width, height, 6).strokeRoundedRect(x, y, width, height, 6).setVisible(true);
+      // Tails sit behind every bubble body so they cannot cross another text.
+      tail.clear().fillStyle(0xf5f0dc, 1).lineStyle(1, 0x394744, 1)
+        .fillTriangle(tailX - 4, y + height - 1, tailX + 4, y + height - 1, tailTipX, tailTipY);
+      tail.beginPath().moveTo(tailX - 4, y + height).lineTo(tailTipX, tailTipY)
+        .lineTo(tailX + 4, y + height).strokePath().setVisible(true);
+      text.setPosition(x, y).setVisible(true);
     }
-    const person = this.neutralPeople[active.personIndex];
-    if (this.speechBubble.text !== active.text) this.speechBubble.setText(active.text);
-    const x = Math.max(8, Math.min(312 - this.speechBubble.width,
-      person.sprite.x - camera.scrollX - this.speechBubble.width / 2));
-    const y = Math.max(42, Math.min(232 - this.speechBubble.height,
-      person.sprite.y - camera.scrollY - this.speechBubble.height - 14));
-    this.speechBubble.setPosition(x, y).setVisible(true);
+  }
+
+  hideSpeechBubbles() {
+    for (const bubble of this.speechBubbles) {
+      bubble.tail.setVisible(false);
+      bubble.shape.setVisible(false);
+      bubble.text.setVisible(false);
+    }
   }
 
   readDirection() {

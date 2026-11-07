@@ -191,13 +191,20 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
     s.neutralSpeech.readyAt = s.time.now;
     s.escapeStartedAt = s.time.now - 10_000;
     person.nextMoveAt = s.time.now + 50;
+    const other = s.neutralPeople[30];
+    other.tile = { x: person.tile.x, y: person.tile.y - 1 };
+    other.sprite.setPosition((other.tile.x + 0.5) * 16, (other.tile.y + 0.5) * 16);
+    other.nextMoveAt = Infinity;
   });
   await page.clock.runFor(250);
   const readSpeech = () => page.evaluate(() => {
     const s = window.__game.scene.getScene("graybox");
-    const bounds = s.speechBubble.getBounds();
+    const bubble = s.speechBubbles[28];
+    const bounds = bubble.text.getBounds();
     return {
-      active: s.neutralSpeech.active, visible: s.speechBubble.visible, result: s.gameResult,
+      active: s.neutralSpeech.active, visible: bubble.text.visible && bubble.shape.visible, result: s.gameResult,
+      visibleCount: s.speechBubbles.filter(b => b.text.visible && b.shape.visible).length,
+      elapsed: s.time.now - s.escapeStartedAt,
       timer: s.timerText.text, player: s.playerTile,
       speakerX: s.neutralPeople[28].sprite.x, speakerY: s.neutralPeople[28].sprite.y,
       fits: bounds.left >= 8 && bounds.top >= 42 && bounds.right <= 312 && bounds.bottom <= 232,
@@ -210,13 +217,14 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
     return { time: s.time.now, state: s.neutralSpeech, tile: p.tile, bounds: p.bounds,
       player: s.playerTile, sprite: [p.sprite.x, p.sprite.y], camera: s.cameras.main.worldView,
       result: s.gameResult, paused: s.isPaused };
-  }))).not.toBeNull();
-  expect(first.active.personIndex).toBe(28);
+  }))).toHaveLength(2);
+  expect(first.active.map(b => b.personIndex)).toEqual(expect.arrayContaining([28, 30]));
+  expect(first.visibleCount).toBe(2);
   expect(first.visible).toBe(true);
   expect(first.fits).toBe(true);
-  await page.clock.runFor(1000);
+  await page.clock.runFor(400);
   const moving = await readSpeech();
-  expect(moving.timer).not.toBe(first.timer);
+  expect(moving.elapsed).toBeGreaterThan(first.elapsed);
   expect([moving.speakerX, moving.speakerY]).not.toEqual([first.speakerX, first.speakerY]);
   await page.keyboard.down("ArrowRight");
   await page.clock.runFor(250);
@@ -230,7 +238,7 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
   await page.clock.runFor(100);
   expect((await readSpeech()).visible).toBe(true);
   await page.clock.runFor(2000);
-  expect((await readSpeech()).active).toBeNull();
+  expect((await readSpeech()).active).toEqual([]);
   await page.evaluate(() => window.__game.scene.getScene("graybox").finishGame("caught", "PM"));
   expect((await readSpeech()).visible).toBe(false);
   await page.clock.runFor(250);
@@ -238,5 +246,5 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
   expect(await page.evaluate(() => {
     const state = window.__game.scene.getScene("graybox").neutralSpeech;
     return { active: state.active, cooldowns: state.personReadyAt };
-  })).toEqual({ active: null, cooldowns: {} });
+  })).toEqual({ active: [], cooldowns: {} });
 });
