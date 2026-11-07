@@ -71,9 +71,9 @@ Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des P
 
 **Erledigt:** Alle 15 Suchenden patrouillieren auf den festgelegten Routen. Jede prüft eine kardinale Sichtlinie bis fünf Kacheln; Wände, solide sichtblockierende Objekte und neutrale Personen unterbrechen die Sicht. Bei Sichtkontakt erscheint ein gelbes Ausrufezeichen, das nach 300 ms auf Rot wechselt; bleibt die Spielfigur insgesamt 600 ms sichtbar, zeigt die Meldung die entdeckende Rolle. Bei wiederholter Blockade berechnet jede Suchfigur einen freien Umweg; neutrale Personen tun dasselbe innerhalb ihres Bereichs. Anschliessend setzen sie die Route am nächsten erreichbaren Routenfeld fort. **Prüfung:** 23 automatisierte Tests prüfen alle Suchendenrouten, PO-Raumstarts und -Rückkehr, Warnstufen und Umwege um blockierte Felder. Der Nutzer bestätigte den Browser-Spieltest der Mehrrollenansicht, der PO-Rückkehr, der Warnstufe und des Ausweichens bei Blockaden.
 
-**Erledigt auf `feature/caught-dialogs`:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
+**Erledigt und über PR #10 in `main` integriert:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
 
-**Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln, neutrale Sprechblasen sowie finale Pixelgrafik und Audio.
+**Teilweise erledigt:** Neutrale Sprechblasen sind auf `feature/neutral-speech-bubbles` implementiert und automatisiert im Browser geprüft; manuelle Abnahme steht aus. **Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln sowie finale Pixelgrafik und Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -186,14 +186,14 @@ Die Bewegung ist bewusst langsam: 650 ms pro Kachelschritt und anschliessend 700
 
 Die ursprünglichen Bewegungsrouten wurden im Browser visuell abgenommen. Der RTE-Pilot ergänzt Route, Sichtlinie und dynamische Sichtblockierung durch neutrale Personen. Bei wiederholter Blockade finden Suchende und neutrale Personen einen Umweg innerhalb ihres Bereichs. Der Nutzer bestätigte die manuelle Prüfung der Umleitung bei gegenseitigem Blockieren; die gezielte Prüfung der Möbel-Sichtblocker steht noch aus.
 
-## Neutrale Sprechblasen – Entwurf
+## Neutrale Sprechblasen – Feature-Implementierung
 
 Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die Spielfigur in ihre Nähe kommt.
 
-- Eine Sprechblase bleibt ungefähr 2–3 Sekunden sichtbar.
-- Zwischen Sprechblasen gilt eine kurze globale Pause.
+- Eine Sprechblase bleibt 2,5 Sekunden sichtbar; die Annäherungsdistanz beträgt höchstens zwei Kacheln im gleichen Raum beziehungsweise Gangbereich.
+- Nur eine Blase gleichzeitig; nach ihrem Ende 4 Sekunden globale Pause und mindestens 15 Sekunden zwischen Auslösungen derselben Person.
 - Sprechblasen sind nicht modal: Sie halten den Timer nicht an und blockieren keine Bewegung.
-- Jede neutrale Figur erhält ein oder zwei Zeilen aus dem Sprüche-Pool.
+- Jede neutrale Figur erhält zwei feste Sprüche aus dem folgenden Pool; bei Auslösung wird einer zufällig gewählt. Die Blase folgt der Figur innerhalb des sichtbaren Spielfelds, ohne die Zeitanzeige zu verdecken. Während der Pause ist sie ausgeblendet und ihre Laufzeit samt Cooldowns eingefroren. Bei Fang endet sie; Neustart setzt Auswahlzustand und Cooldowns zurück. Implementierung auf `feature/neutral-speech-bubbles`; Prüfung und manuelle Abnahme siehe Entwicklungsplan.
 
 1. „Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.“
 2. „Juhu, endlich Stories schätzen! Ich wollte schon immer Fibonacci-Karten nach Gefühl werfen.“

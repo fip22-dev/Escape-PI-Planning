@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { advanceCaughtDialog, createCaughtDialog } from "../game/caughtDialog.js";
+import { createNeutralSpeech, updateNeutralSpeech, shiftNeutralSpeechTime } from "../game/neutralSpeech.js";
 import { bindTouchControls } from "../touchControls.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
@@ -54,6 +55,7 @@ export class GrayboxScene extends Phaser.Scene {
   create() {
     this.seenDialogRoles ??= new Set();
     this.caughtDialog = null;
+    this.neutralSpeech = createNeutralSpeech(this.time.now);
     const { grid, rooms, start } = createFloorPlan();
     this.grid = grid;
     this.rooms = rooms;
@@ -275,6 +277,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.updateNeutralPeople(time);
     this.updateSearchers(time);
     if (this.gameResult) return;
+    this.updateSpeechBubble(time);
     if (this.isMoving || time - this.lastMoveAt < 105) return;
 
     const direction = this.readDirection();
@@ -528,6 +531,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   pauseGame() {
+    this.speechBubble.setVisible(false);
     this.isPaused = true;
     this.pauseChoiceYes = false;
     this.pauseStartedAt = this.time.now;
@@ -544,6 +548,7 @@ export class GrayboxScene extends Phaser.Scene {
   resumeGame() {
     if (!this.isPaused) return;
     const pausedFor = Math.max(0, this.time.now - this.pauseStartedAt);
+    shiftNeutralSpeechTime(this.neutralSpeech, pausedFor);
     if (this.escapeStartedAt !== null) this.escapeStartedAt += pausedFor;
     for (const person of [...this.neutralPeople, ...this.searchers]) {
       person.nextMoveAt += pausedFor;
@@ -583,6 +588,11 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   createGameHud() {
+    this.speechBubble = this.add.text(0, 0, "", {
+      fontFamily: "Arial, sans-serif", fontSize: "9px", color: "#20292a",
+      backgroundColor: "#f5f0dc", padding: { x: 6, y: 5 },
+      wordWrap: { width: 208 }, lineSpacing: 2,
+    }).setScrollFactor(0).setDepth(90).setVisible(false);
     this.dialogPanel = this.add.rectangle(160, 120, 288, 152, 0x172326, 0.98)
       .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(120).setVisible(false);
     this.dialogHeading = this.add.text(28, 57, "", {
@@ -681,6 +691,8 @@ export class GrayboxScene extends Phaser.Scene {
   finishGame(result, caughtRole = null) {
     if (this.gameResult) return;
     this.gameResult = result;
+    this.neutralSpeech.active = null;
+    this.speechBubble.setVisible(false);
     this.caughtRole = caughtRole;
     this.isMoving = false;
     this.playerNextTile = null;
@@ -765,6 +777,30 @@ export class GrayboxScene extends Phaser.Scene {
         },
       });
     }
+  }
+
+  updateSpeechBubble(time) {
+    const camera = this.cameras.main;
+    updateNeutralSpeech(this.neutralSpeech, time, this.neutralPeople, this.playerTile, person => {
+      const bounds = person.bounds;
+      const sameArea = bounds.area === "hall"
+        ? [TILE_TYPES.HALL, TILE_TYPES.DOOR].includes(this.grid[this.playerTile.y]?.[this.playerTile.x])
+        : this.playerTile.x >= bounds.x && this.playerTile.x < bounds.x + bounds.width
+          && this.playerTile.y >= bounds.y && this.playerTile.y < bounds.y + bounds.height;
+      return sameArea && camera.worldView.contains(person.sprite.x, person.sprite.y);
+    });
+    const active = this.neutralSpeech.active;
+    if (!active) {
+      this.speechBubble.setVisible(false);
+      return;
+    }
+    const person = this.neutralPeople[active.personIndex];
+    if (this.speechBubble.text !== active.text) this.speechBubble.setText(active.text);
+    const x = Math.max(8, Math.min(312 - this.speechBubble.width,
+      person.sprite.x - camera.scrollX - this.speechBubble.width / 2));
+    const y = Math.max(42, Math.min(232 - this.speechBubble.height,
+      person.sprite.y - camera.scrollY - this.speechBubble.height - 14));
+    this.speechBubble.setPosition(x, y).setVisible(true);
   }
 
   readDirection() {

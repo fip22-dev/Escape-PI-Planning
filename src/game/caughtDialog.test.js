@@ -7,6 +7,7 @@ import * as objects from "./objects.js";
 import * as loop from "./gameLoop.js";
 import * as detection from "./searcherDetection.js";
 import * as movement from "./neutralMovement.js";
+import * as speech from "./neutralSpeech.js";
 
 test("all 15 searchers have complete first dialogues and skippable family repeats", () => {
   const plan = map.createFloorPlan();
@@ -51,7 +52,7 @@ function createScene() {
   }
   const controls = { clear() {}, destroy() {}, readDirection: () => null };
   const Phaser = { Scene: class {}, Input: { Keyboard: { KeyCodes: {} } }, Scenes: { Events: { SHUTDOWN: "shutdown" } } };
-  const bindings = { Phaser, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement,
+  const bindings = { Phaser, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech,
     bindTouchControls: () => controls, window: { addEventListener() {}, removeEventListener() {} } };
   const source = readFileSync(new URL("../scenes/GrayboxScene.js", import.meta.url), "utf8")
     .replace(/import[\s\S]*?from "[^"]+";\s*/g, "").replace("export class", "class");

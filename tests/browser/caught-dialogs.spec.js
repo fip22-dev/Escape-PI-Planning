@@ -28,9 +28,9 @@ test.beforeEach(async ({ page }) => {
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   page.__errors = errors;
+  await page.clock.install();
   await page.goto("/");
   await page.waitForFunction(() => window.__generation === 1);
-  await page.clock.install();
 });
 
 test.afterEach(async ({ page }) => {
@@ -178,4 +178,65 @@ test("pause, touch restart, win and timeout still work across repeated scene res
   await confirm(page, "Enter");
   expect((await sceneState(page)).generation).toBe(6);
   expect((await sceneState(page)).timer).toBe("03:00");
+});
+
+test("neutral speech is non-modal, follows the speaker, pauses and resets with the attempt", async ({ page }, testInfo) => {
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    const person = s.neutralPeople[28];
+    s.playerTile = { x: person.tile.x - 1, y: person.tile.y };
+    s.player.setPosition((s.playerTile.x + 0.5) * 16, (s.playerTile.y + 0.5) * 16);
+    s.cameras.main.stopFollow();
+    s.cameras.main.centerOn(s.player.x, s.player.y);
+    s.neutralSpeech.readyAt = s.time.now;
+    s.escapeStartedAt = s.time.now - 10_000;
+    person.nextMoveAt = s.time.now + 50;
+  });
+  await page.clock.runFor(250);
+  const readSpeech = () => page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    const bounds = s.speechBubble.getBounds();
+    return {
+      active: s.neutralSpeech.active, visible: s.speechBubble.visible, result: s.gameResult,
+      timer: s.timerText.text, player: s.playerTile,
+      speakerX: s.neutralPeople[28].sprite.x, speakerY: s.neutralPeople[28].sprite.y,
+      fits: bounds.left >= 8 && bounds.top >= 42 && bounds.right <= 312 && bounds.bottom <= 232,
+    };
+  });
+  const first = await readSpeech();
+  expect(first.active, JSON.stringify(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    const p = s.neutralPeople[28];
+    return { time: s.time.now, state: s.neutralSpeech, tile: p.tile, bounds: p.bounds,
+      player: s.playerTile, sprite: [p.sprite.x, p.sprite.y], camera: s.cameras.main.worldView,
+      result: s.gameResult, paused: s.isPaused };
+  }))).not.toBeNull();
+  expect(first.active.personIndex).toBe(28);
+  expect(first.visible).toBe(true);
+  expect(first.fits).toBe(true);
+  await page.clock.runFor(1000);
+  const moving = await readSpeech();
+  expect(moving.timer).not.toBe(first.timer);
+  expect([moving.speakerX, moving.speakerY]).not.toEqual([first.speakerX, first.speakerY]);
+  await page.keyboard.down("ArrowRight");
+  await page.clock.runFor(250);
+  await page.keyboard.up("ArrowRight");
+  expect((await readSpeech()).player).not.toEqual(first.player);
+  await page.screenshot({ path: testInfo.outputPath("neutral-speech.png"), fullPage: true });
+  await page.keyboard.press("Escape");
+  await page.clock.runFor(1000);
+  expect((await readSpeech()).visible).toBe(false);
+  await page.keyboard.press("Escape");
+  await page.clock.runFor(100);
+  expect((await readSpeech()).visible).toBe(true);
+  await page.clock.runFor(2000);
+  expect((await readSpeech()).active).toBeNull();
+  await page.evaluate(() => window.__game.scene.getScene("graybox").finishGame("caught", "PM"));
+  expect((await readSpeech()).visible).toBe(false);
+  await page.clock.runFor(250);
+  await confirm(page, "Enter");
+  expect(await page.evaluate(() => {
+    const state = window.__game.scene.getScene("graybox").neutralSpeech;
+    return { active: state.active, cooldowns: state.personReadyAt };
+  })).toEqual({ active: null, cooldowns: {} });
 });
