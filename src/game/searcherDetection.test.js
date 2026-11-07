@@ -151,3 +151,16 @@ test("searcher warning turns red before the earlier catch threshold", () => {
   assert.equal(searcherDetectionPhase(599), "red");
   assert.equal(searcherDetectionPhase(600), "caught");
 });
+
+test("opening RTE patrol stays clear of the waiting product manager and second scrum master", () => {
+  const { grid, rooms } = createFloorPlan();
+  const searchers = createSearcherPatrols({ grid, rooms, objects: createRoomObjects(rooms) });
+  const rte = searchers.find(s => s.role === "RTE");
+  const waiting = [searchers.find(s => s.role === "PM"), searchers.filter(s => s.role === "Scrum Master")[1]];
+  for (const tile of [rte.start, ...rte.route.slice(0, 12)]) {
+    for (const person of waiting) {
+      assert.ok(Math.abs(tile.x - person.start.x) + Math.abs(tile.y - person.start.y) >= 6,
+        `${person.role} leaves room along the opening RTE patrol`);
+    }
+  }
+});

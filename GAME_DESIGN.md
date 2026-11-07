@@ -71,9 +71,9 @@ Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des P
 
 **Erledigt:** Alle 15 Suchenden patrouillieren auf den festgelegten Routen. Jede prüft eine kardinale Sichtlinie bis fünf Kacheln; Wände, solide sichtblockierende Objekte und neutrale Personen unterbrechen die Sicht. Bei Sichtkontakt erscheint ein gelbes Ausrufezeichen, das nach 300 ms auf Rot wechselt; bleibt die Spielfigur insgesamt 600 ms sichtbar, zeigt die Meldung die entdeckende Rolle. Bei wiederholter Blockade berechnet jede Suchfigur einen freien Umweg; neutrale Personen tun dasselbe innerhalb ihres Bereichs. Anschliessend setzen sie die Route am nächsten erreichbaren Routenfeld fort. **Prüfung:** 23 automatisierte Tests prüfen alle Suchendenrouten, PO-Raumstarts und -Rückkehr, Warnstufen und Umwege um blockierte Felder. Der Nutzer bestätigte den Browser-Spieltest der Mehrrollenansicht, der PO-Rückkehr, der Warnstufe und des Ausweichens bei Blockaden.
 
-**Erledigt auf `feature/caught-dialogs`:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
+**Erledigt und über PR #10 in `main` integriert:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
 
-**Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln, neutrale Sprechblasen sowie finale Pixelgrafik und Audio.
+**Erledigt:** Neutrale Sprechblasen sind implementiert und automatisiert im Browser geprüft; der Nutzer hat den bisherigen Stand bestätigt und die Verlängerung auf 1,7 Sekunden beauftragt. Die neue Dauer ist automatisiert geprüft. **Noch offen:** Designentscheidung über nutzbare Deckungspositionen weiterer Möbel sowie finale Pixelgrafik und Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -99,7 +99,7 @@ Die Koordinaten sind nullbasiert. Teamstopps liegen auf der Gangseite direkt vor
 | RTE | (34, 38) | Q3 (34, 32) → Westgang (14, 32) → Q1 (34, 8) → Westgang (14, 8) → Ausgang (34, 2) → zurück | 1,5 s | 2 s an Kreuzungen, 4 s am Ausgang |
 | P&T | (14, 8) | Windows Client (12, 8) → Enterprise Mobile Services (36, 20) → Communication & Meetingroom (36, 32) → zurück | 1,5 s | 5 s |
 | BO | (14, 9) | Windows Client (12, 9) → Windows Software (36, 8) → Workplace Device (12, 18) → Enterprise Mobile Services (36, 20) → Mac Workplace (12, 29) → M365 (12, 37) → Communication & Meetingroom (36, 32) → zurück | 6 s | 4 s |
-| PM | (34, 33) | Communication & Meetingroom (36, 32) → M365 (12, 37) → Mac Workplace (12, 29) → Enterprise Mobile Services (36, 20) → Workplace Device (12, 18) → Windows Software (36, 8) → Windows Client (12, 8) → zurück | 12 s | 4 s |
+| PM | (28, 20) | Communication & Meetingroom (36, 32) → M365 (12, 37) → Mac Workplace (12, 29) → Enterprise Mobile Services (36, 20) → Workplace Device (12, 18) → Windows Software (36, 8) → Windows Client (12, 8) → zurück | 12 s | 4 s |
 | PO · WCL | (10, 8), innen | Eigene Tür (12, 8) → Q1 West (14, 8) → Q1 Mitte-West (20, 8) → Q1 Mitte (24, 8) → zurück durch eigene Tür in Windows Client | 18 s | 4 s an Stopps, 2,5 s im Raum |
 | PO · WSW | (38, 8), innen | Eigene Tür (36, 8) → Hauptgang (34, 8) → Q1 Mitte-Ost (28, 8) → Q1 Mitte (24, 8) → zurück durch eigene Tür in Windows Software | 20,5 s | 4 s an Stopps, 2,5 s im Raum |
 | PO · WDPS | (10, 18), innen | Eigene Tür (12, 18) → Westgang (14, 18) → Q2 West (18, 20) → Q2 Mitte (24, 20) → zurück durch eigene Tür in Workplace Device | 23 s | 4 s an Stopps, 2,5 s im Raum |
@@ -108,7 +108,7 @@ Die Koordinaten sind nullbasiert. Teamstopps liegen auf der Gangseite direkt vor
 | PO · M365 | (10, 37), innen | Eigene Tür (12, 37) → Westgang (14, 37) → (14, 35) → Q3-Westzugang (14, 33) → zurück durch eigene Tür in M365 | 30,5 s | 4 s an Stopps, 2,5 s im Raum |
 | PO · CMS | (38, 32), innen | Eigene Tür (36, 32) → Hauptgang (34, 32) → Q3 Ost (28, 32) → Q3 Mitte (24, 32) → zurück durch eigene Tür in Communication & Meetingroom Solutions | 33 s | 4 s an Stopps, 2,5 s im Raum |
 | Scrum Master 1 | (14, 30) | Mac Workplace → Q3 → Communication & Meetingroom → M365 → Q2 → zurück | 9 s | 3 s |
-| Scrum Master 2 | (34, 30) | Q3 → Communication & Meetingroom → M365 → Q2 → Mac Workplace → zurück | 11,5 s | 3 s |
+| Scrum Master 2 | (28, 8) | Q3 → Communication & Meetingroom → M365 → Q2 → Mac Workplace → zurück | 11,5 s | 3 s |
 | Scrum Master 3 | (14, 37) | Communication & Meetingroom → M365 → Q2 → Mac Workplace → Q3 → zurück | 14 s | 3 s |
 | Scrum Master 4 | (34, 20) | M365 → Q2 → Mac Workplace → Q3 → Communication & Meetingroom → zurück | 16,5 s | 3 s |
 
@@ -152,7 +152,7 @@ Verbindliche Regeln:
 | Abfalleimer | Nein | Nein |
 | Laptop, Unterlagen und Becher auf Tischen | Keine zusätzliche Kollision | Keine zusätzliche Sichtwirkung |
 
-Die Bewegungskollision und Sichtprüfung der Suchenden sind implementiert. Pflanzen, Tische, Sideboards, Drucker und Kaffeemaschinen blockieren Bewegung und Sicht. Abfalleimer blockieren Bewegung, nicht Sicht. Stühle, Leinwände, Whiteboards und Tischdetails blockieren weder Bewegung noch Sicht. Die Wirkung der Blocker wurde im Browser noch nicht vollständig manuell geprüft.
+Die Bewegungskollision und Sichtprüfung der Suchenden sind implementiert. Pflanzen, Tische, Sideboards, Drucker und Kaffeemaschinen blockieren Bewegung und Sicht. Abfalleimer blockieren Bewegung, nicht Sicht. Stühle, Leinwände, Whiteboards und Tischdetails blockieren weder Bewegung noch Sicht. Die Sichtregeln aller neun Möbeltypen wurden gezielt automatisiert im Browser geprüft; Tischdeckung auf der Originalkarte und das Hervortreten sind mit Screenshots kontrolliert. Pflanzen, Sideboards und Drucker besitzen im aktuellen Layout keine begehbare Sichtachse innerhalb von fünf Kacheln; Kaffeemaschinen bieten nur Achsen ohne zulässigen Suchenden-Standort. Der Nutzer akzeptiert die aktuelle Platzierung vorerst; zusätzliche nutzbare Deckungspositionen sind zurückgestellt. Methodik und Ergebnisse: [FURNITURE_SIGHT_TEST.md](FURNITURE_SIGHT_TEST.md).
 
 Aktuelle, im Browser visuell abgenommene Platzierung auf `feature/room-objects`:
 
@@ -175,7 +175,7 @@ Insgesamt **37 neutrale Personen**, über die ganze Karte verteilt:
 - 5 im PI-Einführungsraum.
 - 6 in den Gängen und Quergängen.
 
-Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Wiederholte Blockaden führen zu einer dynamischen Umleitung innerhalb des Bereichs; anschliessend wird die ursprüngliche Route an einem erreichbaren Feld fortgesetzt. Automatisierte Routentests und visuelle Abnahme der bisherigen Bewegungsrouten sind erfolgreich; die Umleitung wurde im Browser durch den Nutzer bestätigt; die Möbel-Sichtblocker bleiben gezielt zu prüfen. Die aktuelle und reservierte Position jeder neutralen Person blockiert dynamisch die Sichtlinie aller Suchenden.
+Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Wiederholte Blockaden führen zu einer dynamischen Umleitung innerhalb des Bereichs; anschliessend wird die ursprüngliche Route an einem erreichbaren Feld fortgesetzt. Automatisierte Routentests und visuelle Abnahme der bisherigen Bewegungsrouten sind erfolgreich; die Umleitung wurde im Browser durch den Nutzer bestätigt; die Möbel-Sichtprüfung ist abgeschlossen; nutzbare Deckungspositionen weiterer Möbel bleiben offen. Die aktuelle und reservierte Position jeder neutralen Person blockiert dynamisch die Sichtlinie aller Suchenden.
 
 ### Laufwegplanung für den Bewegungsprototyp
 
@@ -184,16 +184,16 @@ Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Perso
 
 Die Bewegung ist bewusst langsam: 650 ms pro Kachelschritt und anschliessend 700 ms Pause. Routen reichen bis zu vier Kacheln von der Startposition, soweit Raum und Möbel das zulassen. Solide Möbel, andere Personen und die Spielfigur blockieren die nächsten Kacheln. Die Spielfigur prüft sowohl die aktuelle als auch die während einer Bewegung reservierte Personenkachel. Bei belegtem Ziel wartet die Person 500 ms und versucht denselben Routenschritt erneut.
 
-Die ursprünglichen Bewegungsrouten wurden im Browser visuell abgenommen. Der RTE-Pilot ergänzt Route, Sichtlinie und dynamische Sichtblockierung durch neutrale Personen. Bei wiederholter Blockade finden Suchende und neutrale Personen einen Umweg innerhalb ihres Bereichs. Der Nutzer bestätigte die manuelle Prüfung der Umleitung bei gegenseitigem Blockieren; die gezielte Prüfung der Möbel-Sichtblocker steht noch aus.
+Die ursprünglichen Bewegungsrouten wurden im Browser visuell abgenommen. Der RTE-Pilot ergänzt Route, Sichtlinie und dynamische Sichtblockierung durch neutrale Personen. Bei wiederholter Blockade finden Suchende und neutrale Personen einen Umweg innerhalb ihres Bereichs. Der Nutzer bestätigte die manuelle Prüfung der Umleitung bei gegenseitigem Blockieren; die Möbel-Sichtprüfung ist abgeschlossen; Platzierungsgrenzen stehen im Möbel-Prüfbericht.
 
-## Neutrale Sprechblasen – Entwurf
+## Neutrale Sprechblasen – Feature-Implementierung
 
 Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die Spielfigur in ihre Nähe kommt.
 
-- Eine Sprechblase bleibt ungefähr 2–3 Sekunden sichtbar.
-- Zwischen Sprechblasen gilt eine kurze globale Pause.
+- Eine Sprechblase bleibt 1,7 Sekunden sichtbar; die Annäherungsdistanz beträgt höchstens zwei Kacheln im gleichen Raum beziehungsweise Gangbereich.
+- In jedem Team-, Meeting- und Pausenraum spricht höchstens eine Person gleichzeitig; nach Ende ihrer Blase kann die nächste Person desselben Raums sprechen. In Gängen und PI-Einführung können mehrere Personen gleichzeitig sprechen. Jede erhält eine abgerundete Blase mit Rahmen und einer Spitze zur Person; nahe Textfelder werden nach Platzangebot versetzt. Keine globale Pause, mindestens 15 Sekunden zwischen Auslösungen derselben Person.
 - Sprechblasen sind nicht modal: Sie halten den Timer nicht an und blockieren keine Bewegung.
-- Jede neutrale Figur erhält ein oder zwei Zeilen aus dem Sprüche-Pool.
+- Jede neutrale Figur erhält zwei feste Sprüche aus dem folgenden Pool; bei Auslösung wird einer zufällig gewählt. Die Blase folgt der Figur innerhalb des sichtbaren Spielfelds, ohne die Zeitanzeige zu verdecken. Während der Pause ist sie ausgeblendet und ihre Laufzeit samt Cooldowns eingefroren. Bei Fang endet sie; Neustart setzt Auswahlzustand und Cooldowns zurück. Implementierung auf `feature/neutral-speech-bubbles`; Prüfung und manuelle Abnahme siehe Entwicklungsplan.
 
 1. „Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.“
 2. „Juhu, endlich Stories schätzen! Ich wollte schon immer Fibonacci-Karten nach Gefühl werfen.“
@@ -244,7 +244,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 
 ## Noch offene Designentscheidungen
 
-- Die tatsächliche Sichtwirkung der Möbel im Browser gezielt prüfen.
+- Vorerst zurückgestellt: Entscheiden, ob Pflanzen, Sideboards, Drucker und Kaffeemaschinen so umgestellt werden sollen, dass sie im aktuellen Sichtmodell tatsächlich Deckung gegen Suchende bieten. Die Sichtregeln sind geprüft; die vorhandene Platzierung schränkt ihren Nutzen ein.
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
 
 Die Umsetzungsreihenfolge und der Status der Arbeiten stehen in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
