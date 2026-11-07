@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { advanceCaughtDialog, createCaughtDialog } from "../game/caughtDialog.js";
 import { bindTouchControls } from "../touchControls.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
@@ -51,6 +52,8 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   create() {
+    this.seenDialogRoles ??= new Set();
+    this.caughtDialog = null;
     const { grid, rooms, start } = createFloorPlan();
     this.grid = grid;
     this.rooms = rooms;
@@ -195,7 +198,7 @@ export class GrayboxScene extends Phaser.Scene {
         });
       }
       person.routeIndex = person.patrol?.route.length > 1 ? 1 : 0;
-      person.nextMoveAt = 1800 + personIndex * 230;
+      person.nextMoveAt = this.time.now + 1800 + personIndex * 230;
     });
 
     const playerX = (start.x + 0.5) * TILE_SIZE;
@@ -222,12 +225,20 @@ export class GrayboxScene extends Phaser.Scene {
       rightD: Phaser.Input.Keyboard.KeyCodes.D,
     });
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.input.keyboard.resetKeys();
     this.touchControls = bindTouchControls({
       onPause: () => this.onEscapePressed(),
-      onRestart: () => this.scene.restart(),
+      onRestart: () => this.caughtDialog ? this.advanceDialog() : this.scene.restart(),
     });
     this.input.on("pointerdown", this.restartIfFinished, this);
     this.handleWindowEscape = (event) => {
+      if ((event.key === "Enter" || event.key === " " || event.code === "Space")
+        && (this.caughtDialog || this.isPaused || this.gameResult)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.onConfirmPressed(event);
+        return;
+      }
       if ((event.key !== "Escape" && event.keyCode !== Phaser.Input.Keyboard.KeyCodes.ESC) || event.repeat) return;
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -237,6 +248,11 @@ export class GrayboxScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       window.removeEventListener("keydown", this.handleWindowEscape, true);
       this.touchControls.destroy();
+      this.input.off("pointerdown", this.restartIfFinished, this);
+      this.input.keyboard.off("keydown-LEFT", this.onMenuDirection, this);
+      this.input.keyboard.off("keydown-RIGHT", this.onMenuDirection, this);
+      this.input.keyboard.off("keydown-ENTER", this.onConfirmPressed, this);
+      this.input.keyboard.off("keydown-SPACE", this.onConfirmPressed, this);
     });
     this.input.keyboard.on("keydown-LEFT", this.onMenuDirection, this);
     this.input.keyboard.on("keydown-RIGHT", this.onMenuDirection, this);
@@ -291,7 +307,8 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   restartIfFinished() {
-    if (this.gameResult === "win" || this.gameResult === "caught") this.scene.restart();
+    if (this.caughtDialog) this.advanceDialog();
+    else if (this.gameResult === "win") this.scene.restart();
   }
 
   onEscapePressed() {
@@ -315,15 +332,40 @@ export class GrayboxScene extends Phaser.Scene {
     }
   }
 
-  onConfirmPressed() {
+  onConfirmPressed(event) {
+    // The same Enter/Space must not also click a focused HTML control.
+    if (this.caughtDialog || this.isPaused || this.gameResult) event?.preventDefault?.();
+    if (event?.repeat) return;
+    if (this.caughtDialog) {
+      this.advanceDialog();
+      return;
+    }
     if (this.isPaused) {
       if (this.pauseChoiceYes) this.scene.restart();
       else this.resumeGame();
     } else if (this.gameResult === "timeout") {
       if (this.resultChoiceYes) this.scene.restart();
-    } else if (this.gameResult === "win" || this.gameResult === "caught") {
+    } else if (this.gameResult === "win") {
       this.scene.restart();
     }
+  }
+
+  advanceDialog() {
+    if (!this.caughtDialog) return;
+    // A held key must not dismiss multiple pages or restart several attempts.
+    if (this.time.now - this.dialogLastAdvancedAt < 200) return;
+    this.dialogLastAdvancedAt = this.time.now;
+    if (advanceCaughtDialog(this.caughtDialog, this.seenDialogRoles)) this.scene.restart();
+    else this.updateDialogText();
+  }
+
+  updateDialogText() {
+    const dialog = this.caughtDialog;
+    this.dialogHeading.setText(`ERWISCHT! – ${dialog.roleName}`);
+    this.dialogBody.setText(dialog.pages[dialog.pageIndex]);
+    this.dialogHint.setText(dialog.repeated
+      ? "Enter / Leertaste / Tippen: überspringen & neu starten"
+      : `${dialog.pageIndex + 1}/${dialog.pages.length} · Enter / Leertaste / Tippen: ${dialog.pageIndex < dialog.pages.length - 1 ? "weiter" : "neu starten"}`);
   }
 
   createSearchers() {
@@ -503,6 +545,10 @@ export class GrayboxScene extends Phaser.Scene {
     if (!this.isPaused) return;
     const pausedFor = Math.max(0, this.time.now - this.pauseStartedAt);
     if (this.escapeStartedAt !== null) this.escapeStartedAt += pausedFor;
+    for (const person of [...this.neutralPeople, ...this.searchers]) {
+      person.nextMoveAt += pausedFor;
+      if (person.visibleSince != null) person.visibleSince += pausedFor;
+    }
     this.isPaused = false;
     this.pauseStartedAt = null;
     this.pausePanel.setVisible(false);
@@ -537,6 +583,19 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   createGameHud() {
+    this.dialogPanel = this.add.rectangle(160, 120, 288, 152, 0x172326, 0.98)
+      .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(120).setVisible(false);
+    this.dialogHeading = this.add.text(28, 57, "", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#ffe066",
+    }).setScrollFactor(0).setDepth(121).setVisible(false);
+    this.dialogBody = this.add.text(28, 82, "", {
+      fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#f5f0dc",
+      wordWrap: { width: 264 }, lineSpacing: 4,
+    }).setScrollFactor(0).setDepth(121).setVisible(false);
+    this.dialogHint = this.add.text(160, 178, "", {
+      fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#b5c4ad",
+      wordWrap: { width: 264 }, align: "center",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(121).setVisible(false);
     this.hudPanel = this.add.rectangle(8, 8, 76, 30, 0x24332b, 0.96)
       .setOrigin(0).setScrollFactor(0).setDepth(100);
     this.hudLabel = this.add.text(14, 11, "ZEIT", {
@@ -626,11 +685,20 @@ export class GrayboxScene extends Phaser.Scene {
     this.isMoving = false;
     this.playerNextTile = null;
     this.tweens.killAll();
+    this.touchControls.clear();
+    if (result === "caught") {
+      this.caughtDialog = createCaughtDialog(caughtRole, this.seenDialogRoles);
+      this.dialogLastAdvancedAt = this.time.now;
+      this.updateDialogText();
+      this.dialogPanel.setVisible(true);
+      this.dialogHeading.setVisible(true);
+      this.dialogBody.setVisible(true);
+      this.dialogHint.setVisible(true);
+      return;
+    }
     this.resultText.setText(result === "win"
       ? "GESCHAFFT!\nDu hast das PI Planning verlassen.\nEnter zum Neustart"
-      : result === "caught"
-        ? `ERWISCHT!\n${caughtRole} hat dich entdeckt.\nEnter zum Neustart`
-        : "Pech gehabt – Zeit abgelaufen.\nVersuch neu starten?");
+      : "Pech gehabt – Zeit abgelaufen.\nVersuch neu starten?");
     this.resultPanel.setVisible(true);
     this.resultText.setVisible(true);
     if (result === "timeout") {

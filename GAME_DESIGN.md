@@ -71,7 +71,9 @@ Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des P
 
 **Erledigt:** Alle 15 Suchenden patrouillieren auf den festgelegten Routen. Jede prüft eine kardinale Sichtlinie bis fünf Kacheln; Wände, solide sichtblockierende Objekte und neutrale Personen unterbrechen die Sicht. Bei Sichtkontakt erscheint ein gelbes Ausrufezeichen, das nach 300 ms auf Rot wechselt; bleibt die Spielfigur insgesamt 600 ms sichtbar, zeigt die Meldung die entdeckende Rolle. Bei wiederholter Blockade berechnet jede Suchfigur einen freien Umweg; neutrale Personen tun dasselbe innerhalb ihres Bereichs. Anschliessend setzen sie die Route am nächsten erreichbaren Routenfeld fort. **Prüfung:** 23 automatisierte Tests prüfen alle Suchendenrouten, PO-Raumstarts und -Rückkehr, Warnstufen und Umwege um blockierte Felder. Der Nutzer bestätigte den Browser-Spieltest der Mehrrollenansicht, der PO-Rückkehr, der Warnstufe und des Ausweichens bei Blockaden.
 
-**Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln, rollenspezifische Erst- und Wiederholungsdialoge mit pausiertem Timer und reproduzierbarem Neustart, neutrale Sprechblasen sowie finale Pixelgrafik und Audio.
+**Erledigt auf `feature/caught-dialogs`:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
+
+**Noch offen:** Gezielte Prüfung der Sichtwirkung von Möbeln, neutrale Sprechblasen sowie finale Pixelgrafik und Audio.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -127,8 +129,9 @@ Diese Werte werden beim Implementieren und Testen feinjustiert.
 - Bei Sieg wird der Timer gestoppt und der Ausgang als geschafft angezeigt; bei null Sekunden erscheint eine Ablaufmeldung mit Ja/Nein-Neustart.
 - ESC öffnet während des laufenden Versuchs ein Pausenmenü und hält Timer sowie Figuren an. Ja startet den Versuch neu, Nein oder ESC setzt ihn fort.
 - In den letzten 30 Sekunden ist die Timeranzeige rot; in den letzten 15 Sekunden blinkt sie rot.
-- Bei Entdeckung wird der Timer für den Dialog angehalten. Danach startet der Versuch im PI-Einführungsraum mit vollem Timer und zurückgesetzten Hauptfiguren neu.
-- Der erste Dialog einer Rolle wird vollständig gezeigt. Wiederholungsdialoge können mit Enter, Leertaste oder Mausklick übersprungen werden.
+- Bei Entdeckung halten Timer und sämtliche Figuren an. Nach Dialogbestätigung startet der Versuch im PI-Einführungsraum mit 180 Sekunden neu. Spieler, 37 neutrale Personen und 15 Suchende erhalten ihre ursprünglichen Positionen, Routenindizes, Blickrichtungen und Startpausen; Zielreservierungen, Umwege und Warnungen werden zurückgesetzt.
+- Der erste Dialog jeder Rollenfamilie wird vollständig gezeigt; längere Texte werden seitenweise mit Enter, Leertaste oder Klick/Tippen im Spielfeld bestätigt. Wiederholungsdialoge zeigen den vollständigen Wiederholungstext und können mit derselben Eingabe übersprungen werden. Der externe Neustart-Button bestätigt während des Dialogs ebenfalls die nächste Seite. ESC und Pause überspringen den Dialog nicht.
+- Die Erinnerung an abgeschlossene Erstgespräche bleibt über alle Versuchsneustarts der aktuellen Spielsitzung erhalten. Alle sieben PO teilen eine Dialogfamilie, zeigen aber ihr jeweiliges Teamkürzel; alle vier Scrum Master teilen ebenfalls eine Familie. Neuladen der Seite löscht die Erinnerung. Gehaltene Bestätigungstasten werden nicht mehrfach verarbeitet; zwischen Bestätigungen liegen mindestens 200 ms.
 
 Timer, Sieg, Ablaufzustand, Pausenmenü und Warnanzeige sind implementiert und geprüft. Die Ablaufmeldung wurde im Browser mit verkürztem Entwicklertimer geprüft; ESC öffnet und schliesst das Pausenmenü im eingebetteten VSC-Browser und wurde vom Nutzer zusätzlich in Safari bestätigt. Der Produktivtimer bleibt bei 180 Sekunden.
 
@@ -172,7 +175,7 @@ Insgesamt **37 neutrale Personen**, über die ganze Karte verteilt:
 - 5 im PI-Einführungsraum.
 - 6 in den Gängen und Quergängen.
 
-Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Wiederholte Blockaden führen zu einer dynamischen Umleitung innerhalb des Bereichs; anschliessend wird die ursprüngliche Route an einem erreichbaren Feld fortgesetzt. Automatisierte Routentests und visuelle Abnahme der bisherigen Bewegungsrouten sind erfolgreich; die neue Umleitung muss noch gezielt im Browser geprüft werden. Die aktuelle und reservierte Position jeder neutralen Person blockiert dynamisch die Sichtlinie aller Suchenden.
+Neutrale Personen sind körperliche Hindernisse: Die Spielfigur und andere Personen können nicht durch sie hindurchgehen. Sie entdecken die Spielfigur nicht und lösen selbst keinen Alarm aus. Alle 37 Personen bewegen sich auf festen Routen innerhalb ihres Raums oder Gangs. Raumfiguren betreten keine Tür- oder Gangfelder; Gangfiguren bleiben auf Gangflächen. Die reproduzierbar erzeugten Routen reichen, wo Platz und Möbel es zulassen, bis zu vier Kacheln von der Startposition. Im Pausenraum hat jede der fünf Personen eine eigene, getrennte Route, damit sie nicht auf denselben Engstellen warten. Die Person in Meeting 2 umrundet den Tisch. Jeder Kachelschritt dauert 650 ms und wird von 700 ms Pause gefolgt. Türen, solide Möbel, andere Personen und die Spielfigur blockieren die Bewegung; während eines Schritts gelten Start- und reservierte Zielkachel als belegt. Wiederholte Blockaden führen zu einer dynamischen Umleitung innerhalb des Bereichs; anschliessend wird die ursprüngliche Route an einem erreichbaren Feld fortgesetzt. Automatisierte Routentests und visuelle Abnahme der bisherigen Bewegungsrouten sind erfolgreich; die Umleitung wurde im Browser durch den Nutzer bestätigt; die Möbel-Sichtblocker bleiben gezielt zu prüfen. Die aktuelle und reservierte Position jeder neutralen Person blockiert dynamisch die Sichtlinie aller Suchenden.
 
 ### Laufwegplanung für den Bewegungsprototyp
 
@@ -212,7 +215,11 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 
 Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: **Fehler melden** und **Idee vorschlagen**. Als erste Lösung öffnen diese Aktionen passende GitHub-Issue-Formulare in einem neuen Browser-Tab. Das Spiel übermittelt keine Berichte automatisch; Tester prüfen und senden den ausgefüllten Bericht selbst ab. Die Umsetzung und nötigen Issue-Formulare sind in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) beschrieben.
 
-## Dialoge bei Entdeckung – Vorschläge
+## Dialoge bei Entdeckung – implementierte Texte
+
+**Offen:** Weitere Dialogvarianten für die Rollen ergänzen. Zusätzliche Texte und ihre Auswahlregeln sind noch zu entwerfen; aktuell besitzt jede Rollenfamilie einen Erst- und einen Wiederholungstext.
+
+Die Dialogüberschrift zeigt den ausgeschriebenen Rollennamen: **Release Train Engineer**, **People & Transformation**, **Business Owner**, **Product Manager**, **Product Owner** (zusätzlich mit Teamkürzel) oder **Scrum Master**. Die kurzen Rollenmarkierungen an den Figuren bleiben bestehen.
 
 Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdialog. Die sieben POs zeigen zusätzlich ihr Teamkürzel; alle vier Figuren tragen die ausgeschriebene Bezeichnung „Scrum Master“. Bei späteren Versuchen folgt ein kurzer Running-Gag zum noch offenen Fluchtpunkt.
 
