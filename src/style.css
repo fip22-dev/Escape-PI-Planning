@@ -53,6 +53,7 @@ h1 {
 }
 
 .game-shell {
+  position: relative;
   overflow: hidden;
   border: 1px solid #62736c;
   border-radius: 10px;
@@ -65,6 +66,19 @@ h1 {
   min-height: min(70vh, 680px);
   place-items: center;
   background: #172326;
+}
+
+.page.is-menu .page-header,
+.page.is-menu .touch-controls,
+.page.is-menu .controls {
+  display: none;
+}
+
+.page.is-menu {
+  display: block;
+  width: min(100% - 24px, 720px);
+  max-width: 720px;
+  padding-top: 24px;
 }
 
 #game-container canvas {
