@@ -38,4 +38,12 @@ npm test
 npm run test:browser -- --grep "furniture|actual-map table"
 ```
 
-Die 41 Node-Tests, neun gezielten Möbel-Browserfälle und alle 18 bisherigen Browserfälle sind erfolgreich. Der Firefox-Belastungstest mit 30 Szenenneustarts überschritt zunächst das 30-Sekunden-Testbudget; mit 60 Sekunden Budget bestand die gezielte Wiederholung in 19,5 Sekunden. Build und Diff-Prüfung erfolgreich; der bestehende Bundle-Grössenhinweis bleibt. JSON-Zählbericht und Screenshots entstehen beim gezielten Testlauf unter `test-results/`; weitere Testläufe können diese Artefakte ersetzen. Einzelheiten stehen im Entwicklungsplan.
+Am 07.11.2026 waren die 41 Node-Tests, neun gezielten Möbel-Browserfälle und alle 18 bisherigen Browserfälle erfolgreich. Aktueller Wiederholungsbefund siehe unten. Der Firefox-Belastungstest mit 30 Szenenneustarts überschritt zunächst das 30-Sekunden-Testbudget; mit 60 Sekunden Budget bestand die gezielte Wiederholung in 19,5 Sekunden. Build und Diff-Prüfung erfolgreich; der bestehende Bundle-Grössenhinweis bleibt. JSON-Zählbericht und Screenshots entstehen beim gezielten Testlauf unter `test-results/`; weitere Testläufe können diese Artefakte ersetzen. Einzelheiten stehen im Entwicklungsplan.
+
+## Wiederholungsprüfung – 08.11.2026
+
+**Erledigt – Synthetischer Möbel-Kontrolltest:** Ursache nachgewiesen: Enter wurde in der Diagnose nach 177–193 ms gesendet, innerhalb der 200-ms-Bestätigungssperre des Fangdialogs. Der Neustart blieb aus; die nächste Aufstellung übernahm gameResult=caught. Der Test wartet jetzt vor Enter 250 ms und prüft Szenengeneration, leeren Fangzustand und geschlossenen Dialog vor der nächsten Aufstellung. Keine Änderung an Spielcode, Sichtlogik oder Möbelstandorten. Stabilitätslauf mit 30/30 bestandenen Fällen und anschliessend vollständige Browserprüfung mit 27/27 bestandenen Fällen abgeschlossen.
+
+### Nachweis und Prüfmethode
+
+Der unveränderte Kontrolltest bestand zunächst in Chromium und scheiterte in Firefox/mobilem Chromium. Eine zusätzliche Neustart-Assertion lokalisierte den Fehler in allen drei Browsern unmittelbar nach der zu frühen Bestätigung: Szenengeneration unverändert, obwohl ein Neustart erwartet war. Damit lag der gemeldete Fang bereits vor dem nächsten Möbelfall vor. Die Korrektur respektiert die bestehende Eingabesperre; sie setzt keinen Fangzustand künstlich zurück. Zehn Kontrollläufe je Browser (30 Fälle, 270 Möbelaufstellungen) erfolgreich; vollständige Browser-Suite anschliessend mit 27/27 bestandenen Fällen abgeschlossen. Screenshots der isolierten Kaffeemaschinendeckung und Originalkarten-Tischdeckung vor/nach Hervortreten visuell kontrolliert. Funktionstests (41), Build und Diff-Prüfung bereits erfolgreich; Bundle-Grössenhinweis bleibt.
