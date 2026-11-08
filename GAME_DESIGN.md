@@ -211,13 +211,13 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 14. „Mein Kaffee-Token ist aufgebraucht. Ist das ein Impediment?“
 15. „Ich wollte nur kurz Wasser holen. Jetzt bin ich Teil einer Abhängigkeit.“
 
-## Intro-Menü – offener Entwurf
+## Intro-Menü – festgehaltener Plan
 
-**Offen:** Ein Intro-Menü vor dem ersten Spielversuch gestalten und implementieren. Aktuell startet die Graybox-Szene direkt; das Menü ist noch nicht vorhanden. Folgender Umfang ist ein Vorschlag zur Abstimmung:
+**Offen:** Ein Intro-Menü vor dem ersten Spielversuch gestalten und implementieren. Aktuell startet die Graybox-Szene direkt; das Menü ist noch nicht vorhanden. Der Menüplan wurde am 08.11.2026 zur Dokumentation festgehalten. Die Umsetzung ist ausdrücklich noch nicht gestartet und wird erst separat beauftragt. Geplante Grundlage:
 
 | Inhalt | Vorgeschlagenes Verhalten |
 |---|---|
-| Titel und kurzes Intro | Escape PI Planning, kleine Büroillustration und ein bis zwei Sätze zur Flucht aus dem PI Planning. Keine lange Pflichtsequenz. |
+| Titel und kurzes Intro | Kleine Büro-Pixelszene, Titel Escape PI Planning und Introtext: Das PI Planning läuft. Dein Feierabend wartet. Keine lange Pflichtsequenz. |
 | Spiel starten | Deutliche Hauptaktion. Beginnt einen frischen Versuch im PI-Raum; der 180-Sekunden-Timer startet weiterhin erst beim Verlassen des Raums. |
 | So geht's | Spielziel, WASD/Pfeiltasten und Touch, Pause/Neustart, Warnung vor Fang, nutzbare Deckung. Zurück führt ins Menü. |
 | Einstellungen | Musik und Effekte getrennt schalten oder stummschalten, sobald Audio implementiert ist. Auswahl möglichst lokal speichern; keine funktionslosen Audioregler vorab. |
@@ -226,7 +226,7 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 
 **Technische Machbarkeit:** Mit der bestehenden Phaser-/HTML-Anwendung umsetzbar. Empfohlen ist ein responsives HTML-Menü vor dem Spielcontainer mit normalen, fokussierbaren Buttons; die Graybox-Szene wird erst nach Spiel starten aktiviert. Während des Menüs laufen weder Patrouillen noch Sprechblasen oder Spielzeit, und Spielsteuerungen sind ausgeblendet beziehungsweise deaktiviert. Der Start-Klick darf keine Spielerbewegung oder Dialogbestätigung auslösen. Audio erst nach einer Nutzeraktion aktivieren und auf echtem iPhone/Safari prüfen. Für die Rückkehr aus dem Pausenmenü den laufenden Versuch nach Bestätigung verwerfen und Eingaben bereinigen; ein gewöhnlicher Versuchsneustart bleibt direkt im Spiel. Die Gesprächserinnerung bleibt gemäss bisheriger Regel bis zum Neuladen der Seite erhalten.
 
-Vorerst sind keine Spielstände, Highscores, Schwierigkeitsgrade oder zusätzliche Anmeldung vorgesehen. Tastatur, Touch, sichtbarer Fokus, ausreichend grosse Schaltflächen und lesbare Hoch-/Querformate gehören zur Abnahme. Konkretes Layout, Illustration, Texte und die genaue Platzierung der Feedback-Links sind noch abzustimmen.
+Vorerst sind keine Spielstände, Highscores, Schwierigkeitsgrade oder zusätzliche Anmeldung vorgesehen. Tastatur, Touch, sichtbarer Fokus, ausreichend grosse Schaltflächen und lesbare Hoch-/Querformate gehören zur Abnahme. Geplante Anordnung: Büro-Pixelszene und Titel oben, darunter der Introtext. Spiel starten als grosse Hauptschaltfläche; anschliessend So geht's und Einstellungen. Infos & Credits kleiner darunter. Feedback-Links später ergänzen. Konkrete Ausgestaltung und genaue Platzierung der Feedback-Links bleiben offen. Es werden in diesem Arbeitsschritt weder Menücode noch Grafiken oder Audio erstellt.
 ## Beta-Feedback über GitHub Issues
 
 Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: **Fehler melden** und **Idee vorschlagen**. Als erste Lösung öffnen diese Aktionen passende GitHub-Issue-Formulare in einem neuen Browser-Tab. Das Spiel übermittelt keine Berichte automatisch; Tester prüfen und senden den ausgefüllten Bericht selbst ab. Die Umsetzung und nötigen Issue-Formulare sind in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) beschrieben.

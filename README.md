@@ -156,4 +156,4 @@ Der Nutzer hat am 08.11.2026 alle vorgesehenen iPhone-/Safari-Tests der aktualis
 
 ## Geplant: Intro-Menü
 
-**Offen:** Ein Startbildschirm mit Spiel starten, kurzer Anleitung, späteren Audio-Einstellungen und Infos/Credits. Beta-Feedback-Links folgen mit den Issue-Formularen. Das Menü ist noch nicht implementiert; Umfang und Gestaltung sind als Vorschlag in GAME_DESIGN.md erfasst, Umsetzung und Abnahme in DEVELOPMENT_PLAN.md.
+**Offen:** Ein Startbildschirm mit Spiel starten, kurzer Anleitung, späteren Audio-Einstellungen und Infos/Credits. Beta-Feedback-Links folgen mit den Issue-Formularen. Der Menüplan mit kleiner Büro-Pixelszene, dem Introtext Das PI Planning läuft. Dein Feierabend wartet. und der Menüstruktur ist in GAME_DESIGN.md festgehalten. Die Umsetzung ist noch nicht gestartet und wartet auf einen separaten Auftrag; Aufgaben und Abnahme stehen in DEVELOPMENT_PLAN.md.
