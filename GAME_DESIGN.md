@@ -213,7 +213,7 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 
 ## Intro-Menü und Pixelstil – in Arbeit
 
-**Teilweise erledigt:** Das Intro-Menü und die dazu passende Pixelgrafik sowie Audio sind auf `feature/visuals-audio-menu` umgesetzt. Die erste Version startet vor dem ersten Spielversuch mit Titel „Escape PI Planning“ und dem Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“ im freien dunklen Streifen oberhalb der Büro-Pixelszene. Titel und Untertitel verdecken die Illustration nicht. Auswahl: **Spiel starten**, **So geht's**, **Einstellungen** und **Infos & Credits**. Spielregeln und Patrouillen beginnen erst nach Spielstart. Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell im Browser geprüft. Restgrafik und Geräteprüfung bleiben offen.
+**Teilweise erledigt:** Das Intro-Menü und die dazu passende Pixelgrafik sowie Audio wurden über PR #13 in `main` integriert. Die erste Version startet vor dem ersten Spielversuch mit Titel „Escape PI Planning“ und dem Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“ im freien dunklen Streifen oberhalb der Büro-Pixelszene. Titel und Untertitel verdecken die Illustration nicht. Auswahl: **Spiel starten**, **So geht's**, **Einstellungen** und **Infos & Credits**. Spielregeln und Patrouillen beginnen erst nach Spielstart. Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell im Browser geprüft. Restgrafik und Geräteprüfung laufen auf `feature/visuals-audio-polish`.
 
 | Inhalt | Vorgeschlagenes Verhalten |
 |---|---|
@@ -228,7 +228,7 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 
 Vorerst sind keine Spielstände, Highscores, Schwierigkeitsgrade oder zusätzliche Anmeldung vorgesehen. Tastatur, Touch, sichtbare Auswahl, lesbare Hoch-/Querformate und verlässliche Rückkehr aus Untermenüs gehören zur Prüfung. Anordnung: Büro-Pixelszene und Titel oben, darunter der Introtext. Spiel starten als Hauptaktion; anschliessend So geht's und Einstellungen. Infos & Credits kleiner darunter. Feedback-Links später ergänzen. Konkrete Ausgestaltung und genaue Platzierung der Feedback-Links bleiben offen.
 
-**Teilweise umgesetzt:** Eine eigene Büro-Pixelszene, Kacheltexturen, Spielfigur/neutralen Figuren, generierte Büro-Jazz-Musik und synthetische Spielgeräusche sind im Code angelegt. Der aktuelle Funktionsschnitt steht in PR #13; die manuelle Browserprüfung des Nutzers ist bestätigt. Restliche Raumobjekte, Suchendenvarianten und abschliessende Lautstärke-/Geräteprüfung werden nach dem Merge auf einem eigenen Feature-Branch von `main` fortgeführt.
+**Teilweise umgesetzt:** Eine eigene Büro-Pixelszene, Kacheltexturen, Spielfigur/neutralen Figuren, generierte Büro-Jazz-Musik und synthetische Spielgeräusche sind in `main` integriert. Der Nutzer hat die manuelle Browserprüfung des Funktionsschnitts bestätigt. Restliche Raumobjekte, Suchendenvarianten und abschliessende Lautstärke-/Geräteprüfung werden auf `feature/visuals-audio-polish` fortgeführt.
 ## Beta-Feedback über GitHub Issues
 
 Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: **Fehler melden** und **Idee vorschlagen**. Als erste Lösung öffnen diese Aktionen passende GitHub-Issue-Formulare in einem neuen Browser-Tab. Das Spiel übermittelt keine Berichte automatisch; Tester prüfen und senden den ausgefüllten Bericht selbst ab. Die Umsetzung und nötigen Issue-Formulare sind in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) beschrieben.
