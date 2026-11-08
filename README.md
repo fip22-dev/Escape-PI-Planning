@@ -34,7 +34,7 @@ Ergänzt sind Whiteboards, Sideboards, eine Druckerstation, Abfalleimer neben de
 
 Im Dialogfenster werden Rollen ausgeschrieben: Release Train Engineer, People & Transformation, Business Owner, Product Manager, Product Owner (mit Teamkürzel) und Scrum Master.
 
-Die Rollendialoge und der reproduzierbare Neustart auf `feature/caught-dialogs` sind zusätzlich zu den automatisierten Tests vom Nutzer im lokalen Browser-Spieltest am 07.11.2026 abgenommen. Eine gesonderte iPhone-/Safari-Prüfung dieses Feature-Stands bleibt offen.
+Die Rollendialoge und der reproduzierbare Neustart auf `feature/caught-dialogs` sind zusätzlich zu den automatisierten Tests vom Nutzer im lokalen Browser-Spieltest am 07.11.2026 abgenommen. Die iPhone-/Safari-Abnahme des integrierten Stands wurde am 08.11.2026 vom Nutzer bestätigt.
 
 Die mobile Version entspricht der vom Nutzer bestätigten Demo: Richtungstasten antippen für einzelne Schritte oder gedrückt halten zum Laufen. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
 
@@ -146,8 +146,14 @@ Der Product Manager startet bei Q2 auf (28, 20), Scrum Master 2 im ersten horizo
 
 ## Möbel-Sichtprüfung
 
-41 Funktionstests, neun neue Möbel-Browserfälle und alle 18 bisherigen Browserfälle erfolgreich; Build erfolgreich. Die Sichtregeln stimmen, Tischdeckung ist auch auf der Originalkarte geprüft. Pflanzen, Sideboards und Drucker bieten mit der aktuellen Platzierung keine freie begehbare Sichtachse innerhalb der Sichtweite; Kaffeemaschinen liegen ohne zulässigen Suchenden-Standort. Eine Entscheidung über ihre spielerisch nutzbare Platzierung bleibt offen. Methodik und Ergebnisse stehen in [FURNITURE_SIGHT_TEST.md](FURNITURE_SIGHT_TEST.md).
+Historischer Prüfstand vom 07.11.2026: 41 Funktionstests, neun neue Möbel-Browserfälle und alle 18 bisherigen Browserfälle erfolgreich; Build erfolgreich. Der am 08.11.2026 aufgetretene Fehler im synthetischen Möbel-Kontrolltest ist auf eine zu frühe Dialogbestätigung zurückgeführt und im Test korrigiert; 30 Wiederholungen und anschliessend alle 27 Browserfälle erfolgreich. Die Sichtregeln stimmen, Tischdeckung ist auch auf der Originalkarte geprüft. Pflanzen, Sideboards und Drucker bieten mit der aktuellen Platzierung keine freie begehbare Sichtachse innerhalb der Sichtweite; Kaffeemaschinen liegen ohne zulässigen Suchenden-Standort. Eine Entscheidung über ihre spielerisch nutzbare Platzierung bleibt offen. Methodik und Ergebnisse stehen in [FURNITURE_SIGHT_TEST.md](FURNITURE_SIGHT_TEST.md).
 
-## Nächster Test: iPhone
+## iPhone-Abnahme und nächster Schritt
 
-Der Stand aus PR #11 ist vom Nutzer zum Merge freigegeben. Vor weiterer Entwicklung folgt ein echter iPhone-/Safari-Test in Hoch- und Querformat. Bis dahin wird kein neuer Feature-Branch gestartet. Für den aktuellen lokalen Stand die WLAN-Anleitung oben verwenden; die private Online-Demo enthält nach einem Git-Merge nicht automatisch denselben Stand.
+Der Nutzer hat am 08.11.2026 alle vorgesehenen iPhone-/Safari-Tests der aktualisierten privaten Online-Demo bestätigt: Hoch-/Querformat, Touch-Steuerung, Fokusverlust, Pause/Weiter, Neustart, Fangdialoge und Überspringen, Sprechblasen, Raumbegrenzung und vollständiger Spielversuch. Die Demo enthält die Spielquellen aus main (21483a7, PR #11). Git-Merges aktualisieren sie weiterhin nicht automatisch.
+
+**Erledigt – Testabschluss:** Ursache des Möbel-Kontrolltestfehlers geklärt und nur im Test korrigiert. 30 Wiederholungen (270 Möbelaufstellungen), alle 27 Browserfälle, 41 Funktionstests, Build und Diff-Prüfung erfolgreich. Als Nächstes folgen Grafik und Audio, abgestimmt mit dem offenen Intro-Menü.
+
+## Geplant: Intro-Menü
+
+**Offen:** Ein Startbildschirm mit Spiel starten, kurzer Anleitung, späteren Audio-Einstellungen und Infos/Credits. Beta-Feedback-Links folgen mit den Issue-Formularen. Das Menü ist noch nicht implementiert; Umfang und Gestaltung sind als Vorschlag in GAME_DESIGN.md erfasst, Umsetzung und Abnahme in DEVELOPMENT_PLAN.md.

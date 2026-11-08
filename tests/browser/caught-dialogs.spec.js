@@ -435,7 +435,21 @@ test("furniture cover in the rendered scene hides or reveals the player accordin
     expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.style.color)).toBe("#ff4d4f");
     await page.clock.runFor(300);
     expect((await sceneState(page)).result, fixture.type).toBe("caught");
+    // Catching starts a 200 ms confirmation guard. Advancing time only after
+    // pressing Enter can leave the old caught result in the next fixture.
+    await page.clock.runFor(250);
+    const beforeConfirm = await page.evaluate(() => {
+      const s = window.__game.scene.getScene("graybox");
+      return { generation: window.__generation, elapsed: s.time.now - s.dialogLastAdvancedAt };
+    });
+    expect(beforeConfirm.elapsed).toBeGreaterThanOrEqual(200);
     await confirm(page, "Enter");
+    const restarted = await sceneState(page);
+    expect(restarted.generation,
+      `${fixture.type}: confirmation after ${beforeConfirm.elapsed} ms must restart before the next fixture`)
+      .toBe(beforeConfirm.generation + 1);
+    expect(restarted.result).toBeNull();
+    expect(restarted.dialog).toBeNull();
   }
 });
 

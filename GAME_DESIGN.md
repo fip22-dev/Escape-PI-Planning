@@ -211,6 +211,22 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 14. „Mein Kaffee-Token ist aufgebraucht. Ist das ein Impediment?“
 15. „Ich wollte nur kurz Wasser holen. Jetzt bin ich Teil einer Abhängigkeit.“
 
+## Intro-Menü – offener Entwurf
+
+**Offen:** Ein Intro-Menü vor dem ersten Spielversuch gestalten und implementieren. Aktuell startet die Graybox-Szene direkt; das Menü ist noch nicht vorhanden. Folgender Umfang ist ein Vorschlag zur Abstimmung:
+
+| Inhalt | Vorgeschlagenes Verhalten |
+|---|---|
+| Titel und kurzes Intro | Escape PI Planning, kleine Büroillustration und ein bis zwei Sätze zur Flucht aus dem PI Planning. Keine lange Pflichtsequenz. |
+| Spiel starten | Deutliche Hauptaktion. Beginnt einen frischen Versuch im PI-Raum; der 180-Sekunden-Timer startet weiterhin erst beim Verlassen des Raums. |
+| So geht's | Spielziel, WASD/Pfeiltasten und Touch, Pause/Neustart, Warnung vor Fang, nutzbare Deckung. Zurück führt ins Menü. |
+| Einstellungen | Musik und Effekte getrennt schalten oder stummschalten, sobald Audio implementiert ist. Auswahl möglichst lokal speichern; keine funktionslosen Audioregler vorab. |
+| Infos / Credits | Kurze Projektinfo, Urheber-/Lizenzangaben und kompakte Versionskennung für Fehlermeldungen. |
+| Beta-Feedback | Fehler melden und Idee vorschlagen als sekundäre Links, sobald die GitHub-Issue-Formulare aus Schritt 9 bereitstehen. |
+
+**Technische Machbarkeit:** Mit der bestehenden Phaser-/HTML-Anwendung umsetzbar. Empfohlen ist ein responsives HTML-Menü vor dem Spielcontainer mit normalen, fokussierbaren Buttons; die Graybox-Szene wird erst nach Spiel starten aktiviert. Während des Menüs laufen weder Patrouillen noch Sprechblasen oder Spielzeit, und Spielsteuerungen sind ausgeblendet beziehungsweise deaktiviert. Der Start-Klick darf keine Spielerbewegung oder Dialogbestätigung auslösen. Audio erst nach einer Nutzeraktion aktivieren und auf echtem iPhone/Safari prüfen. Für die Rückkehr aus dem Pausenmenü den laufenden Versuch nach Bestätigung verwerfen und Eingaben bereinigen; ein gewöhnlicher Versuchsneustart bleibt direkt im Spiel. Die Gesprächserinnerung bleibt gemäss bisheriger Regel bis zum Neuladen der Seite erhalten.
+
+Vorerst sind keine Spielstände, Highscores, Schwierigkeitsgrade oder zusätzliche Anmeldung vorgesehen. Tastatur, Touch, sichtbarer Fokus, ausreichend grosse Schaltflächen und lesbare Hoch-/Querformate gehören zur Abnahme. Konkretes Layout, Illustration, Texte und die genaue Platzierung der Feedback-Links sind noch abzustimmen.
 ## Beta-Feedback über GitHub Issues
 
 Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: **Fehler melden** und **Idee vorschlagen**. Als erste Lösung öffnen diese Aktionen passende GitHub-Issue-Formulare in einem neuen Browser-Tab. Das Spiel übermittelt keine Berichte automatisch; Tester prüfen und senden den ausgefüllten Bericht selbst ab. Die Umsetzung und nötigen Issue-Formulare sind in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) beschrieben.
@@ -248,3 +264,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 - Den genauen Platz der Beta-Feedback-Aktionen im Start- oder Pausemenü festlegen; die Meldung über GitHub-Issue-Formulare ist als Lösung vorgesehen.
 
 Die Umsetzungsreihenfolge und der Status der Arbeiten stehen in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
+
+## Geräteabnahme – 08.11.2026
+
+**Erledigt:** Der Nutzer bestätigt alle vorgesehenen iPhone-/Safari-Tests der aktualisierten privaten Online-Demo, einschliesslich Hoch-/Querformat, Touch-Steuerung, Fokusverlust, Pause/Neustart, Fangdialogen, Sprechblasen, Raumbegrenzung und vollständigem Spielversuch. Der separat fehlgeschlagene automatisierte Möbel-Kontrolltest wurde auf die 200-ms-Bestätigungssperre zurückgeführt und im Test korrigiert. Die Spielregeln und die Sichtlogik bleiben unverändert; Abschlussprüfung siehe Entwicklungsplan.
