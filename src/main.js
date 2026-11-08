@@ -1,6 +1,11 @@
 import Phaser from "phaser";
+import { IntroScene } from "./scenes/IntroScene.js";
 import { GrayboxScene } from "./scenes/GrayboxScene.js";
 import "./style.css";
+
+window.addEventListener("game:mode", event => {
+  document.querySelector(".page")?.classList.toggle("is-menu", event.detail?.mode === "menu");
+});
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -10,7 +15,7 @@ const game = new Phaser.Game({
   backgroundColor: "#172326",
   pixelArt: true,
   antialias: false,
-  scene: [GrayboxScene],
+  scene: [IntroScene, GrayboxScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
