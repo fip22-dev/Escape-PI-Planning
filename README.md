@@ -200,4 +200,4 @@ Abschliessender Prüfstand vor der Übernahme nach main: 45 Funktionstests, alle
 
 ## Gerätezweig – Bereitstellung
 
-Die neue private Testdemo wird unter https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site vorbereitet. Dies ist vor erfolgreicher Veröffentlichung noch keine Bestätigung ihrer Erreichbarkeit. Site-ID und statisches Ausgabeziel stehen in .openai/hosting.json; Publikationsstand und Quellzuordnung im [Geräteprüfplan](IPHONE_SAFARI_TEST_PLAN.md). Hauptstand-Merge: PR #14, main a199290.
+**Erledigt – veröffentlicht:** Die eigene [private iPhone-/Safari-Testdemo](https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site) wurde als Version 1 erfolgreich bereitgestellt. In Safari gegebenenfalls mit dem zugehörigen ChatGPT-Konto anmelden. Die bisherige Demo bleibt bestehen. **Offen:** reale Geräteabnahme I01–I14. Zusätzliche Browseröffnung hier wegen nicht verfügbarem Browser-Dienst blockiert. Site-ID und statisches Ausgabeziel stehen in .openai/hosting.json; Publikationsstand und Quellzuordnung im [Geräteprüfplan](IPHONE_SAFARI_TEST_PLAN.md). Hauptstand-Merge: PR #14, main a199290.
