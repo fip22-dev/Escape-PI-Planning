@@ -14,6 +14,10 @@ Ein humorvolles 2D-Browserspiel in Draufsicht: Während des PI Plannings versuch
 
 Die vollständigen Spielregeln und Dialogtexte stehen in [GAME_DESIGN.md](GAME_DESIGN.md).
 
+## iPhone-/Safari-Testbranch
+
+Dieser Branch basiert auf dem nach main gemergten Stand a199290. Eigene private Testdemo und echte Geräteabnahme werden hier isoliert geführt. Die sichtbare Testkennung unterscheidet die Demo vom Hauptstand; Spielregeln bleiben unverändert. [Prüfplan und Geräteprotokoll](IPHONE_SAFARI_TEST_PLAN.md).
+
 ## Projektstatus
 
 **Freigegebener Funktionsstand:** Der Nutzer hat Grafik und Darstellung visuell bestätigt und die Übernahme nach `main` beauftragt. Echte iPhone-/Safari-Tests und die neue private Testdemo gehören zum separaten Branch `feature/iphone-safari-testing`, der vom gemergten `main` startet. Die bestehende private Demo wird dadurch nicht ersetzt.
@@ -193,3 +197,7 @@ Prüfung: 45 Funktionstests, 15 gezielte Browserfälle in Chromium/Firefox/mobil
 Der Branch [feature/iphone-safari-testing](https://github.com/fip22-dev/Escape-PI-Planning/tree/feature/iphone-safari-testing) ist für die reale Geräteabnahme und die eigene private iPhone-Testdemo reserviert. Er startet vom gemergten Hauptstand. Demo-Konfiguration, Quellcommit und Prüfergebnisse werden dort dokumentiert; spielrelevante Korrekturen gehen später per Pull Request nach main zurück. Ein iPhone-Browser verwendet ausschliesslich den veröffentlichten Stand und wählt keinen Git-Branch. Die bisherige private Demo bleibt bestehen.
 
 Abschliessender Prüfstand vor der Übernahme nach main: 45 Funktionstests, alle 51 Browserfälle in Chromium/Firefox/mobilem Chromium, Produktionsbuild und Diff-Prüfung erfolgreich. Die visuelle Nutzerabnahme und Mergefreigabe liegen vor; der echte iPhone-/Safari-Spieltest wird auf dem separaten Testbranch protokolliert.
+
+## Gerätezweig – Bereitstellung
+
+Die neue private Testdemo wird unter https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site vorbereitet. Dies ist vor erfolgreicher Veröffentlichung noch keine Bestätigung ihrer Erreichbarkeit. Site-ID und statisches Ausgabeziel stehen in .openai/hosting.json; Publikationsstand und Quellzuordnung im [Geräteprüfplan](IPHONE_SAFARI_TEST_PLAN.md). Hauptstand-Merge: PR #14, main a199290.

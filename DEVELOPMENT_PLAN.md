@@ -177,3 +177,13 @@ Ansichtsschalter in der HTML-Leiste und F in Menü/Spiel ergänzt. Native Fullsc
 **Erledigt – Nutzerfreigabe:** Der Nutzer bestätigt die Darstellung und beauftragt Commit und Merge nach main. Alle lokalen Implementierungs-, Test- und Dokumentationsänderungen werden zusammenhängend gesichert. Die reale iPhone-/Safari-Abnahme ist ausdrücklich kein Bestandteil dieser Freigabe, sondern folgt auf einem separaten Branch mit eigener privater Demo.
 
 **Erledigt – abschliessende Mergeprüfung:** 45 Funktionstests, alle 51 Browserfälle in Chromium, Firefox und mobilem Chromium (vollständiger Lauf, 6,3 Minuten), Produktionsbuild und Diff-Prüfung erfolgreich. Der bestehende Bundle-Hinweis bei ca. 1,27 MB bleibt. Die Übernahme erfolgt per Pull Request nach Nutzerfreigabe. Der Branch feature/iphone-safari-testing wird erst vom gemergten main angelegt. Demo-Konfiguration und Geräteprüfplan bleiben dort; spätere Spielkorrekturen werden separat zurückgeführt.
+
+## Separater iPhone-/Safari-Branch – 09.11.2026
+
+**Erledigt – Hauptstand übernommen:** PR #14 ist gemergt; main a199290e4b00ebb57029d59aafb5007eb4b2901a lokal synchronisiert. Feature-Commit 2fe3094 ist enthalten. 45 Funktionstests, alle 51 Browserfälle, Build und Diff-Prüfung vor der Übernahme erfolgreich.
+
+**Erledigt – Testzweig vorbereitet:** feature/iphone-safari-testing direkt von diesem main angelegt. Neue private Site appgprj_6af23d83574c81919296181569f39729 mit eigener Identität; bestehende Demo wird nicht ersetzt. Hosting-Manifest und Geräteprüfplan nur in diesem Branch. HTML-Testkennung und Seitentitel ergänzt, in Grossansicht ausgeblendet; keine Spielregeländerung. Lokale Veröffentlichungsartefakte unter .sites/ bleiben ignoriert.
+
+**In Arbeit – Bereitstellung:** Eigene private Demo aus diesem Branch bauen und veröffentlichen. Ziel: https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site. Prüfergebnisse und genaue Quellzuordnung folgen im Geräteplan. **Offen:** alle realen iPhone-/Safari-Fälle I01–I14.
+
+**Erledigt – technischer Demo-Aufbau:** Produktionsbuild und vier betroffene mobile Chromium-Fälle mit der Testkennung erfolgreich. Es wurden keine Spielregeln geändert. Bereitstellung der eigenen privaten Demo folgt aus dem gepushten Testbranch; reale Safari-Fälle bleiben offen.

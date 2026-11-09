@@ -185,3 +185,7 @@ body.has-expanded-game { overflow: hidden; }
   .page.is-expanded:not(.is-menu) .game-shell { grid-column: 1; grid-row: 2; }
 }
 
+
+/* Isolated device-test branch: identify the baseline without crowding fullscreen. */
+.test-build-label { flex: 1; min-width: 0; color: #b5c4ad; font: 10px/1.2 system-ui, sans-serif; }
+.page.is-expanded .test-build-label { display: none; }
