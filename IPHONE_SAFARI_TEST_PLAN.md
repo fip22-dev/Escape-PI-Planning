@@ -5,7 +5,7 @@
 - Arbeitsbranch: feature/iphone-safari-testing.
 - Freigegebene Spielbasis: main a199290e4b00ebb57029d59aafb5007eb4b2901a ([PR #14](https://github.com/fip22-dev/Escape-PI-Planning/pull/14)).
 - **Erledigt – technische Hauptstand-Prüfung:** 45 Funktionstests, alle 51 Browserfälle in Chromium/Firefox/mobilem Chromium, Produktionsbuild und Diff-Prüfung erfolgreich. Das ist keine reale iPhone-/Safari-Abnahme.
-- Eigene owner-private Testdemo, Site-ID: appgprj_6af23d83574c81919296181569f39729. Die frühere private Demo bleibt bestehen.
+- Eigene owner-private Testdemo, Site-ID: appgprj_6af23d83574c81919296181569f39729. Die alte Demo wird nicht mehr benötigt; ihre Löschung ist beauftragt und noch offen.
 - **Erledigt – veröffentlicht:** Demo-Adresse: https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site (Version 1, owner-private).
 - Anzeige zur Unterscheidung: iPhone/Safari-Testdemo · Basis a199290.
 - GitHub-Quellcommit: 2e46d805393633ffb9250989f122c261da061f45; Sites-Quellcommit: 2aeac129288902dab6bf47fede1c7e210dad6ccc. Version 1, Deployment appgdep_6af23f0a3eb88191a3f7947faa7142b1 am 09.11.2026 erfolgreich. Nachfolgende Dokumentationscommits ändern den veröffentlichten Spielstand nicht.
@@ -27,7 +27,7 @@
 
 | ID | Prüfung und erwartetes Ergebnis | Status |
 |---|---|---|
-| I01 | Privater Zugriff funktioniert; eigene Testdemo/Basiskennung korrekt, bestehende Demo unverändert. | **Offen** |
+| I01 | Privater Zugriff funktioniert; eigene Testdemo/Basiskennung korrekt. | **Offen** |
 | I02 | Menü, Anleitung (Scrollen/Wischen), Einstellungen und Zurück funktionieren ohne verdeckte Texte. | **Offen** |
 | I03 | Richtungstasten einzeln antippen und halten: alle vier Richtungen, Loslassen/Abbruch stoppt die Eingabe. | **Offen** |
 | I04 | Nach App-/Tabwechsel oder Fokusverlust hängt keine Richtung fest. Für Fristvergleiche zuvor bewusst pausieren; Hintergrundwechsel ist keine zugesicherte automatische Spielpause. | **Offen** |

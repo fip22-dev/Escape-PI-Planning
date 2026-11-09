@@ -4,7 +4,7 @@ Dieses Dokument hält Umsetzungsreihenfolge und Fortschritt fest. Spielregeln, K
 
 ## Aktueller Stand
 
-- **Erledigt – visuelle Abnahme und Mergefreigabe, 09.11.2026:** Nutzer bestätigt den aktuellen Stand als gut und beauftragt Commit/Merge nach main. iPhone/Safari, Geräteperformance und Hörprobe werden bewusst separat auf `feature/iphone-safari-testing` geprüft. Die eigene private Testdemo ersetzt die bisherige Demo nicht.
+- **Erledigt – visuelle Abnahme und Mergefreigabe, 09.11.2026:** Nutzer bestätigt den aktuellen Stand als gut und beauftragt Commit/Merge nach main. iPhone/Safari, Geräteperformance und Hörprobe werden bewusst separat auf `feature/iphone-safari-testing` geprüft. Die alte Demo wird nicht mehr benötigt; ihre Löschung ist beauftragt und noch offen.
 
 - Grundlage: Browser-Graybox mit WASD/Pfeiltasten, mitlaufender Kamera, sieben Teamzimmern, Pausenraum, fünf Meeting-Räumen und PI-Einführung.
 - 37 neutrale Figuren sind über Teamzimmer, Nebenräume, PI-Einführungsraum und Gänge verteilt; alle erhalten feste Routen innerhalb ihres Raums oder Gangs.
@@ -182,8 +182,12 @@ Ansichtsschalter in der HTML-Leiste und F in Menü/Spiel ergänzt. Native Fullsc
 
 **Erledigt – Hauptstand übernommen:** PR #14 ist gemergt; main a199290e4b00ebb57029d59aafb5007eb4b2901a lokal synchronisiert. Feature-Commit 2fe3094 ist enthalten. 45 Funktionstests, alle 51 Browserfälle, Build und Diff-Prüfung vor der Übernahme erfolgreich.
 
-**Erledigt – Testzweig vorbereitet:** feature/iphone-safari-testing direkt von diesem main angelegt. Neue private Site appgprj_6af23d83574c81919296181569f39729 mit eigener Identität; bestehende Demo wird nicht ersetzt. Hosting-Manifest und Geräteprüfplan nur in diesem Branch. HTML-Testkennung und Seitentitel ergänzt, in Grossansicht ausgeblendet; keine Spielregeländerung. Lokale Veröffentlichungsartefakte unter .sites/ bleiben ignoriert.
+**Erledigt – Testzweig vorbereitet:** feature/iphone-safari-testing direkt von diesem main angelegt. Neue private Site appgprj_6af23d83574c81919296181569f39729 mit eigener Identität; Entfernung der bisherigen Demo inzwischen beauftragt, noch offen. Hosting-Manifest und Geräteprüfplan nur in diesem Branch. HTML-Testkennung und Seitentitel ergänzt, in Grossansicht ausgeblendet; keine Spielregeländerung. Lokale Veröffentlichungsartefakte unter .sites/ bleiben ignoriert.
 
-**Erledigt – Bereitstellung:** Eigene private Demo als Version 1 erfolgreich veröffentlicht: https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site. GitHub-Quelle 2e46d80, Sites-Quelle 2aeac12, Spielbasis main a199290; genaue Zuordnung im Geräteplan. Eigentümerzugriff bestätigt, bestehende Demo unverändert. Zusätzliche Browseröffnung hier wegen nicht verfügbarem Browser-Dienst blockiert. **Offen:** alle realen iPhone-/Safari-Fälle I01–I14.
+**Erledigt – Bereitstellung:** Eigene private Demo als Version 1 erfolgreich veröffentlicht: https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site. GitHub-Quelle 2e46d80, Sites-Quelle 2aeac12, Spielbasis main a199290; genaue Zuordnung im Geräteplan. Eigentümerzugriff bestätigt; die alte Demo wartet auf Löschung. Zusätzliche Browseröffnung hier wegen nicht verfügbarem Browser-Dienst blockiert. **Offen:** alle realen iPhone-/Safari-Fälle I01–I14.
 
 **Erledigt – technischer Demo-Aufbau:** Produktionsbuild und vier betroffene mobile Chromium-Fälle mit der Testkennung erfolgreich. Es wurden keine Spielregeln geändert. Bereitstellung aus dem gepushten Testbranch erfolgreich; reale Safari-Fälle bleiben offen.
+
+## Alte Demo entfernen – 09.11.2026
+
+**Teilweise erledigt:** Nutzer möchte nur noch die iPhone-/Safari-Demo verwenden. Alte Site eindeutig identifiziert: appgprj_6aee34dece1c8191bf51c97641082dcf, Titel „Escape PI Planning – Demo“, Adresse https://escape-pi-planning-demo-philippe.electgleam1.chatgpt.site. **Offen – Löschung blockiert:** Der Sites-Anschluss bietet keine Löschoperation; der Browser-Zugriffsdienst ist nicht verfügbar. Die alte Site ist laut Sites-Abfrage weiterhin vorhanden. Löschung in der Sites-/Library-Verwaltung nachholen. Die neue Site appgprj_6af23d83574c81919296181569f39729 bleibt erhalten. Keine Änderung am Spiel oder an der Veröffentlichung. Git-Abgleich erfolgreich, keine offenen Pull Requests; Testbranch separat von main. Dokumentationsänderungen mit git diff --check geprüft.
