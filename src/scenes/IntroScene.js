@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { getAudioEngine } from "../game/audio.js";
+import { configureRendering, RENDER_SCALE } from "../game/rendering.js";
 
 const W = 320;
 const H = 240;
@@ -25,6 +26,7 @@ export class IntroScene extends Phaser.Scene {
   }
 
   create() {
+    configureRendering(this);
     document.querySelector(".page")?.classList.add("is-menu");
     window.dispatchEvent(new CustomEvent("game:mode", { detail: { mode: "menu" } }));
     this.drawOffice();
@@ -136,11 +138,11 @@ export class IntroScene extends Phaser.Scene {
     this.view = "home";
     this.selection = Math.min(this.selection, 3);
     this.add.text(160, 14, "ESCAPE PI PLANNING", {
-      fontFamily: "Courier New, monospace", fontSize: "16px", fontStyle: "bold", color: C.cream,
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "16px", fontStyle: "bold", color: C.cream,
       stroke: "#203735", strokeThickness: 3,
     }).setOrigin(0.5).setDepth(10);
     this.add.text(160, 42, "Schaffst du es, dich vor dem PI Planning zu drücken,\nohne erwischt zu werden?", {
-      fontFamily: "Courier New, monospace", fontSize: "7px", color: C.cream,
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "8px", color: C.cream,
       align: "center", lineSpacing: 1,
     }).setOrigin(0.5).setDepth(10);
     this.add.rectangle(160, 184, 198, 92, C.panel, 0.97).setStrokeStyle(2, C.gold).setDepth(10);
@@ -150,14 +152,14 @@ export class IntroScene extends Phaser.Scene {
       .on("pointerover", () => { this.selection = index; this.updateHomeSelection(); })
       .on("pointerdown", () => { this.selection = index; this.confirmSelection(); }));
     this.homeLabels = this.homeItems.map((label, index) => this.add.text(160, 151 + index * 20, label, {
-      fontFamily: "Courier New, monospace", fontSize: index === 0 ? "11px" : "9px",
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: index === 0 ? "11px" : "10px",
       fontStyle: index === 0 ? "bold" : "normal", color: C.cream,
     }).setOrigin(0.5).setDepth(12));
     this.homeArrow = this.add.text(75, 151, "▶", {
-      fontFamily: "monospace", fontSize: "8px", color: C.gold,
+      resolution: RENDER_SCALE, fontFamily: "monospace", fontSize: "8px", color: C.gold,
     }).setOrigin(0.5).setDepth(12);
-    this.add.text(160, 226, "WASD / ↑↓ wählen · Enter starten · Esc zurück", {
-      fontFamily: "Courier New, monospace", fontSize: "6px", color: C.muted,
+    this.add.text(160, 235, "WASD / ↑↓ wählen · Enter starten · Esc zurück", {
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "7px", color: C.muted,
     }).setOrigin(0.5).setDepth(10);
     this.updateHomeSelection();
   }
@@ -183,7 +185,7 @@ export class IntroScene extends Phaser.Scene {
     });
     this.homeLabels?.forEach((label, index) => {
       label.setColor(index === this.selection ? "#ffe3a1" : C.cream);
-      label.setScale(index === this.selection ? 1.04 : 1);
+      label.setScale(1);
     });
     this.homeArrow?.setY(151 + this.selection * 20);
   }
@@ -238,14 +240,14 @@ export class IntroScene extends Phaser.Scene {
       credits: "INFOS & CREDITS",
     };
     this.markMenu(this.add.text(160, 58, headings[view], {
-      fontFamily: "Courier New, monospace", fontSize: "12px", fontStyle: "bold", color: "#ffe3a1",
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "12px", fontStyle: "bold", color: "#ffe3a1",
     }).setOrigin(0.5).setDepth(21));
     if (view === "help") {
       this.buildHelpPanel();
     } else if (view === "credits") {
       this.markMenu(this.add.text(31, 91,
         "Ein Fluchtspiel über Kaffee und den Versuch,\nsich elegant vor dem PI Planning zu drücken.\n\nGrafik und Musik: eigens für dieses Spiel\nTechnik: Phaser · Vite\n\nVersion 0.1.0", {
-          fontFamily: "Courier New, monospace", fontSize: "8px", color: C.cream,
+          resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "8px", color: C.cream,
           lineSpacing: 4,
         }).setDepth(21));
       this.addBackButton();
@@ -263,7 +265,7 @@ export class IntroScene extends Phaser.Scene {
     this.helpMask = maskGraphics.createGeometryMask();
     const addHelpText = (y, text, style) => {
       const object = this.markMenu(this.add.text(left + 6, y, text, {
-        fontFamily: "Courier New, monospace",
+        resolution: RENDER_SCALE, fontFamily: "Courier New, monospace",
         fontSize: style.fontSize,
         fontStyle: style.fontStyle,
         color: style.color,
@@ -292,7 +294,7 @@ export class IntroScene extends Phaser.Scene {
     this.markMenu(this.add.rectangle(291, top + height / 2, 2, height, C.panelLight).setDepth(21));
     this.helpScrollThumb = this.markMenu(this.add.rectangle(291, top + 15, 4, 30, C.gold).setDepth(22));
     this.helpScrollHint = this.markMenu(this.add.text(160, 161, "Rad · Wischen · ↑↓ zum Scrollen", {
-      fontFamily: "Courier New, monospace", fontSize: "6px", color: C.muted, align: "center",
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "7px", color: C.muted, align: "center",
     }).setOrigin(0.5).setDepth(22));
     this.updateHelpScroll();
     this.addBackButton();
@@ -319,24 +321,27 @@ export class IntroScene extends Phaser.Scene {
   }
 
   handleHelpWheel(pointer, _currentlyOver, _deltaX, deltaY) {
-    if (this.view !== "help" || pointer.x < 20 || pointer.x > 300
-      || pointer.y < this.helpScrollTop || pointer.y > this.helpScrollTop + this.helpScrollHeight) return;
+    const { x, y } = pointer.positionToCamera(this.cameras.main);
+    if (this.view !== "help" || x < 20 || x > 300
+      || y < this.helpScrollTop || y > this.helpScrollTop + this.helpScrollHeight) return;
     pointer.event?.preventDefault?.();
     this.scrollHelp(deltaY * 0.7);
   }
 
   startHelpScroll(pointer) {
-    if (this.view !== "help" || pointer.x < 20 || pointer.x > 300
-      || pointer.y < this.helpScrollTop || pointer.y > this.helpScrollTop + this.helpScrollHeight) return;
+    const { x, y } = pointer.positionToCamera(this.cameras.main);
+    if (this.view !== "help" || x < 20 || x > 300
+      || y < this.helpScrollTop || y > this.helpScrollTop + this.helpScrollHeight) return;
     this.helpDragging = true;
-    this.helpDragY = pointer.y;
+    this.helpDragY = y;
     pointer.event?.preventDefault?.();
   }
 
   dragHelpScroll(pointer) {
     if (!this.helpDragging || this.view !== "help" || !pointer.isDown) return;
-    this.scrollHelp(this.helpDragY - pointer.y);
-    this.helpDragY = pointer.y;
+    const { y } = pointer.positionToCamera(this.cameras.main);
+    this.scrollHelp(this.helpDragY - y);
+    this.helpDragY = y;
   }
 
   stopHelpScroll() {
@@ -352,12 +357,12 @@ export class IntroScene extends Phaser.Scene {
         .on("pointerdown", () => { this.selection = index; this.confirmSelection(); })));
     this.settingsLabels = this.settingsLabelNames.map((label, index) =>
       this.markMenu(this.add.text(160, 74 + index * 18, "", {
-        fontFamily: "Courier New, monospace", fontSize: "8px", color: C.cream,
+        resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "8px", color: C.cream,
       }).setOrigin(0.5).setDepth(22)));
     this.updateSettingsText();
     this.markMenu(this.add.text(160, 180,
       "Spielgeräusche: Schritte, Warnung, Fang, Sieg\nMenünavigation bleibt stumm", {
-      fontFamily: "Courier New, monospace", fontSize: "6px", color: C.muted,
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "7px", color: C.muted,
       align: "center", lineSpacing: 2,
     }).setOrigin(0.5).setDepth(21));
   }
@@ -387,7 +392,7 @@ export class IntroScene extends Phaser.Scene {
       .setStrokeStyle(1, C.gold).setDepth(21).setInteractive({ useHandCursor: true })
       .on("pointerdown", () => this.buildHomeMenu()));
     this.markMenu(this.add.text(160, 194, "▶ ZURÜCK", {
-      fontFamily: "Courier New, monospace", fontSize: "9px", color: "#ffe3a1",
+      resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "9px", color: "#ffe3a1",
     }).setOrigin(0.5).setDepth(22));
   }
 

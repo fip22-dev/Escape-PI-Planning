@@ -6,6 +6,10 @@
 
 **Offen, vorerst zurückgestellt – Spielbare Deckung durch die Platzierung:** Tische bieten auf der aktuellen Karte nutzbare Deckung. Für Pflanzen, Sideboards und Drucker gibt es keine freie kardinale Sichtachse mit begehbaren Endpunkten innerhalb von fünf Kacheln. Eine Kaffeemaschine liegt auf vier solchen Achsen im Pausenraum, den keine Suchenden betreten dürfen. Ihre Sichtblocker-Eigenschaft ist korrekt, daraus entsteht dort aber noch keine eigenständige Deckungsmöglichkeit gegen die Suchenden. Der Nutzer lässt diesen Befund vorerst unverändert stehen; eine mögliche Umstellung bleibt als zurückgestelltes To-do dokumentiert.
 
+## Abgrenzung zu automatischen Türen
+
+Der aktuelle Folgebranch besitzt zusätzlich geschlossene, automatisch öffnende Türen als dynamischen Sichtschutz. Die folgenden Möbelzählungen und isolierten Geometrieprüfungen behandeln Türen weiterhin als transparent, um ausschliesslich Möbel zu vergleichen. Sie sind keine Zählung aller im laufenden Spiel sichtbaren Achsen mit geschlossenen Türen. Türpassagen, Fristen und Sichtunterbrechung werden separat geprüft; aktueller Status im Entwicklungsplan.
+
 ## Prüfumfang
 
 - Node-Prüfungen aller 197 vorhandenen Möbelobjekte mit ihren tatsächlichen Abmessungen: beide Achsen, beide Blickrichtungen, jede Reihe beziehungsweise Spalte. Sollwerte sind unabhängig von den Objektregeln aus dem Spieldesign abgeleitet. Die fünf Kacheln breite PI-Leinwand wird für die reine Transparenzprüfung mit grösserer Testreichweite geprüft; die produktive Sichtweite bleibt fünf Kacheln und wird separat geprüft.

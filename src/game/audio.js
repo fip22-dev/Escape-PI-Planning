@@ -95,7 +95,7 @@ export class AudioEngine {
   play(name = "step") {
     if (!this.context || !this.settings.sounds) return;
     const sounds = {
-      step: [180, 135, 0.045, "square"],
+      step: [120, 80, 0.055, "sine", 0.012],
       start: [330, 740, 0.19, "triangle"],
       warning: [430, 610, 0.18, "square"],
       caught: [390, 110, 0.48, "sawtooth"],
@@ -103,7 +103,7 @@ export class AudioEngine {
       timeout: [260, 100, 0.42, "triangle"],
       speech: [680, 520, 0.1, "sine"],
     };
-    const [from, to, duration, type] = sounds[name] ?? sounds.step;
+    const [from, to, duration, type, volume = 0.07] = sounds[name] ?? sounds.step;
     const now = this.context.currentTime;
     const oscillator = this.context.createOscillator();
     const gain = this.context.createGain();
@@ -111,7 +111,7 @@ export class AudioEngine {
     oscillator.frequency.setValueAtTime(from, now);
     oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, to), now + duration);
     gain.gain.setValueAtTime(0.0001, now);
-    gain.gain.linearRampToValueAtTime(0.07, now + Math.min(0.012, duration / 4));
+    gain.gain.linearRampToValueAtTime(volume, now + Math.min(0.012, duration / 4));
     gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
     oscillator.connect(gain);
     gain.connect(this.context.destination);

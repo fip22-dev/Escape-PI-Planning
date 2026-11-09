@@ -1,6 +1,7 @@
 import { TILE_TYPES } from "./map.js";
 import { objectAt } from "./objects.js";
 import { sameTile } from "./neutralMovement.js";
+import { doorBlocksSight } from "./doors.js";
 
 export const RTE_START = { x: 34, y: 38 };
 export const RTE_SIGHT_RANGE = 5;
@@ -236,6 +237,7 @@ export function canSearcherSeePlayer({
   grid,
   objects,
   neutralPeople,
+  doors = [],
   maxRange = RTE_SIGHT_RANGE,
 }) {
   const deltaX = playerTile.x - observerTile.x;
@@ -254,8 +256,8 @@ export function canSearcherSeePlayer({
     const y = observerTile.y + stepY * step;
     const tile = grid[y]?.[x];
 
-    // Doors are open floor openings in the current graybox and remain transparent.
-    if (tile === undefined || tile === TILE_TYPES.WALL || objectAt(objects, x, y, "blocksSight")) {
+    if (tile === undefined || tile === TILE_TYPES.WALL || objectAt(objects, x, y, "blocksSight")
+      || doorBlocksSight(doors, x, y)) {
       return false;
     }
     if (neutralPeople.some(person => sameTile({ x, y }, person.tile) || sameTile({ x, y }, person.nextTile))) {

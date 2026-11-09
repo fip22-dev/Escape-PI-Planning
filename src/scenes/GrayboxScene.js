@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import { getAudioEngine } from "../game/audio.js";
-import { drawPixelPerson, drawPixelTile } from "../game/pixelArt.js";
+import { createDoors, updateDoors, drawDoors, shiftDoorTime } from "../game/doors.js";
+import { configureRendering, routeRenderLayers, RENDER_SCALE } from "../game/rendering.js";
+import { drawPixelPerson, drawPixelTile, drawPixelFurniture } from "../game/pixelArt.js";
 import { advanceCaughtDialog, createCaughtDialog } from "../game/caughtDialog.js";
 import { createNeutralSpeech, updateNeutralSpeech, shiftNeutralSpeechTime } from "../game/neutralSpeech.js";
 import { bindTouchControls } from "../touchControls.js";
@@ -55,6 +57,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   create() {
+    configureRendering(this, true);
     document.querySelector(".page")?.classList.remove("is-menu");
     window.dispatchEvent(new CustomEvent("game:mode", { detail: { mode: "play" } }));
     this.audio = getAudioEngine();
@@ -65,6 +68,8 @@ export class GrayboxScene extends Phaser.Scene {
     this.neutralSpeech = createNeutralSpeech(this.time.now);
     const { grid, rooms, start } = createFloorPlan();
     this.grid = grid;
+    this.doors = createDoors(grid);
+    this.doorGraphics = this.add.graphics().setDepth(2);
     this.rooms = rooms;
     this.roomObjects = createRoomObjects(rooms);
     this.playerTile = { ...start };
@@ -79,16 +84,18 @@ export class GrayboxScene extends Phaser.Scene {
     this.pauseTransitionPending = false;
 
     const graphics = this.add.graphics();
+    const doorTiles = new Set(this.doors.filter(door => !door.exit)
+      .flatMap(door => door.tiles.map(tile => `${tile.x},${tile.y}`)));
     for (let y = 0; y < MAP_HEIGHT; y += 1) {
       for (let x = 0; x < MAP_WIDTH; x += 1) {
         const tile = grid[y][x];
         const px = x * TILE_SIZE;
         const py = y * TILE_SIZE;
-        const kind = tile === TILE_TYPES.WALL ? "wall"
+        const kind = doorTiles.has(`${x},${y}`) ? "door" : tile === TILE_TYPES.WALL ? "wall"
           : tile === TILE_TYPES.HALL ? "hall"
             : tile === TILE_TYPES.START ? "start"
               : tile === TILE_TYPES.EXIT ? "exit"
-                : tile === TILE_TYPES.DOOR ? "door" : "room";
+                : "room";
         drawPixelTile(graphics, kind, px, py, TILE_SIZE, x, y);
       }
     }
@@ -105,7 +112,7 @@ export class GrayboxScene extends Phaser.Scene {
           below ? (room.y + room.height) * TILE_SIZE + 2 : room.y * TILE_SIZE - 2,
           room.label,
           {
-            fontFamily: "Arial, sans-serif",
+            resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
             fontSize: "9px",
             fontStyle: "bold",
             color: COLORS.text,
@@ -120,7 +127,7 @@ export class GrayboxScene extends Phaser.Scene {
 
     this.add
       .text(34 * TILE_SIZE, 0, "AUSGANG", {
-        fontFamily: "Arial, sans-serif",
+        resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
         fontSize: "9px",
         fontStyle: "bold",
         color: COLORS.text,
@@ -131,7 +138,7 @@ export class GrayboxScene extends Phaser.Scene {
 
     this.add
       .text(38 * TILE_SIZE, 40 * TILE_SIZE - 2, "PI-Einführung", {
-        fontFamily: "Arial, sans-serif",
+        resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
         fontSize: "9px",
         fontStyle: "bold",
         color: COLORS.text,
@@ -225,6 +232,12 @@ export class GrayboxScene extends Phaser.Scene {
         if (!event.repeat) this.togglePauseAudioSetting(audioSetting);
         return;
       }
+      if (this.isPaused && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyW", "KeyS", "KeyA", "KeyD"].includes(event.code)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.onMenuDirection(event);
+        return;
+      }
       if ((event.key === "Enter" || event.key === " " || event.code === "Space")
         && (this.caughtDialog || this.isPaused || this.gameResult)) {
         event.preventDefault();
@@ -257,7 +270,8 @@ export class GrayboxScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-SPACE", this.onConfirmPressed, this);
 
     this.createGameHud();
-
+    this.updateDoors(this.time.now, true);
+    routeRenderLayers(this);
   }
 
   update(time) {
@@ -289,6 +303,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.isMoving = true;
     this.lastMoveAt = time;
     this.playerNextTile = { x: targetX, y: targetY };
+    this.updateDoors(time);
     this.tweens.add({
       targets: this.player,
       x: (targetX + 0.5) * TILE_SIZE,
@@ -317,19 +332,17 @@ export class GrayboxScene extends Phaser.Scene {
       return;
     }
     if (this.gameResult) return;
-    if (this.isPaused) {
-      if (this.pauseMode === "leave") this.resumeGame();
-      else this.requestMainMenu();
-    } else this.pauseGame();
+    if (this.isPaused) this.resumeGame();
+    else this.pauseGame();
   }
 
   onMenuDirection(event) {
+    if (event?.repeat) return;
     if (this.isPaused) {
-      if (this.pauseMode === "restart" && event?.code === "ArrowDown") {
-        this.requestMainMenu();
-        return;
-      }
-      this.pauseChoiceYes = !this.pauseChoiceYes;
+      if (["ArrowDown", "KeyS"].includes(event?.code)) this.pauseRow = (this.pauseRow + 1) % 3;
+      else if (["ArrowUp", "KeyW"].includes(event?.code)) this.pauseRow = (this.pauseRow + 2) % 3;
+      else if (this.pauseRow === 0) this.pauseChoiceYes = !this.pauseChoiceYes;
+      else if (this.pauseRow === 2) this.pauseAudioChoice = 1 - this.pauseAudioChoice;
       this.updatePauseChoice();
     } else if (this.gameResult === "timeout") {
       this.resultChoiceYes = !this.resultChoiceYes;
@@ -375,18 +388,18 @@ export class GrayboxScene extends Phaser.Scene {
   createSearchers() {
     this.searchers = createSearcherPatrols({ grid: this.grid, objects: this.roomObjects, rooms: this.rooms }).map(config => {
       const sprite = this.add.container((config.start.x + 0.5) * TILE_SIZE, (config.start.y + 0.5) * TILE_SIZE);
-      drawPixelPerson(this, 0, 0, config.color, config.color % 7, sprite);
+      drawPixelPerson(this, 0, 0, config.color, config.color % 7, sprite, config.role);
       const facingMarker = this.add.rectangle(0, -7, 2, 2, 0x273438);
       const roleTag = this.add.text(0, -16, config.role, {
-        fontFamily: "Arial, sans-serif",
-        fontSize: "6px",
+        resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
+        fontSize: "7px",
         fontStyle: "bold",
         color: "#fff0a8",
         backgroundColor: "#50372e",
         padding: { x: 1, y: 1 },
       }).setOrigin(0.5);
       const warningIcon = this.add.text(0, -24, "!", {
-        fontFamily: "Arial, sans-serif",
+        resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
         fontSize: "12px",
         fontStyle: "bold",
         color: "#ffe066",
@@ -427,9 +440,17 @@ export class GrayboxScene extends Phaser.Scene {
 
   updateSearchers(time) {
     this.searchers.forEach(searcher => this.updateSearcherPatrol(searcher, time));
+    this.updateDoors(time);
     for (const searcher of this.searchers) {
       if (this.updateSearcherDetection(searcher, time)) return;
     }
+  }
+
+  updateDoors(time, force = false) {
+    const actors = [{ tile: this.playerTile, nextTile: this.playerNextTile },
+      ...this.neutralPeople, ...this.searchers];
+    const changed = updateDoors(this.doors, actors, time);
+    if (force || changed) drawDoors(this.doorGraphics, this.doors, TILE_SIZE);
   }
 
   updateSearcherPatrol(searcher, time) {
@@ -507,6 +528,7 @@ export class GrayboxScene extends Phaser.Scene {
         grid: this.grid,
         objects: this.roomObjects,
         neutralPeople: this.neutralPeople,
+        doors: this.doors,
         maxRange: RTE_SIGHT_RANGE,
       })));
 
@@ -535,7 +557,8 @@ export class GrayboxScene extends Phaser.Scene {
     this.hideSpeechBubbles();
     this.isPaused = true;
     this.pauseChoiceYes = false;
-    this.pauseMode = "restart";
+    this.pauseRow = 0;
+    this.pauseAudioChoice = 0;
     this.pauseStartedAt = this.time.now;
     this.tweens.pauseAll();
     this.updatePauseChoice();
@@ -559,6 +582,7 @@ export class GrayboxScene extends Phaser.Scene {
     if (!this.isPaused) return;
     const pausedFor = Math.max(0, this.time.now - this.pauseStartedAt);
     shiftNeutralSpeechTime(this.neutralSpeech, pausedFor);
+    shiftDoorTime(this.doors, pausedFor);
     if (this.escapeStartedAt !== null) this.escapeStartedAt += pausedFor;
     for (const person of [...this.neutralPeople, ...this.searchers]) {
       person.nextMoveAt += pausedFor;
@@ -589,6 +613,8 @@ export class GrayboxScene extends Phaser.Scene {
     this.pauseSoundsText.setText(`TÖNE: ${settings.sounds ? "AN" : "AUS"}`);
     this.pauseMusicText.setColor(settings.music ? "#f5f0dc" : "#b5c4ad");
     this.pauseSoundsText.setColor(settings.sounds ? "#f5f0dc" : "#b5c4ad");
+    this.pauseMusicButton.setStrokeStyle(1, this.pauseRow === 2 && this.pauseAudioChoice === 0 ? 0xffe066 : 0x718573);
+    this.pauseSoundsButton.setStrokeStyle(1, this.pauseRow === 2 && this.pauseAudioChoice === 1 ? 0xffe066 : 0x718573);
   }
 
   togglePauseAudioSetting(key) {
@@ -598,28 +624,30 @@ export class GrayboxScene extends Phaser.Scene {
 
   updatePauseChoice() {
     if (!this.pauseYes || !this.pauseNo) return;
-    this.pauseYes.setText(`${this.pauseChoiceYes ? "> " : "  "}Ja`);
-    this.pauseNo.setText(`${this.pauseChoiceYes ? "  " : "> "}Nein`);
-    this.pauseYes.setColor(this.pauseChoiceYes ? "#f5f0dc" : "#b5c4ad");
-    this.pauseNo.setColor(this.pauseChoiceYes ? "#b5c4ad" : "#f5f0dc");
+    const choices = this.pauseRow === 0;
+    this.pauseYes.setText(`${choices && this.pauseChoiceYes ? "> " : "  "}Ja`);
+    this.pauseNo.setText(`${choices && !this.pauseChoiceYes ? "> " : "  "}Nein`);
+    this.pauseYes.setColor(choices && this.pauseChoiceYes ? "#ffe066" : "#b5c4ad");
+    this.pauseNo.setColor(choices && !this.pauseChoiceYes ? "#ffe066" : "#b5c4ad");
+    this.pauseMenu.setText(`${this.pauseRow === 1 ? "> " : ""}ZURÜCK ZUM STARTMENÜ`);
+    this.pauseMenu.setColor(this.pauseRow === 1 ? "#ffe066" : "#d8b868");
+    this.updatePauseAudioButtons();
   }
 
   requestMainMenu() {
-    this.pauseMode = "leave";
-    this.pauseChoiceYes = false;
-    this.pausePrompt.setText("Versuch wirklich verlassen?");
-    this.updatePauseChoice();
+    if (this.pauseTransitionPending) return;
+    this.pauseTransitionPending = true;
+    this.touchControls.clear();
+    this.input.keyboard.resetKeys();
+    // Defer until the current input finishes, so Enter cannot start a new game.
+    this.time.delayedCall(0, () => this.scene.start("intro"));
   }
 
   confirmPauseChoice() {
     if (this.pauseTransitionPending) return;
-    if (this.pauseMode === "leave") {
-      if (this.pauseChoiceYes) {
-        this.pauseTransitionPending = true;
-        this.touchControls.clear();
-        this.time.delayedCall(0, () => this.scene.start("intro"));
-      } else this.resumeGame();
-    } else if (this.pauseChoiceYes) this.scene.restart();
+    if (this.pauseRow === 1) this.requestMainMenu();
+    else if (this.pauseRow === 2) this.togglePauseAudioSetting(this.pauseAudioChoice === 0 ? "music" : "sounds");
+    else if (this.pauseChoiceYes) this.scene.restart();
     else this.resumeGame();
   }
 
@@ -642,33 +670,33 @@ export class GrayboxScene extends Phaser.Scene {
       tail: this.add.graphics().setScrollFactor(0).setDepth(89).setVisible(false),
       shape: this.add.graphics().setScrollFactor(0).setDepth(90).setVisible(false),
       text: this.add.text(0, 0, "", {
-        fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#20292a",
+        resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#20292a",
         padding: { x: 6, y: 5 }, wordWrap: { width: 124 }, lineSpacing: 2,
       }).setScrollFactor(0).setDepth(91).setVisible(false),
     }));
     this.dialogPanel = this.add.rectangle(160, 120, 288, 152, 0x172326, 0.98)
       .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(120).setVisible(false);
     this.dialogHeading = this.add.text(28, 57, "", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#ffe066",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#ffe066",
     }).setScrollFactor(0).setDepth(121).setVisible(false);
     this.dialogBody = this.add.text(28, 82, "", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#f5f0dc",
       wordWrap: { width: 264 }, lineSpacing: 4,
     }).setScrollFactor(0).setDepth(121).setVisible(false);
     this.dialogHint = this.add.text(160, 178, "", {
-      fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#b5c4ad",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#b5c4ad",
       wordWrap: { width: 264 }, align: "center",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(121).setVisible(false);
     this.hudPanel = this.add.rectangle(8, 8, 76, 30, 0x24332b, 0.96)
       .setOrigin(0).setScrollFactor(0).setDepth(100);
     this.hudLabel = this.add.text(14, 11, "ZEIT", {
-      fontFamily: "Arial, sans-serif",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
       fontSize: "8px",
       fontStyle: "bold",
       color: "#b5c4ad",
     }).setScrollFactor(0).setDepth(101);
     this.timerText = this.add.text(14, 20, "03:00", {
-      fontFamily: "Arial, sans-serif",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
       fontSize: "12px",
       fontStyle: "bold",
       color: "#f5f0dc",
@@ -676,7 +704,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.resultPanel = this.add.rectangle(160, 120, 272, 88, 0x172326, 0.96)
       .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(110).setVisible(false);
     this.resultText = this.add.text(160, 103, "", {
-      fontFamily: "Arial, sans-serif",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
       fontSize: "11px",
       fontStyle: "bold",
       color: "#f5f0dc",
@@ -684,10 +712,10 @@ export class GrayboxScene extends Phaser.Scene {
       lineSpacing: 5,
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
     this.resultYes = this.add.text(122, 145, "Ja", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#b5c4ad",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#b5c4ad",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
     this.resultNo = this.add.text(198, 145, "Nein", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#f5f0dc",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
     this.resultYes.on("pointerdown", () => this.confirmResultChoice(true));
     this.resultNo.on("pointerdown", () => this.confirmResultChoice(false));
@@ -695,49 +723,56 @@ export class GrayboxScene extends Phaser.Scene {
     this.pausePanel = this.add.rectangle(160, 120, 272, 176, 0x172326, 0.97)
       .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(110).setVisible(false);
     this.pauseHeading = this.add.text(160, 52, "PAUSE", {
-      fontFamily: "Arial, sans-serif", fontSize: "12px", fontStyle: "bold", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "12px", fontStyle: "bold", color: "#f5f0dc",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
     this.pausePrompt = this.add.text(160, 75, "Versuch neu starten?", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", color: "#f5f0dc",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
     this.pauseYes = this.add.text(122, 100, "Ja", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#b5c4ad",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#b5c4ad",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
     this.pauseNo = this.add.text(198, 100, "Nein", {
-      fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "11px", fontStyle: "bold", color: "#f5f0dc",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
     this.pauseMenu = this.add.text(160, 124, "ZURÜCK ZUM STARTMENÜ", {
-      fontFamily: "Arial, sans-serif", fontSize: "8px", fontStyle: "bold", color: "#d8b868",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", fontStyle: "bold", color: "#d8b868",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false).setInteractive({ useHandCursor: true });
     this.pauseMusicButton = this.add.rectangle(95, 153, 122, 22, 0x30413a, 1)
       .setStrokeStyle(1, 0x718573).setScrollFactor(0).setDepth(111).setVisible(false)
       .setInteractive({ useHandCursor: true });
     this.pauseMusicText = this.add.text(95, 153, "MUSIK: AN", {
-      fontFamily: "Arial, sans-serif", fontSize: "8px", fontStyle: "bold", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", fontStyle: "bold", color: "#f5f0dc",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(112).setVisible(false);
     this.pauseSoundsButton = this.add.rectangle(225, 153, 122, 22, 0x30413a, 1)
       .setStrokeStyle(1, 0x718573).setScrollFactor(0).setDepth(111).setVisible(false)
       .setInteractive({ useHandCursor: true });
     this.pauseSoundsText = this.add.text(225, 153, "TÖNE: AN", {
-      fontFamily: "Arial, sans-serif", fontSize: "8px", fontStyle: "bold", color: "#f5f0dc",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", fontStyle: "bold", color: "#f5f0dc",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(112).setVisible(false);
-    this.pauseHint = this.add.text(160, 176, "Esc: Rückkehrdialog · ←/→: Ja/Nein · Enter: wählen", {
-      fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#f5f0dc", align: "center",
+    this.pauseHint = this.add.text(160, 176, "↑↓ Auswahl · ←→ wechseln · Enter wählen · Esc weiter", {
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#f5f0dc", align: "center",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(111).setVisible(false);
     this.pauseAudioHintBackground = this.add.rectangle(160, 194, 154, 17, 0x30413a, 1)
       .setStrokeStyle(1, 0xd8b868).setScrollFactor(0).setDepth(111).setVisible(false);
     this.pauseAudioHint = this.add.text(160, 194, "M: MUSIK  ·  T: TÖNE", {
-      fontFamily: "Arial, sans-serif", fontSize: "9px", fontStyle: "bold", color: "#ffe066", align: "center",
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "9px", fontStyle: "bold", color: "#ffe066", align: "center",
     }).setOrigin(0.5).setScrollFactor(0).setDepth(112).setVisible(false);
     this.pauseMenu.on("pointerdown", () => this.requestMainMenu());
+    this.pauseMenu.on("pointerover", () => { this.pauseRow = 1; this.updatePauseChoice(); });
+    this.pauseYes.on("pointerover", () => { this.pauseRow = 0; this.pauseChoiceYes = true; this.updatePauseChoice(); });
+    this.pauseNo.on("pointerover", () => { this.pauseRow = 0; this.pauseChoiceYes = false; this.updatePauseChoice(); });
+    this.pauseMusicButton.on("pointerover", () => { this.pauseRow = 2; this.pauseAudioChoice = 0; this.updatePauseChoice(); });
+    this.pauseSoundsButton.on("pointerover", () => { this.pauseRow = 2; this.pauseAudioChoice = 1; this.updatePauseChoice(); });
     this.pauseMusicButton.on("pointerdown", () => this.togglePauseAudioSetting("music"));
     this.pauseSoundsButton.on("pointerdown", () => this.togglePauseAudioSetting("sounds"));
     this.pauseYes.on("pointerdown", () => {
+      this.pauseRow = 0;
       this.pauseChoiceYes = true;
       this.updatePauseChoice();
       this.confirmPauseChoice();
     });
     this.pauseNo.on("pointerdown", () => {
+      this.pauseRow = 0;
       this.pauseChoiceYes = false;
       this.updatePauseChoice();
       this.confirmPauseChoice();
@@ -878,28 +913,31 @@ export class GrayboxScene extends Phaser.Scene {
     this.hideSpeechBubbles();
     const placed = [];
     for (const active of this.neutralSpeech.active) {
-      const person = this.neutralPeople[active.personIndex];
-      if (!camera.worldView.contains(person.sprite.x, person.sprite.y)) continue;
       const { text, shape, tail } = this.speechBubbles[active.personIndex];
       if (text.text !== active.text) text.setText(active.text);
-      const tipX = person.sprite.x - camera.scrollX;
-      const tipY = person.sprite.y - camera.scrollY - 10;
+      const tipX = active.anchor.x - camera.worldView.x;
+      const tipY = active.anchor.y - camera.worldView.y;
       const width = text.width;
       const height = text.height;
-      const baseX = Math.max(8, Math.min(312 - width, tipX - width / 2));
-      const baseY = Math.max(42, Math.min(222 - height, tipY - height - 8));
-      let position = { x: baseX, y: baseY };
-      // Nearby speakers get separate boxes where the viewport permits it.
-      search: for (const x of [baseX, 8, 312 - width]) {
-        for (let y = baseY; y >= 42; y -= height + 6) {
-          if (placed.every(box => x + width + 4 <= box.x || x >= box.x + box.width + 4
-            || y + height + 4 <= box.y || y >= box.y + box.height + 4)) {
-            position = { x, y };
-            break search;
+      if (!active.layout) {
+        const baseX = Math.max(8, Math.min(312 - width, tipX - width / 2));
+        const baseY = Math.max(42, Math.min(222 - height, tipY - height - 8));
+        let position = { x: baseX, y: baseY };
+        // Resolve nearby bubbles once, then keep the rectangle in world space.
+        search: for (const x of [baseX, 8, 312 - width]) {
+          for (let y = baseY; y >= 42; y -= height + 6) {
+            if (placed.every(box => x + width + 4 <= box.x || x >= box.x + box.width + 4
+              || y + height + 4 <= box.y || y >= box.y + box.height + 4)) {
+              position = { x, y };
+              break search;
+            }
           }
         }
+        active.layout = { x: position.x + camera.worldView.x, y: position.y + camera.worldView.y };
       }
-      const { x, y } = position;
+      const x = active.layout.x - camera.worldView.x;
+      const y = active.layout.y - camera.worldView.y;
+      if (x + width < 0 || x > 320 || y + height + 10 < 0 || y > 240) continue;
       placed.push({ x, y, width, height });
       const tailX = Math.max(x + 10, Math.min(x + width - 10, tipX));
       const tailTipX = Math.max(tailX - 8, Math.min(tailX + 8, tipX));
@@ -934,88 +972,6 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   drawRoomObjects() {
-    const g = this.add.graphics().setDepth(1);
-    for (const object of this.roomObjects) {
-      const x = object.x * TILE_SIZE;
-      const y = object.y * TILE_SIZE;
-      const w = object.width * TILE_SIZE;
-      const h = object.height * TILE_SIZE;
-      if (object.type === "table") {
-        g.fillStyle(0x493626).fillRect(x + 1, y + 3, w - 2, h - 3);
-        g.fillStyle(0xb88651).fillRect(x + 1, y + 1, w - 2, h - 4);
-        g.lineStyle(1, 0xe0b67a).strokeRect(x + 2, y + 2, w - 4, h - 6);
-        if (object.surface === "break") {
-          // Pausentische erhalten Essen und Kaffeetassen statt Arbeitsmaterial.
-          g.fillStyle(0xe9e3cf).fillRect(x + 5, y + 6, 8, 4);
-          g.fillStyle(0xb85f45).fillRect(x + 6, y + 5, 3, 3);
-          g.fillStyle(0x78904f).fillRect(x + 10, y + 7, 3, 2);
-          g.fillStyle(0xf1e9d5).fillRect(x + 20, y + 4, 4, 5);
-          g.fillStyle(0x6f8188).fillRect(x + 19, y + 4, 1, 3);
-          g.fillStyle(0x6f8188).fillRect(x + 24, y + 5, 2, 2);
-          g.fillStyle(0xe9e3cf).fillRect(x + 28, y + 7, 5, 3);
-        } else if (object.surface === "pi-snack") {
-          // Der kleine PI-Tisch zeigt Obst, Gemüse und Gipfeli.
-          g.fillStyle(0xd94f45).fillRect(x + 5, y + 5, 6, 6);
-          g.fillStyle(0x9d3f39).fillRect(x + 6, y + 5, 2, 2);
-          g.fillStyle(0x78a64b).fillRect(x + 5, y + 21, 6, 6);
-          g.fillStyle(0xb2c96b).fillRect(x + 5, y + 21, 2, 2);
-          g.fillStyle(0xe3b84f).fillRect(x + 4, y + 38, 8, 4);
-          g.fillStyle(0xf5d98b).fillRect(x + 5, y + 39, 5, 1);
-        } else {
-          // Arbeitsmaterial ist Dekoration ohne eigene Kollisions- oder Sichtfläche.
-          g.fillStyle(0x253c4b).fillRect(x + 3, y + 3, 10, 6);
-          g.fillStyle(0x85b7c2).fillRect(x + 4, y + 4, 8, 3);
-          g.fillStyle(0x6f8188).fillRect(x + 2, y + 9, 12, 2);
-          g.fillStyle(0xf1e9d5).fillRect(x + 17, y + 3, 6, 7);
-          g.fillStyle(0xaaa591).fillRect(x + 18, y + 5, 4, 1);
-          g.fillStyle(0xf7ead1).fillRect(x + w - 7, y + 6, 4, 4);
-          g.fillStyle(0x64442f).fillRect(x + w - 6, y + 6, 2, 1);
-        }
-      } else if (object.type === "chair") {
-        g.fillStyle(0x374b56).fillRect(x + 4, y + 4, 8, 9);
-        g.fillStyle(0x6a91a0).fillRect(x + 3, y + 2, 10, 4);
-        g.fillStyle(0x517585).fillRect(x + 4, y + 7, 8, 5);
-      } else if (object.type === "plant") {
-        g.fillStyle(0x9b6145).fillRect(x + 5, y + 10, 7, 5);
-        g.fillStyle(0x355c3e).fillRect(x + 5, y + 4, 6, 7);
-        g.fillStyle(0x416c43).fillRect(x + 2, y + 6, 5, 4);
-        g.fillStyle(0x416c43).fillRect(x + 9, y + 3, 5, 5);
-        g.fillStyle(0x6f9a50).fillRect(x + 4, y + 3, 3, 3);
-        g.fillStyle(0xa7b866).fillRect(x + 10, y + 5, 2, 2);
-      } else if (object.type === "coffee") {
-        g.fillStyle(0x28343c).fillRect(x + 2, y + 1, 12, 14);
-        g.fillStyle(0x80999b).fillRect(x + 3, y + 2, 10, 4);
-        g.fillStyle(0xf2e0bc).fillRect(x + 6, y + 9, 5, 4);
-        g.fillStyle(0xd5a355).fillRect(x + 11, y + 7, 2, 2);
-      } else if (object.type === "whiteboard") {
-        g.fillStyle(0x5b6d72).fillRect(x, y + 1, w, h - 2);
-        g.fillStyle(0xe9eddf).fillRect(x + 1, y + 2, w - 2, h - 4);
-        for (let i = 0; i < 5; i += 1) {
-          g.fillStyle(i % 2 ? 0xe6b66c : 0x8bb9ac).fillRect(x + 4 + i * 8, y + 5, 5, 5);
-        }
-      } else if (object.type === "sideboard") {
-        g.fillStyle(0x5c4936).fillRect(x + 1, y + 1, w - 2, h - 2);
-        g.fillStyle(0xa68c65).fillRect(x + 2, y + 2, w - 4, 3);
-        g.lineStyle(1, 0xceb78c).strokeRect(x + 3, y + 7, w / 2 - 4, 6);
-        g.fillStyle(0xceb78c).fillRect(x + w - 7, y + 9, 2, 2);
-      } else if (object.type === "printer") {
-        g.fillStyle(0x3c4a52).fillRect(x + 2, y + 5, 12, 10);
-        g.fillStyle(0xb2bdb8).fillRect(x + 1, y + 4, 14, 6);
-        g.fillStyle(0xf3ecd9).fillRect(x + 4, y + 1, 8, 5);
-        g.fillStyle(0x72af87).fillRect(x + 11, y + 6, 2, 2);
-        g.fillStyle(0x1c2c33).fillRect(x + 4, y + 11, 8, 2);
-      } else if (object.type === "bin") {
-        g.fillStyle(0x4c6261).fillRect(x + 4, y + 5, 8, 10);
-        g.fillStyle(0x91a6a0).fillRect(x + 3, y + 3, 10, 3);
-        g.fillStyle(0x263c3b).fillRect(x + 5, y + 4, 6, 1);
-      } else if (object.type === "screen") {
-        g.fillStyle(0x3a4751).fillRect(x, y + 1, w, h - 2);
-        g.fillStyle(0xe5e9df).fillRect(x + 2, y + 3, w - 4, h - 6);
-        g.fillStyle(0x90adb1);
-        if (h > w) g.fillRect(x + Math.floor(w / 2) - 1, y + 8, 2, h - 16);
-        else g.fillRect(x + 8, y + 6, w - 16, 2);
-      }
-    }
+    drawPixelFurniture(this, this.roomObjects, TILE_SIZE);
   }
 }
-
