@@ -8,6 +8,8 @@ import * as loop from "./gameLoop.js";
 import * as detection from "./searcherDetection.js";
 import * as movement from "./neutralMovement.js";
 import * as speech from "./neutralSpeech.js";
+import * as pixels from "./pixelArt.js";
+import * as doors from "./doors.js";
 
 test("all 15 searchers have complete first dialogues and skippable family repeats", () => {
   const plan = map.createFloorPlan();
@@ -52,8 +54,11 @@ function createScene() {
   }
   const controls = { clear() {}, destroy() {}, readDirection: () => null };
   const Phaser = { Scene: class {}, Input: { Keyboard: { KeyCodes: {} } }, Scenes: { Events: { SHUTDOWN: "shutdown" } } };
-  const bindings = { Phaser, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech,
-    bindTouchControls: () => controls, window: { addEventListener() {}, removeEventListener() {} } };
+  const bindings = { Phaser, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors,
+    configureRendering() {}, routeRenderLayers() {}, RENDER_SCALE: 4,
+    document: { querySelector: () => null }, CustomEvent: class {},
+    getAudioEngine: () => ({ startMusic() {}, play() {}, getSettings: () => ({ music: true, sounds: true }) }),
+    bindTouchControls: () => controls, window: { addEventListener() {}, removeEventListener() {}, dispatchEvent() {} } };
   const source = readFileSync(new URL("../scenes/GrayboxScene.js", import.meta.url), "utf8")
     .replace(/import[\s\S]*?from "[^"]+";\s*/g, "").replace("export class", "class");
   const Scene = new Function(...Object.keys(bindings), `${source}\nreturn GrayboxScene;`)(...Object.values(bindings));

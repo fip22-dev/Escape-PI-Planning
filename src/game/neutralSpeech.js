@@ -1,4 +1,6 @@
-export const SPEECH_DURATION_MS = 1700;
+import { TILE_SIZE } from "./map.js";
+
+export const SPEECH_DURATION_MS = 2000;
 export const SPEECH_PERSON_COOLDOWN_MS = 15_000;
 export const NEUTRAL_SAYINGS = [
   "Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.",
@@ -35,7 +37,9 @@ export function updateNeutralSpeech(state, now, people, playerTile, eligible = (
     const roomKey = person.bounds?.label ? `${person.bounds.x},${person.bounds.y}` : null;
     if (roomKey !== null && state.active.some(bubble => bubble.roomKey === roomKey)) continue;
     const sayingIndex = (index + (random() < 0.5 ? 0 : 7)) % NEUTRAL_SAYINGS.length;
-    state.active.push({ personIndex: index, roomKey, text: NEUTRAL_SAYINGS[sayingIndex], expiresAt: now + SPEECH_DURATION_MS });
+    state.active.push({ personIndex: index, roomKey, text: NEUTRAL_SAYINGS[sayingIndex], expiresAt: now + SPEECH_DURATION_MS,
+      anchor: { x: person.sprite?.x ?? (person.tile.x + 0.5) * TILE_SIZE,
+        y: (person.sprite?.y ?? (person.tile.y + 0.5) * TILE_SIZE) - 10 } });
     state.personReadyAt[index] = now + SPEECH_PERSON_COOLDOWN_MS;
   }
 }

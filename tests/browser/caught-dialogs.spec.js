@@ -1,6 +1,166 @@
 import { test, expect } from "@playwright/test";
 import { isolatedFurnitureCases, furnitureSightLayout } from "../helpers/furnitureSight.js";
 
+test("doors occupy the wall openings on every side of the floor", async ({ page }, testInfo) => {
+  const positions = await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.update = () => {};
+    s.tweens.pauseAll();
+    s.cameras.main.stopFollow();
+    return s.doors.map(d => [d.x, d.y, d.width, d.height]);
+  });
+  expect(positions.sort()).toEqual([
+    [12, 8, 1, 2], [12, 18, 1, 2], [12, 29, 1, 2], [12, 37, 1, 2],
+    [36, 8, 1, 2], [36, 20, 1, 2], [36, 32, 1, 2], [22, 6, 2, 1],
+    [21, 12, 1, 1], [21, 18, 1, 1], [20, 22, 1, 1], [28, 22, 1, 1],
+    [20, 34, 1, 1], [27, 34, 1, 1], [34, 39, 2, 1], [33, 2, 2, 1],
+  ].sort());
+  for (const [name, x, y] of [["meeting-4-5", 24, 35], ["west", 12, 19], ["east", 36, 20],
+    ["north", 23, 7], ["meeting-1-3", 24, 20]]) {
+    await page.evaluate(({ x, y }) => window.__game.scene.getScene("graybox").cameras.main.centerOn(x * 16, y * 16), { x, y });
+    await page.clock.runFor(32);
+    await page.screenshot({ path: testInfo.outputPath(`${name}-wall-doors.png`) });
+  }
+  await page.evaluate(async () => {
+    const s = window.__game.scene.getScene("graybox");
+    for (const door of s.doors) door.open = true;
+    const { drawDoors } = await import("/src/game/doors.js");
+    drawDoors(s.doorGraphics, s.doors, 16);
+  });
+  for (const [name, x, y] of [["meeting-4-5", 24, 35], ["west", 12, 19], ["east", 36, 20]]) {
+    await page.evaluate(({ x, y }) => window.__game.scene.getScene("graybox").cameras.main.centerOn(x * 16, y * 16), { x, y });
+    await page.clock.runFor(32);
+    await page.screenshot({ path: testInfo.outputPath(`${name}-open-doors.png`) });
+  }
+});
+
+test("pause menu returns directly to the intro with keyboard and pointer", async ({ page }, testInfo) => {
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("ArrowDown");
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").pauseRow)).toBe(1);
+  await page.clock.runFor(32);
+  await page.screenshot({ path: testInfo.outputPath("pause-main-menu-selected.png") });
+  await page.keyboard.press("Enter");
+  await page.clock.runFor(250);
+  expect(await page.evaluate(() => window.__game.scene.isActive("intro"))).toBe(true);
+  expect(await page.locator(".touch-controls").isVisible()).toBe(false);
+  await page.clock.runFor(250);
+  expect(await page.evaluate(() => window.__game.scene.isActive("graybox"))).toBe(false);
+  await page.keyboard.press("Enter");
+  await page.clock.runFor(250);
+  expect(await page.evaluate(() => window.__game.scene.isActive("graybox"))).toBe(true);
+  await page.keyboard.press("Escape");
+  const canvas = page.locator("canvas");
+  const box = await canvas.boundingBox();
+  const options = { position: { x: box.width / 2, y: box.height * 124 / 240 } };
+  if (testInfo.project.name.startsWith("mobile")) await canvas.tap(options);
+  else await canvas.click(options);
+  await page.clock.runFor(250);
+  expect(await page.evaluate(() => window.__game.scene.isActive("intro")), JSON.stringify(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return { paused: s.isPaused, row: s.pauseRow, pending: s.pauseTransitionPending,
+      pointer: { x: s.input.activePointer.x, y: s.input.activePointer.y },
+      menu: s.pauseMenu.getBounds(), cameras: s.cameras.cameras.map(c => ({ id: c.id, name: c.name, zoom: c.zoom })) };
+  }))).toBe(true);
+});
+
+test("automatic doors stay open through player and PO passages, pause, then close and reset", async ({ page }, testInfo) => {
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.updateSearcherDetection = () => false;
+    s.tweens.killAll();
+    for (const p of [...s.neutralPeople, ...s.searchers]) {
+      p.tile = { x: 0, y: 0 }; p.nextTile = null; p.nextMoveAt = Infinity;
+      p.sprite.setVisible(false);
+    }
+    s.playerTile = { x: 34, y: 40 }; s.playerNextTile = null; s.lastMoveAt = -Infinity;
+    s.player.setPosition(34.5 * 16, 40.5 * 16);
+    s.cameras.main.stopFollow(); s.cameras.main.centerOn(34.5 * 16, 39.5 * 16);
+  });
+  const piDoor = () => page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return s.doors.find(d => d.x === 34 && d.y === 39).open;
+  });
+  expect(await piDoor()).toBe(false);
+  await page.clock.runFor(32);
+  await page.screenshot({ path: testInfo.outputPath("door-closed.png") });
+  await page.keyboard.down("ArrowUp");
+  await page.clock.runFor(32);
+  await page.keyboard.up("ArrowUp");
+  expect(await piDoor()).toBe(true);
+  await page.keyboard.press("Escape");
+  await page.clock.runFor(1000);
+  expect(await piDoor()).toBe(true);
+  await page.keyboard.press("Escape");
+  await page.clock.runFor(150);
+  expect((await sceneState(page)).snapshot.player).toEqual({ x: 34, y: 39 });
+  await page.screenshot({ path: testInfo.outputPath("door-open.png") });
+  await page.keyboard.down("ArrowUp");
+  await page.clock.runFor(32);
+  await page.keyboard.up("ArrowUp");
+  await page.clock.runFor(150);
+  expect((await sceneState(page)).snapshot.player).toEqual({ x: 34, y: 38 });
+  await page.clock.runFor(300);
+  expect(await piDoor()).toBe(false);
+
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.playerTile = { x: 34, y: 47 }; s.player.setPosition(34.5 * 16, 47.5 * 16);
+    const po = s.searchers.find(p => p.role.startsWith("PO"));
+    po.tile = { x: 11, y: 8 }; po.nextTile = null;
+    po.sprite.setPosition(11.5 * 16, 8.5 * 16).setVisible(true);
+    po.route = [{ x: 12, y: 8 }, { x: 13, y: 8 }]; po.routeIndex = 0;
+    po.nextMoveAt = s.time.now;
+    s.cameras.main.centerOn(11.5 * 16, 8.5 * 16);
+  });
+  const teamDoor = () => page.evaluate(() => window.__game.scene.getScene("graybox").doors.find(d => d.x === 12 && d.y === 8).open);
+  await page.clock.runFor(32);
+  expect(await teamDoor()).toBe(true);
+  await page.clock.runFor(450);
+  expect(await teamDoor()).toBe(true);
+  await page.clock.runFor(400);
+  expect(await teamDoor()).toBe(true);
+  await page.clock.runFor(700);
+  expect(await teamDoor(), JSON.stringify(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    const po = s.searchers.find(p => p.role.startsWith("PO"));
+    return { now: s.time.now, tile: po.tile, next: po.nextTile, nextMove: po.nextMoveAt,
+      door: s.doors.find(d => d.x === 12 && d.y === 8), routeIndex: po.routeIndex, blocked: po.blockedAttempts };
+  }))).toBe(false);
+  await page.locator('[data-action="restart"]').click();
+  await page.clock.runFor(100);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").doors.every(d => !d.open))).toBe(true);
+});
+
+test("closed doors hide the player; an NPC reservation opens sight and closing clears the warning", async ({ page }) => {
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.tweens.killAll();
+    for (const p of [...s.neutralPeople, ...s.searchers]) {
+      p.tile = { x: 0, y: 0 }; p.nextTile = null; p.nextMoveAt = Infinity;
+    }
+    const observer = s.searchers[0];
+    observer.tile = { x: 10, y: 8 }; observer.facing = { x: 1, y: 0 }; observer.visibleSince = null;
+    s.playerTile = { x: 13, y: 8 }; s.playerNextTile = null;
+  });
+  await page.clock.runFor(800);
+  expect((await sceneState(page)).result).toBeNull();
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.visible)).toBe(false);
+  await page.evaluate(() => {
+    const npc = window.__game.scene.getScene("graybox").neutralPeople[0];
+    npc.tile = { x: 11, y: 9 }; npc.nextTile = { x: 12, y: 9 };
+  });
+  await page.clock.runFor(100);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.visible)).toBe(true);
+  await page.evaluate(() => {
+    window.__game.scene.getScene("graybox").neutralPeople[0].nextTile = null;
+  });
+  await page.clock.runFor(300);
+  expect((await sceneState(page)).result).toBeNull();
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].warningIcon.visible)).toBe(false);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").searchers[0].visibleSince)).toBeNull();
+});
+
 test.beforeEach(async ({ page }) => {
   // Test-only instrumentation: the shipped app exposes no game/debug globals.
   await page.addInitScript(() => {
@@ -17,21 +177,25 @@ test.beforeEach(async ({ page }) => {
   });
   await page.route("**/src/main.js", async route => {
     const response = await route.fetch();
-    const body = (await response.text()).replace("scene: [GrayboxScene],", `scene: [class extends GrayboxScene {
+    const body = (await response.text()).replace("scene: [IntroScene, GrayboxScene],", `scene: [class extends GrayboxScene {
       create() {
         super.create();
         window.__initialState = window.__snapshot(this);
         window.__generation = (window.__generation ?? 0) + 1;
       }
-    }],`) + "\nwindow.__game = game;";
+    }, IntroScene],`) + "\nwindow.__game = game;";
     await route.fulfill({ response, body });
   });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
   page.__errors = errors;
-  await page.clock.install();
+  // Keep simulation time frozen between explicit advances. High-resolution
+  // screenshots must not consume the 300/600 ms detection deadlines.
+  await page.clock.install({ time: new Date("2026-11-09T12:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-11-09T12:00:01Z"));
   await page.goto("/");
+  await page.clock.runFor(100);
   await page.waitForFunction(() => window.__generation === 1);
 });
 
@@ -138,7 +302,9 @@ test("real sight detection catches during movement; world and timer stay frozen 
     return [...s.neutralPeople, ...s.searchers].map(p => [p.sprite.x, p.sprite.y]);
   });
   await page.keyboard.press("Escape");
-  await page.clock.runFor(5000);
+  // Scene time is sampled at frame boundaries, so leave a small frame margin
+  // while still asserting at least five full seconds of frozen gameplay.
+  await page.clock.runFor(5100);
   const after = await sceneState(page);
   expect(after.timer).toBe(frozen.timer);
   expect(after.now - frozen.now).toBeGreaterThanOrEqual(5000);
@@ -162,7 +328,8 @@ test("pause, touch restart, win and timeout still work across repeated scene res
   await page.locator('[data-action="pause"]').click();
   await page.clock.runFor(1000);
   expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(true);
-  await page.keyboard.press("Escape");
+  // The restart choice defaults to Nein, which resumes the attempt.
+  await page.keyboard.press("Enter");
   expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(false);
   for (let i = 0; i < 3; i++) {
     await page.locator('[data-action="restart"]').click();
@@ -184,7 +351,7 @@ test("pause, touch restart, win and timeout still work across repeated scene res
   expect((await sceneState(page)).timer).toBe("03:00");
 });
 
-test("neutral speech is non-modal, follows the speaker, pauses and resets with the attempt", async ({ page }, testInfo) => {
+test("neutral speech stays at its world position, pauses and resets with the attempt", async ({ page }, testInfo) => {
   await page.evaluate(() => {
     const s = window.__game.scene.getScene("graybox");
     const person = s.neutralPeople[28];
@@ -211,6 +378,8 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
       elapsed: s.time.now - s.escapeStartedAt,
       timer: s.timerText.text, player: s.playerTile,
       speakerX: s.neutralPeople[28].sprite.x, speakerY: s.neutralPeople[28].sprite.y,
+      bubbleWorld: { x: bubble.text.x + s.cameras.main.worldView.x, y: bubble.text.y + s.cameras.main.worldView.y },
+      bubbleScreen: { x: bubble.text.x, y: bubble.text.y },
       fits: bounds.left >= 8 && bounds.top >= 42 && bounds.right <= 312 && bounds.bottom <= 232,
     };
   });
@@ -230,15 +399,24 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
   const moving = await readSpeech();
   expect(moving.elapsed).toBeGreaterThan(first.elapsed);
   expect([moving.speakerX, moving.speakerY]).not.toEqual([first.speakerX, first.speakerY]);
+  expect(moving.bubbleWorld).toEqual(first.bubbleWorld);
+  await page.evaluate(() => {
+    const camera = window.__game.scene.getScene("graybox").cameras.main;
+    camera.setScroll(camera.scrollX + 16, camera.scrollY + 16);
+  });
+  await page.clock.runFor(50);
+  expect((await readSpeech()).bubbleWorld).toEqual(first.bubbleWorld);
+  expect((await readSpeech()).bubbleScreen).not.toEqual(first.bubbleScreen);
   await page.keyboard.down("ArrowRight");
   await page.clock.runFor(250);
   await page.keyboard.up("ArrowRight");
   expect((await readSpeech()).player).not.toEqual(first.player);
+  expect((await readSpeech()).bubbleWorld).toEqual(first.bubbleWorld);
   await page.screenshot({ path: testInfo.outputPath("neutral-speech.png"), fullPage: true });
   await page.keyboard.press("Escape");
   await page.clock.runFor(1000);
   expect((await readSpeech()).visible).toBe(false);
-  await page.keyboard.press("Escape");
+  await page.keyboard.press("Enter");
   await page.clock.runFor(100);
   expect((await readSpeech()).visible).toBe(true);
   await page.clock.runFor(2000);
@@ -254,6 +432,8 @@ test("neutral speech is non-modal, follows the speaker, pauses and resets with t
 });
 
 test("all side rooms show one speech bubble at a time; hall still allows two", async ({ page }) => {
+  // Fourteen rendered room setups advance about 25 s of simulation time.
+  test.setTimeout(60_000);
   const rooms = await page.evaluate(() => window.__game.scene.getScene("graybox").rooms);
   expect(rooms).toHaveLength(13);
   for (const room of [...rooms, { x: 12, y: 10, width: 5, height: 8, area: "hall" }]) {
@@ -285,7 +465,7 @@ test("all side rooms show one speech bubble at a time; hall still allows two", a
     expect(first.speakers.length, room.label ?? "hall").toBe(room.label ? 1 : 2);
     expect(first.visible).toBe(room.label ? 1 : 2);
     if (room.label) {
-      await page.clock.runFor(1700);
+      await page.clock.runFor(2000);
       const next = await read();
       expect(next.visible).toBe(1);
       expect(next.speakers).not.toEqual(first.speakers);

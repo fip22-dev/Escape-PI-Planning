@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;600;700&display=swap");
-
 :root {
   font-family: "Space Grotesk", system-ui, sans-serif;
   color: #f5f0dc;
@@ -61,10 +59,15 @@ h1 {
   box-shadow: 0 24px 72px #0007, 0 0 0 6px #ffffff08;
 }
 
+.game-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-height: 36px; margin-bottom: 8px; }
+.display-status { color: #b5c4ad; font: 11px system-ui, sans-serif; }
+.fullscreen-button { flex-shrink: 0; min-height: 36px; padding: 6px 12px; border: 1px solid #819885; border-radius: 6px; color: #f5f0dc; background: #294343; font: 600 13px system-ui, sans-serif; cursor: pointer; }
+.fullscreen-button:hover { background: #3c574c; }
+.fullscreen-button:focus-visible { outline: 3px solid #e8ce79; outline-offset: 2px; }
+
 #game-container {
-  display: grid;
-  min-height: min(70vh, 680px);
-  place-items: center;
+  display: block;
+  height: min(76dvh, 720px);
   background: #172326;
 }
 
@@ -76,16 +79,16 @@ h1 {
 
 .page.is-menu {
   display: block;
-  width: min(100% - 24px, 720px);
-  max-width: 720px;
+  width: min(100% - 24px, 960px);
+  max-width: 960px;
   padding-top: 24px;
 }
 
 #game-container canvas {
   display: block;
   max-width: 100%;
-  max-height: min(70vh, 680px);
-  image-rendering: pixelated;
+  max-height: 100%;
+  image-rendering: auto;
 }
 
 .controls {
@@ -118,6 +121,7 @@ kbd {
 
   #game-container {
     min-height: 0;
+    height: auto;
     aspect-ratio: 4 / 3;
   }
 
@@ -147,11 +151,37 @@ kbd {
 }
 @media (orientation: landscape) and (max-height: 540px) {
   .page { width: calc(100% - 24px); padding: 8px 0; display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 10px; }
+  .page.is-menu { padding-top: 8px; }
   .page-header, .controls { display: none; }
-  #game-container { min-height: 0; height: calc(100dvh - 16px); }
-  #game-container canvas { max-height: calc(100dvh - 16px); }
+  .game-toolbar { grid-column: 1 / -1; margin-bottom: 0; }
+  #game-container { min-height: 0; height: calc(100dvh - 64px); }
+  #game-container canvas { max-height: calc(100dvh - 64px); }
   .touch-controls { flex-direction: column; justify-content: center; gap: 14px; padding: 0; }
   .touch-actions { grid-template-columns: 1fr 1fr; gap: 6px; }
   .touch-actions button { font-size: 12px; padding: 4px 6px; }
+}
+
+body.has-expanded-game { overflow: hidden; }
+.page.is-expanded {
+  position: fixed; inset: 0; z-index: 1000; width: 100%; max-width: none;
+  height: 100dvh; margin: 0; padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: 36px minmax(0, 1fr) auto;
+  gap: 8px; background: #142124;
+}
+.page.is-expanded .page-header, .page.is-expanded .controls { display: none; }
+.page.is-expanded .game-toolbar { grid-column: 1 / -1; margin: 0; }
+.page.is-expanded .game-shell { min-width: 0; min-height: 0; border-radius: 4px; box-shadow: none; }
+.page.is-expanded #game-container { width: 100%; height: 100%; min-height: 0; aspect-ratio: auto; }
+.page.is-expanded #game-container canvas { max-height: 100%; }
+.page.is-expanded .touch-controls { margin: 0; padding: 0; }
+.page.is-expanded.is-menu { grid-template-rows: 36px minmax(0, 1fr); }
+@media (hover: hover) and (pointer: fine) {
+  .page.is-expanded { grid-template-rows: 36px minmax(0, 1fr); }
+  .page.is-expanded .touch-controls { display: none; }
+}
+@media (orientation: landscape) and (max-height: 540px) and (pointer: coarse) {
+  .page.is-expanded:not(.is-menu) { grid-template-columns: minmax(0, 1fr) 180px; grid-template-rows: 36px minmax(0, 1fr); }
+  .page.is-expanded:not(.is-menu) .touch-controls { grid-column: 2; grid-row: 2; }
+  .page.is-expanded:not(.is-menu) .game-shell { grid-column: 1; grid-row: 2; }
 }
 
