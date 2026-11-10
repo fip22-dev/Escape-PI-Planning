@@ -42,17 +42,20 @@ function refreshLayout() {
 }
 
 const rotatedLayout = bindRotatedLayout(game, document.querySelector(".page"));
-const gameSurface = bindGameSurface(document.querySelector(".page"));
+function resetGameInput() {
+  for (const scene of game.scene.scenes) {
+    scene.touchControls?.clear();
+    scene.input?.keyboard?.resetKeys();
+  }
+}
+const gameSurface = bindGameSurface(document.querySelector(".page"), { onCancel: resetGameInput });
 
 const fullscreen = bindFullscreen({
   target: document.querySelector(".page"),
   button: document.querySelector(".fullscreen-button"),
   status: document.querySelector(".display-status"),
   onLayoutChange() {
-    for (const scene of game.scene.scenes) {
-      scene.touchControls?.clear();
-      scene.input?.keyboard?.resetKeys();
-    }
+    resetGameInput();
     requestAnimationFrame(refreshLayout);
   },
 });

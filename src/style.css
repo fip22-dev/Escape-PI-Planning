@@ -10,13 +10,13 @@
   box-sizing: border-box;
 }
 
-.page, .page * {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
+html, body, .page, .page * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
 }
 .page canvas { touch-action: none; }
-.fullscreen-button { touch-action: manipulation; }
+.page button, .game-toolbar, .touch-controls { touch-action: none; }
 
 body {
   min-width: 320px;

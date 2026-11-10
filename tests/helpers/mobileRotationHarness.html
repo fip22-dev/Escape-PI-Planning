@@ -112,6 +112,12 @@ try {
  await until(()=>Math.abs(speech.anchor.x-speaker.sprite.x)<0.01 && Math.abs(speech.anchor.y-(speaker.sprite.y-10))<0.01);
  assert(Math.abs(label.x-original.x-16)<1 && Math.abs(label.y-original.y-8)<1,'bubble did not follow rendered NPC');
  assert(speech.expiresAt===original.expiry && speech.text===original.text,'movement renewed the bubble');
+ const anchored={x:label.x,y:label.y};
+ talkingScene.playerTile={x:talkingScene.playerTile.x+1,y:talkingScene.playerTile.y};
+ talkingScene.player.x+=16;
+ const camera=talkingScene.cameras.main; camera.setScroll(camera.scrollX+20,camera.scrollY+10);
+ await wait(100);
+ assert(label.scrollFactorX===1 && label.x===anchored.x && label.y===anchored.y,'bubble follows player/camera instead of staying in NPC world coordinates');
  const step=new Promise(resolve=>talkingScene.tweens.add({targets:speaker.sprite,x:speaker.sprite.x+10,duration:400,onComplete:resolve}));
  await wait(80); talkingScene.pauseGame();
  const paused={x:speaker.sprite.x,labelX:label.x,anchorX:speech.anchor.x};
@@ -124,7 +130,55 @@ try {
  doc.querySelector('[data-action="restart"]').click(); await wait(100);
  assert(talkingScene.neutralSpeech.active.length===0 && Object.keys(talkingScene.neutralSpeech.personReadyAt).length===0,'restart kept old speech');
  pass('Speech follows smooth NPC movement, freezes in pause, expires and resets correctly');
+ const meetingScene=game.scene.getScene('graybox');
+ meetingScene.tweens.killAll(); meetingScene.updateSearcherDetection=()=>false;
+ for(const person of meetingScene.neutralPeople) person.nextMoveAt=Infinity;
+ meetingScene.playerTile={x:12,y:30}; meetingScene.player.setPosition(200,488);
+ meetingScene.cameras.main.stopFollow(); meetingScene.cameras.main.centerOn(384,416);
+ meetingScene.neutralSpeech.active=[]; meetingScene.neutralSpeech.readyAt=Infinity;
+ await wait(100);
+ meetingScene.neutralSpeech.personReadyAt={};
+ for(let i=0;i<meetingScene.neutralPeople.length;i++) if(!/^Meeting [1-5]$/.test(meetingScene.neutralPeople[i].bounds.label??'')) meetingScene.neutralSpeech.personReadyAt[i]=Infinity;
+ meetingScene.neutralSpeech.readyAt=meetingScene.time.now;
+ await until(()=>meetingScene.neutralSpeech.active.length===2 && meetingScene.speechBubbles.filter(b=>b.text.visible).length===2);
+ assert(meetingScene.neutralSpeech.active.every(b=>{
+   const bounds=meetingScene.neutralPeople[b.personIndex].bounds;
+   return /^Meeting [1-5]$/.test(bounds.label??'') && !(12>=bounds.x && 12<bounds.x+bounds.width && 30>=bounds.y && 30<bounds.y+bounds.height);
+ }),'meeting bubbles require the player to be inside');
+ for(let i=0;i<12;i++){await wait(40);assert(meetingScene.neutralSpeech.active.length<=2 && meetingScene.speechBubbles.filter(b=>b.text.visible).length<=2,'more than two speech bubbles');}
+ pass('Visible meeting NPCs speak while player is outside; global limit remains two');
+ const pauseButton=doc.querySelector('[data-action="pause"]');
+ const nativeTouch=(type,el,id=41)=>{
+   const r=el.getBoundingClientRect(), touch=new win.Touch({identifier:id,target:el,clientX:r.x+r.width/2,clientY:r.y+r.height/2,pageX:r.x+r.width/2+win.scrollX,pageY:r.y+r.height/2+win.scrollY});
+   const event=new win.TouchEvent(type,{bubbles:true,cancelable:true,changedTouches:[touch],touches:type==='touchend'||type==='touchcancel'?[]:[touch],targetTouches:type==='touchend'||type==='touchcancel'?[]:[touch]});
+   el.dispatchEvent(event); return event;
+ };
+ const outerRange=doc.createRange(); outerRange.selectNode(page); selection.addRange(outerRange);
+ await until(()=>selection.rangeCount===0);
+ assert(nativeTouch('touchstart',pauseButton).defaultPrevented,'native long-press start not cancelled'); await wait(500);
+ assert(nativeTouch('touchend',pauseButton).defaultPrevented,'native end not cancelled');
+ assert(meetingScene.isPaused,'touch release did not activate pause');
+ pauseButton.dispatchEvent(new win.MouseEvent('click',{bubbles:true,cancelable:true,detail:1}));
+ assert(meetingScene.isPaused,'compatibility ghost click activated pause twice');
+ nativeTouch('touchstart',pauseButton); nativeTouch('touchend',pauseButton); assert(!meetingScene.isPaused,'second intentional touch did not resume');
+ nativeTouch('touchstart',pauseButton); nativeTouch('touchcancel',pauseButton); nativeTouch('touchend',pauseButton); assert(!meetingScene.isPaused,'cancelled touch activated a button');
+ assert(selection.rangeCount===0,'long press created selection');
+ pass('Body-level selection, touch hold/release, ghost click suppression and cancellation work');
+ meetingScene.pauseGame();
+ const canvasTouch=(type,x,y)=>{
+   const p=point(x,y), touch=new win.Touch({identifier:52,target:canvas,clientX:p.x,clientY:p.y,pageX:p.x+win.scrollX,pageY:p.y+win.scrollY});
+   canvas.dispatchEvent(new win.TouchEvent(type,{bubbles:true,cancelable:true,changedTouches:[touch],touches:type==='touchend'?[]:[touch],targetTouches:type==='touchend'?[]:[touch]}));
+ };
+ canvasTouch('touchstart',160,124); canvasTouch('touchend',160,124);
+ await until(()=>game.scene.isActive('intro')); await wait(150);
+ canvasTouch('touchstart',160,171); canvasTouch('touchend',160,171);
+ await until(()=>game.scene.getScene('intro').view==='help'); await wait(100);
+ canvasTouch('touchstart',160,145); canvasTouch('touchmove',160,95); canvasTouch('touchend',160,95);
+ await until(()=>game.scene.getScene('intro').helpScroll>0);
+ canvasTouch('touchstart',160,194); canvasTouch('touchend',160,194);
+ await until(()=>game.scene.getScene('intro').view==='home');
+ pass('Canvas touch menu selection and help swiping still work with native defaults suppressed');
  document.title='PASS – mobile rotation browser checks';
- results.insertAdjacentHTML('afterend','<h2>All 11 browser checks passed</h2>');
+ results.insertAdjacentHTML('afterend','<h2>All 14 browser checks passed</h2>');
 } catch(error) { results.insertAdjacentHTML('beforeend',`<li style="color:red">FAIL: ${error.stack}</li>`); document.title='FAIL – mobile rotation browser checks'; }
 </script></body></html>

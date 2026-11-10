@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 await mkdir('.sites/qa', { recursive: true });
 const main = (await readFile('src/main.js', 'utf8'))
   .replaceAll('"./', '"/src/')
-  .replace('const game = new Phaser.Game({', 'const game = new Phaser.Game({\n  fps: { forceSetTimeOut: true },');
+  .replace('const game = new Phaser.Game({', 'const game = new Phaser.Game({\n  fps: { forceSetTimeOut: true },\n  input: { touch: true },');
 await writeFile('.sites/qa/fixture.js', main + '\nwindow.__game = game;\n');
 const html = (await readFile('index.html', 'utf8')).replace(
   '<script type="module" src="/src/main.js"></script>',
@@ -15,4 +15,4 @@ Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value
 </script><script type="module" src="/.sites/qa/fixture.js"></script>`);
 await writeFile('.sites/qa/fixture.html', html);
 await writeFile('.sites/qa/index.html', await readFile('tests/helpers/mobileRotationHarness.html'));
-console.log('Open /.sites/qa/index.html on the Vite server for eleven browser checks.');
+console.log('Open /.sites/qa/index.html on the Vite server for fourteen browser checks.');

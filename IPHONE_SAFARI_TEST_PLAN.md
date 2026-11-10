@@ -36,7 +36,7 @@
 | I07 | Pause/Weiter friert Timer/Figuren/Sprechblasen und Türfristen ein. Neustart setzt den Versuch zurück. Direkter Startmenü-Eintrag führt ohne zweite Abfrage zurück. | **Offen** |
 | I08 | Musik und Töne getrennt schaltbar und nach Neuladen gespeichert. Audio beginnt erst nach Nutzeraktion. Musik/Schritte auf Lautsprecher und gegebenenfalls Kopfhörer dezent; Lautstärkeeinstellung notieren. | **Offen** |
 | I09 | Texte (Rollen, Räume, HUD, Dialoge) lesbar; Pflanzen, Türen und Möbel klar. Keine Störungen beim Laufen oder in Grossansicht. | **Offen** |
-| I10 | Sprechblasen folgen zwei Spielsekunden lang dem sprechenden NPC einschliesslich Bewegung zwischen Kacheln, nicht dem Spieler. Blasenkörper und Spitze folgen gemeinsam; ausserhalb des Kamerabereichs ausgeblendet. Pro Seitenraum nur eine, Gang/PI mehrere; Pause friert Laufzeit ein. | **Offen** |
+| I10 | Sprechblasen folgen zwei Spielsekunden lang dem sprechenden NPC einschliesslich Bewegung zwischen Kacheln, nicht dem Spieler. Blasenkörper und Spitze folgen gemeinsam; ausserhalb des Kamerabereichs ausgeblendet. Höchstens zwei insgesamt, höchstens eine pro Seitenraum; sichtbare Meeting-NPCs sprechen auch bei Spieler ausserhalb des Raums. Spieler-/Kamerabewegung darf den Weltversatz zum NPC nicht ändern; Pause friert Laufzeit ein. | **Offen** |
 | I11 | Spieler und zulässige NPCs öffnen Türen in der Wandöffnung. Kein Schliessen auf belegter/reservierter Kachel; 250 ms nach letzter Freigabe geschlossen. Geschlossene Tür blockiert Sicht, offene nicht. Wartende NPCs in der Tür halten sie offen. | **Offen** |
 | I12 | Fangdialoge vollständig lesbar, Wiederholung überspringbar; Neustart setzt Spieler und alle NPCs sauber zurück. | **Offen** |
 | I13 | Vollständiger Versuch: Timer ab Verlassen des PI-Raums, Zeitablauf oder Sieg erreichbar, danach sauberer Neustart. | **Offen** |
@@ -70,3 +70,10 @@ Die App-Quelle dieses Branchs wird in eine eigene private Sites-Quelle gespiegel
 ## Mitlaufende NPC-Sprechblasen – 10.11.2026
 
 Der Nutzer bestätigt die Darstellung des Breitbildstands 2473b6b als gut. Dies ist keine vollständige Abnahme aller Gerätefälle. Neuer Wunsch: Blasen folgen dem sprechenden NPC statt am Entstehungsort zu verbleiben. **Erledigt – technische Prüfung:** 48 Funktionstests, Build und elf Chromium-Harness-Prüfungen bestanden, einschliesslich Sprite-Tween, Blasenbewegung, Pause, Ablauf und Neustart. Die Playwright-Ausführung bleibt wegen fehlendem Browser-Binary blockiert. Anker und Layout werden pro Spielupdate nachgeführt; Dauer, Raumbegrenzung, Cooldowns und Pausenregeln bleiben erhalten. Neue reale Geräteprüfung des Nachführens offen.
+
+
+## Erneuter Touch-Befund und Meeting-Sprecher – 10.11.2026
+
+**Nutzerbefund:** Markierung tritt weiterhin auf; Blasen sollen ausschliesslich dem NPC folgen, Meeting-Sprecher auch ausserhalb des Raums hörbar/lesbar sein, maximal zwei gleichzeitig. **Erledigt – Umsetzung und gezielte technische Prüfung:** Weltkamera statt fester UI-Kamera für Blasen, stabiler NPC-relativer Versatz ohne Kamera-Clamping. Sichtbare Meeting-1–5-NPCs sind unabhängig von Raumzutritt/Entfernung auslösbar; andere NPCs behalten Nähe-/Bereichsregel. Globale Obergrenze zwei. Touch-Standardaktionen unterdrückt, Buttons beim Loslassen einmal aktiviert, nachfolgender Kompatibilitätsklick und Abbruch geprüft. Die vorherige CSS-/Kontextmenüprüfung war keine echte iPhone-Langdruckabnahme. Neu auf dem iPhone prüfen: lange Tastenberührung, Loslassen/Abbruch, Menüwahl/Wischen, NPC bei eigener Bewegung beobachten, Meetingräume von aussen und Anzahl der Blasen.
+
+Technische Prüfung dieses Stands: 51 Funktionstests, Build und 14 Chromium-Harness-Fälle erfolgreich; echte Safari-Langdruck-/Mehrfingerprüfung bleibt offen. Das sind synthetische TouchEvents im Testbrowser und keine reale iPhone-Abnahme.

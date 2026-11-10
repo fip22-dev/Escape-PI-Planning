@@ -146,7 +146,7 @@ Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zug
 
 ## Neutrale Sprechblasen – aktueller Feature-Stand
 
-Neutrale Personen sprechen bei Annäherung bis zwei Kacheln im gleichen Bereich. Die Blasen bleiben zwei Sekunden sichtbar und folgen dabei der aktuellen Position des sprechenden NPCs, auch während eines Kachelschritts. Sie folgen nicht der Spielfigur. Verlässt der Sprecher den sichtbaren Kartenausschnitt, wird seine Blase ausgeblendet. Je eine Blase pro Team-, Meeting- und Pausenraum, mehrere im Gang und in der PI-Einführung; weiterhin 15 Sekunden Cooldown pro Person. Timer und Bewegung laufen weiter. Pause friert Anzeigezeit und Cooldowns ein; Fang und Neustart räumen die Blasen auf. Aktuelle Prüfungen und offene Nutzerabnahme stehen im Entwicklungsplan.
+Sichtbare NPCs in Meeting 1–5 können auch sprechen, wenn die Spielfigur ausserhalb des Raums oder weiter als zwei Kacheln entfernt steht. Andere neutrale Personen sprechen weiterhin bei Annäherung bis zwei Kacheln im gleichen Bereich. Die Blasen bleiben zwei Sekunden sichtbar und folgen dabei der aktuellen Position des sprechenden NPCs, auch während eines Kachelschritts. Blasenkörper und Spitze liegen direkt in der Spielwelt und folgen nicht der Spielfigur oder dem Bildschirmrand. Verlässt der Sprecher den sichtbaren Kartenausschnitt, wird seine Blase ausgeblendet. Insgesamt höchstens zwei aktive Blasen gleichzeitig, zusätzlich höchstens eine pro Team-, Meeting- und Pausenraum; weiterhin 15 Sekunden Cooldown pro Person. Timer und Bewegung laufen weiter. Pause friert Anzeigezeit und Cooldowns ein; Fang und Neustart räumen die Blasen auf. Aktuelle Prüfungen und offene Nutzerabnahme stehen im Entwicklungsplan.
 
 Der Product Manager startet bei Q2 auf (28, 20), Scrum Master 2 im ersten horizontalen Gang Q1 auf (28, 8). Damit stehen beide zu Beginn abseits des RTE-Laufwegs vor der PI-Einführung. Routen und Startversätze bleiben erhalten; später können sich Patrouillen weiterhin begegnen.
 
@@ -225,3 +225,10 @@ Aktueller Prüfstand: 47 Funktionstests, Build und zehn gezielte Chromium-Harnes
 
 
 Aktueller Sprechblasen-Prüfstand: 48 Funktionstests, Produktionsbuild und elf gezielte Chromium-Harness-Prüfungen bestanden. Nachführung während eines NPC-Tweens, Pause, Ablauf und Neustart geprüft; neue reale iPhone-Abnahme offen.
+
+
+## Touch-Schutz und weltgebundene NPC-Blasen
+
+Die Auswahlsperre gilt nun auch für Auswahlbereiche, deren Anfang und Ende am Seitenkörper liegen und die Spieloberfläche umfassen. Auf Canvas und Schaltern werden native Touch-Standardaktionen am Ende des Ereignispfads unterdrückt; Aktionsschalter reagieren beim Loslassen genau einmal. Ein zusätzlicher Browser-Klick nach derselben Berührung wird abgefangen. Abgebrochene Gesten und Auswahlaktionen löschen gehaltene Spieleingaben. Die Canvas-Toucheingaben für Menü und Anleitung bleiben erhalten. Die native Safari-Langdruckprüfung auf dem iPhone bleibt erforderlich.
+
+Aktueller Prüfstand: 51 Funktionstests, Build und 14 gezielte Chromium-Harness-Fälle erfolgreich. Weltverankerung bei eigener Bewegung, Meeting-Sprecher von ausserhalb, Zwei-Blasen-Limit und Touch-Halten/Loslassen/Abbruch sind geprüft. Der Harness verwendet synthetische TouchEvents und ersetzt keine echte Safari-Langdruckprüfung.
