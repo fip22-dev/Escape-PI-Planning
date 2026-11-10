@@ -31,7 +31,7 @@ Die bestehende private Demo und `.openai/hosting.json` bleiben erhalten. Abnahme
 
 ## Zusätzliche Rollendialoge
 
-**Erledigt – zusätzliche Rollendialoge implementiert und abgenommen:** Die zwölf freigegebenen Texte sind auf `feature/role-dialogue-variants` eingebaut. Nach dem unveränderten Ersttext wechseln bisheriger Wiederholungstext und zwei neue Varianten je Rollenfamilie reihum. Bestätigung schaltet weiter; Neuversuche und Hauptmenü erhalten den Verlauf, Neuladen setzt ihn zurück. Texte und Auswahlregeln stehen in GAME_DESIGN.md. Die private Demo enthält diesen Stand zum Testen. [PR #17](https://github.com/fip22-dev/Escape-PI-Planning/pull/17) ist für die Übernahme vorbereitet; lokaler Spieltest und iPhone-Abnahme sind vom Nutzer bestätigt.
+**Erledigt – zusätzliche Rollendialoge implementiert und abgenommen:** Die zwölf freigegebenen Texte sind auf `feature/role-dialogue-variants` eingebaut. Nach dem unveränderten Ersttext wechseln bisheriger Wiederholungstext und zwei neue Varianten je Rollenfamilie reihum. Bestätigung schaltet weiter; Neuversuche und Hauptmenü erhalten den Verlauf, Neuladen setzt ihn zurück. Texte und Auswahlregeln stehen in GAME_DESIGN.md. Die private Demo enthält diesen Stand zum Testen. Umsetzung und Abnahme sind in [PR #17](https://github.com/fip22-dev/Escape-PI-Planning/pull/17) dokumentiert; lokaler Spieltest und iPhone-Abnahme sind vom Nutzer bestätigt.
 
 ## Projektstatus
 
