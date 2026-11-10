@@ -1,7 +1,7 @@
 <!doctype html><html><head><title>Mobile rotation browser checks</title></head>
 <body style="background:#eef2f2;font:16px system-ui"><h1>Mobile rotation browser checks</h1>
 <p>Coarse pointer and missing Fullscreen API simulated; real Phaser canvas and DOM input.</p>
-<ol id="results"></ol><iframe id="phone" src="./fixture.html" style="border:1px solid;width:390px;height:844px"></iframe>
+<ol id="results"></ol><iframe id="phone" src="./fixture.html" style="border:1px solid;width:844px;height:390px"></iframe>
 <script type="module">
 const frame = document.querySelector('iframe');
 const results = document.querySelector('#results');
@@ -19,6 +19,14 @@ try {
  const point = (x,y) => { const r=canvas.getBoundingClientRect(); return page.classList.contains('is-rotated') ? {x:r.right-y/240*r.width,y:r.top+x/320*r.height} : {x:r.left+x/320*r.width,y:r.top+y/240*r.height}; };
  const mouse = (type,x,y,buttons=0) => { const p=point(x,y); canvas.dispatchEvent(new win.MouseEvent(type,{bubbles:true,clientX:p.x,clientY:p.y,button:0,buttons})); };
  const tap = async (x,y) => { mouse('mousemove',x,y); await wait(80); mouse('mousedown',x,y,1); await wait(80); mouse('mouseup',x,y); await wait(250); };
+ assert(!page.classList.contains('is-expanded'),'Landscape startup already expanded: first tap would shrink');
+ await wait(250); const normalWidth=canvas.getBoundingClientRect().width;
+ button.click(); await until(()=>page.classList.contains('is-expanded') && fits() && canvas.getBoundingClientRect().width>normalWidth+1);
+ assert(!page.classList.contains('is-rotated'),'landscape rotated twice');
+ assert(canvas.getBoundingClientRect().width>normalWidth+1,'landscape first tap did not enlarge canvas');
+ button.click(); await until(()=>!page.classList.contains('is-expanded'));
+ pass('Landscape cold start: first tap enlarges, second tap exits');
+ frame.style.width='390px'; frame.style.height='844px'; await wait(250);
  assert(!page.classList.contains('is-rotated'),'normal portrait unexpectedly rotated');
  button.click();
  await until(()=>page.classList.contains('is-rotated') && fits());
@@ -56,12 +64,13 @@ try {
  assert(!page.classList.contains('is-rotated'),'rotation remains after exit');
  pass('Portrait height changes, restart and return to normal view');
  frame.style.width='844px'; frame.style.height='390px';
- await until(()=>page.classList.contains('is-expanded') && fits());
+ await wait(250); assert(!page.classList.contains('is-expanded'),'orientation entered expanded view without a tap');
+ button.click(); await until(()=>page.classList.contains('is-expanded') && fits());
  button.click(); win.dispatchEvent(new win.Event('resize')); await wait(200);
  assert(!page.classList.contains('is-expanded'),'resize undid explicit exit');
- pass('Landscape auto-expansion respects explicit exit');
+ pass('Landscape entry and exit remain controlled by the button');
  frame.style.width='390px'; frame.style.height='844px'; await wait(150); button.click(); await until(()=>page.classList.contains('is-rotated') && fits());
  document.title='PASS – mobile rotation browser checks';
- results.insertAdjacentHTML('afterend','<h2>All 6 browser checks passed</h2>');
+ results.insertAdjacentHTML('afterend','<h2>All 7 browser checks passed</h2>');
 } catch(error) { results.insertAdjacentHTML('beforeend',`<li style="color:red">FAIL: ${error.stack}</li>`); document.title='FAIL – mobile rotation browser checks'; }
 </script></body></html>

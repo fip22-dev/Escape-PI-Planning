@@ -323,3 +323,6 @@ Dieser Branch startet von main a199290 (PR #14). Für die iPhone-/Safari-Demo ko
 ## Mobile Rotation der Spieloberfläche
 
 Die mobile Grossansicht verwendet ein virtuelles Querformat: Im Hochformat wird die gesamte Bühne einschliesslich HTML-Tasten im Uhrzeigersinn gedreht. Phaser skaliert und zentriert anhand der ungedrehten lokalen Bühne; Canvas-Eingaben werden vor Kamera-/Objekt-Treffertests zurückgerechnet. Dadurch bleiben Menüauswahl, Anleitungsscrollen, Pause und Dialoge bedienbar. Bei echter Querformatlage wird nur die CSS-Drehung aufgehoben, ohne Szene oder Versuch neu zu starten. Physische Ausrichtung, Browser-Vollbild und CSS-Grossansicht sind getrennt. Explizites Verkleinern im Querformat darf durch eine Änderung der Browserleistenhöhe nicht rückgängig gemacht werden. Sichtbereichänderungen aktualisieren das Layout und löschen gehaltene Eingaben.
+
+
+Grossansicht wird in beiden Ausrichtungen ausschliesslich mit dem Ansichtsschalter aktiviert. Das Drehen des Geräts passt nur eine bereits gewählte Grossansicht an. So vergrössert der erste Tipp auch bei einem Start im Querformat; der nächste Tipp verkleinert.

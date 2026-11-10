@@ -149,11 +149,17 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   await expect(stage).not.toHaveClass(/is-rotated|is-expanded/);
 });
 
-test("mobile landscape exit stays closed during browser viewport resize", async ({ page }, testInfo) => {
+test("mobile landscape first tap enlarges and exit stays closed during browser viewport resize", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.name.startsWith("mobile"), "Phone touch layout");
+  await page.addInitScript(() => Object.defineProperty(document, "fullscreenEnabled", { configurable: true, value: false }));
   await page.setViewportSize({ width: 844, height: 390 });
   await boot(page);
+  await expect(page.locator(".page")).not.toHaveClass(/is-expanded/);
+  const widthBefore = (await page.locator("canvas").boundingBox()).width;
+  await page.locator(".fullscreen-button").tap();
   await expect(page.locator(".page")).toHaveClass(/is-expanded/);
+  await expectFits(page);
+  await expect.poll(async () => (await page.locator("canvas").boundingBox()).width).toBeGreaterThan(widthBefore + 1);
   await page.locator(".fullscreen-button").tap();
   await page.setViewportSize({ width: 844, height: 360 });
   await expect(page.locator(".page")).not.toHaveClass(/is-expanded/);
