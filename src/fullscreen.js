@@ -1,6 +1,8 @@
 export function bindFullscreen({ target, button, status, onLayoutChange }) {
   const abort = new AbortController();
   let expanded = false;
+  let autoLandscape = false;
+  const landscapePhone = () => matchMedia("(orientation: landscape) and (pointer: coarse) and (max-height: 600px)").matches;
   let pending = false;
   let wasNative = false;
   let ignoreEscapeUntil = 0;
@@ -21,13 +23,25 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
     if (!active) status.textContent = "";
     onLayoutChange();
   };
+  const onOrientation = () => {
+    const shouldExpand = landscapePhone();
+    if (shouldExpand && !expanded && document.fullscreenElement !== target) {
+      expanded = true;
+      autoLandscape = true;
+      sync();
+    } else if (!shouldExpand && autoLandscape) {
+      expanded = false;
+      autoLandscape = false;
+      sync();
+    }
+  };
   const toggle = async () => {
     if (pending) return;
     pending = true;
     button.disabled = true;
     try {
       if (document.fullscreenElement === target) await document.exitFullscreen();
-      else if (expanded) expanded = false;
+      else if (expanded) { expanded = false; autoLandscape = false; }
       else if (nativeAvailable()) {
         try {
           await target.requestFullscreen();
@@ -64,6 +78,9 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
   button.addEventListener("click", () => { void toggle(); }, { signal: abort.signal });
   document.addEventListener("fullscreenchange", sync, { signal: abort.signal });
   window.addEventListener("keydown", onKey, { capture: true, signal: abort.signal });
+  window.addEventListener("orientationchange", onOrientation, { signal: abort.signal });
+  window.addEventListener("resize", onOrientation, { signal: abort.signal });
+  onOrientation();
   sync();
   return { destroy() { abort.abort(); } };
 }
