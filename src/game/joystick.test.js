@@ -10,7 +10,23 @@ test('joystick dead zone, cardinal directions and bounded thumb travel', () => {
   const far = joystickState(300,400,30);
   assert.equal(Math.hypot(far.x,far.y),30);
   assert.deepEqual(joystickState(20,21,30,false,{x:1,y:0}).direction,{x:1,y:0});
-  assert.deepEqual(joystickState(20,26,30,false,{x:1,y:0}).direction,{x:0,y:1});
+  assert.deepEqual(joystickState(20,28,30,false,{x:1,y:0}).direction,{x:0,y:1});
+});
+test('diagonal thumb positions snap to the active axis and deliberate turns switch it', () => {
+  for (const rotated of [false,true]) {
+    for (const [dx,dy] of [[20,15],[-20,15],[15,-20],[-15,-20],[300,400]]) {
+      const state=joystickState(dx,dy,30,rotated);
+      assert.equal(state.x===0 || state.y===0,true);
+      assert.equal(Math.hypot(state.x,state.y)<=30,true);
+      assert.equal(state.x!==0,state.direction.x!==0);
+    }
+  }
+  assert.deepEqual(joystickState(20,26,30,false,{x:1,y:0}),{x:20,y:0,direction:{x:1,y:0}});
+  assert.deepEqual(joystickState(20,28,30,false,{x:1,y:0}),{x:0,y:28,direction:{x:0,y:1}});
+  assert.deepEqual(joystickState(26,20,30,false,{x:0,y:1}),{x:0,y:20,direction:{x:0,y:1}});
+  assert.deepEqual(joystickState(28,20,30,false,{x:0,y:1}),{x:28,y:0,direction:{x:1,y:0}});
+  assert.deepEqual(joystickState(6,6,30),{x:0,y:0,direction:null});
+  assert.deepEqual(joystickState(0,0,0),{x:0,y:0,direction:null});
 });
 test('rotated stage maps physical down to game right and physical right to game up', () => {
   assert.deepEqual(joystickState(0,30,30,true).direction,{x:1,y:0});

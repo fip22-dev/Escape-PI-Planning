@@ -42,9 +42,9 @@ Im Dialogfenster werden Rollen ausgeschrieben: Release Train Engineer, People & 
 
 Die Rollendialoge und der reproduzierbare Neustart auf `feature/caught-dialogs` sind zusätzlich zu den automatisierten Tests vom Nutzer im lokalen Browser-Spieltest am 07.11.2026 abgenommen. Die iPhone-/Safari-Abnahme des integrierten Stands wurde am 08.11.2026 vom Nutzer bestätigt.
 
-Die mobile Steuerung entspricht der vom Nutzer bestätigten Demo: den Joystick ziehen und halten zum Laufen; die Mitte und Loslassen stoppen die Eingabe. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
+Die mobile Steuerung verwendet einen Joystick mit Kreuzführung: Ziehen und Halten bewegt horizontal oder vertikal. Auch der Steuerknopf rastet auf diesen Achsen ein; kleine diagonale Abweichungen wechseln die Richtung nicht sofort. Mitte und Loslassen stoppen weitere Schritte. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
 
-Prüfung: Bewegung, Pause und Neustart im Browser geprüft, 23 vorhandene Tests und Produktionsbuild erfolgreich. Der Nutzer hat die mobile Demo bestätigt.
+Prüfung des aktuellen Testbranchs: 55 Funktionstests, Produktionsbuild und 16 gezielte Chromium-Harness-Fälle erfolgreich, einschliesslich Kreuzführung, Richtungswechsel und gedrehter Ansicht. Der Harness simuliert Touch-Eingaben; die iPhone-/Safari-Abnahme der Kreuzführung bleibt offen.
 
 ## Spiel auf Mobile und PC öffnen
 

@@ -141,10 +141,10 @@ kbd {
 .touch-controls { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 2px 8px; }
 .touch-controls button { border: 1px solid #819885; border-radius: 10px; background: #294343; color: #f5f0dc; font: 600 14px system-ui, sans-serif; min-height: 48px; touch-action: none; cursor: pointer; }
 .touch-joystick { position: relative; flex: 0 0 104px; width: 104px; height: 104px; border: 1px solid #819885; border-radius: 50%; background: #294343b8; pointer-events: auto; touch-action: none; cursor: grab; }
-.joystick-track { position: absolute; inset: 12px; border: 1px solid #81988580; border-radius: 50%; pointer-events: none; }
-.joystick-track::before, .joystick-track::after { content: ""; position: absolute; background: #81988560; }
-.joystick-track::before { width: 1px; height: 100%; left: 50%; }
-.joystick-track::after { height: 1px; width: 100%; top: 50%; }
+.joystick-track { position: absolute; inset: 12px; pointer-events: none; }
+.joystick-track::before, .joystick-track::after { content: ""; position: absolute; border: 1px solid #81988580; border-radius: 6px; background: #81988530; }
+.joystick-track::before { width: 12px; height: 100%; left: calc(50% - 6px); }
+.joystick-track::after { height: 12px; width: 100%; top: calc(50% - 6px); }
 .joystick-thumb { position: absolute; width: 42px; height: 42px; left: calc(50% - 21px); top: calc(50% - 21px); border: 2px solid #e8ce79; border-radius: 50%; background: #49645c; transform: translate(var(--stick-x, 0px), var(--stick-y, 0px)); pointer-events: none; box-shadow: 0 2px 6px #0006; }
 .touch-joystick.held { cursor: grabbing; }
 .touch-joystick.held .joystick-thumb { background: #d0b969; }

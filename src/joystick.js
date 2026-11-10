@@ -1,18 +1,18 @@
-// Keep grid movement cardinal. A small dead zone and axis hysteresis avoid
-// accidental steps at the centre and direction chatter near a diagonal.
+// Both the thumb and the grid movement follow a four-way cross. Keep the
+// chosen axis through small diagonal drift; return to centre to choose freely.
 export function joystickState(dx, dy, radius, rotated = false, previous = null) {
   const x = rotated ? dy : dx;
   const y = rotated ? -dx : dy;
-  const distance = Math.hypot(x, y);
-  const factor = distance > radius && distance > 0 ? radius / distance : 1;
-  let direction = null;
-  if (radius > 0 && distance >= radius * 0.22) {
-    let horizontal = Math.abs(x) > Math.abs(y);
-    if (previous?.x && Math.abs(y) < Math.abs(x) * 1.2) horizontal = true;
-    if (previous?.y && Math.abs(x) < Math.abs(y) * 1.2) horizontal = false;
-    direction = horizontal ? { x: Math.sign(x), y: 0 } : { x: 0, y: Math.sign(y) };
-  }
-  return { x: x * factor, y: y * factor, direction };
+  if (radius <= 0) return { x: 0, y: 0, direction: null };
+  let horizontal = Math.abs(x) > Math.abs(y);
+  if (previous?.x && Math.abs(y) < Math.abs(x) * 1.35) horizontal = true;
+  if (previous?.y && Math.abs(x) < Math.abs(y) * 1.35) horizontal = false;
+  const value = horizontal ? x : y;
+  if (Math.abs(value) < radius * 0.22) return { x: 0, y: 0, direction: null };
+  const travel = Math.max(-radius, Math.min(radius, value));
+  return horizontal
+    ? { x: travel, y: 0, direction: { x: Math.sign(value), y: 0 } }
+    : { x: 0, y: travel, direction: { x: 0, y: Math.sign(value) } };
 }
 
 export function bindJoystick(element) {

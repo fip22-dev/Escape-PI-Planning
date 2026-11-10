@@ -29,7 +29,7 @@
 |---|---|---|
 | I01 | Privater Zugriff funktioniert; eigene Testdemo/Basiskennung korrekt. | **Offen** |
 | I02 | Menü, Anleitung (Scrollen/Wischen), Einstellungen und Zurück funktionieren ohne verdeckte Texte. | **Offen** |
-| I03 | Joystick ziehen/halten: vier Richtungen, neutraler Mittelbereich, Loslassen/Abbruch/App-Wechsel stoppt weitere Schritte. Zweiten Finger ignorieren; auch in gedrehter Grossansicht prüfen. | **Offen** |
+| I03 | Joystick ziehen/halten: Steuerknopf nur auf horizontaler/vertikaler Kreuzführung, stabile Achse bei leichter diagonaler Drift, deutlicher Richtungswechsel ohne Loslassen, neutraler Mittelbereich, Loslassen/Abbruch/App-Wechsel stoppt weitere Schritte. Zweiten Finger ignorieren; auch in gedrehter Grossansicht prüfen. | **Offen** |
 | I04 | Nach App-/Tabwechsel oder Fokusverlust hängt keine Richtung fest. Für Fristvergleiche zuvor bewusst pausieren; Hintergrundwechsel ist keine zugesicherte automatische Spielpause. | **Offen** |
 | I05 | Im Hochformat Grossansicht wählen: Bühne und Tasten drehen automatisch quer. Menü, Anleitung per Wischen, Spiel, Pause und Dialoge treffen korrekt. Echtes Drehen und Zurückdrehen erhalten den Versuch; Verkleinern stellt die normale Ansicht her. | **Offen** |
 | I06 | Vollbildtaste: natives Vollbild, wenn freigegeben; sonst benannte Grossansicht mit erhaltenen Browserleisten. Zurück-Taste bleibt erreichbar. Kein Anspruch auf native API auf jedem iPhone. | **Offen** |
