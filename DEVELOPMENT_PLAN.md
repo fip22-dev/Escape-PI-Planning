@@ -19,6 +19,8 @@ Dieses Dokument hält Umsetzungsreihenfolge und Fortschritt fest. Spielregeln, K
 
 **Branch-Aufteilung:** Der freigegebene Funktionsstand aus `feature/visuals-audio-polish` wird nach main übernommen. Die reale Geräteabnahme samt eigener privater Demo läuft danach auf `feature/iphone-safari-testing`, neu vom gemergten main. Die vorhandene ältere lokale Dokumentationsbranch `docs/iphone-safari-acceptance` gehört zur früheren Abnahme und wird nicht wiederverwendet. Schritt 9 (Beta-Feedback) und Schritt 10 (Abschlusstest/Veröffentlichung) bleiben danach offen.
 
+**Offen – Neuer Entwicklungsschritt: Team-Schlüssel und gesperrter Ausgang:** In jedem der sieben Teamzimmer einen eigenen Schlüssel finden und einsammeln. Der Ausgang darf erst mit allen sieben unterschiedlichen Team-Schlüsseln geöffnet und zum Sieg durchquert werden. Spielmechanik und Regeln im Menü **So geht’s** gemeinsam erweitern; Details und Abnahmekriterien siehe Abschnitt **Geplante Spielerweiterung: Team-Schlüssel**. Diese Erweiterung ist geplant und noch nicht implementiert.
+
 **Offen – Weitere Rollendialoge:** Zusätzliche Dialogvarianten für alle sechs Rollenfamilien schreiben und später ins Spiel integrieren. Die vorhandenen Erst- und Wiederholungsdialoge bleiben die abgeschlossene Grundlage; Auswahlregeln und Abwechslung der zusätzlichen Texte sind noch festzulegen.
 
 Schritte 1–7 sind **Erledigt**. Schritt 8 und das Intro-Menü aus Schritt 1 sind **Teilweise erledigt**; Schritte 9–10 sind **Offen**. Der echte iPhone-/Safari-Test wurde am 08.11.2026 vom Nutzer vollständig bestätigt. Die Ursache des Möbel-Kontrolltestfehlers ist geklärt und im Test korrigiert. Der Nutzer hat die manuelle Browserprüfung des aktuellen Menü-/Grafik-/Audio-Funktionsschnitts bestätigt; die manuelle Abnahme der neuen Grafik, Hörprobe auf Zielgeräten und Veröffentlichungsprüfungen sind offen. Teilabschlüsse und abgeschlossene Schritte werden direkt am jeweiligen Schritt gekennzeichnet; erforderliche Prüfungen werden mitgeführt.
@@ -35,6 +37,20 @@ Zusätzliche Büroobjekte sind ebenfalls implementiert: Whiteboards und Sideboar
 8. **Teilweise erledigt – Grafik und Audio:** Eigene Pixelgrafik für Kacheln, Figuren und Menü sowie generierte Büro-Jazz-Musik und Spielgeräusche sind teilweise implementiert. In den Einstellungen und im Pausenfenster schalten zwei Optionen Musik sowie Töne (Spielgeräusche); die Pause unterstützt dafür auch **M** und **T**. Die Menünavigation bleibt stumm. In der Anleitung stehen **Regeln** vor **Rollen**; beide Überschriften sind fett und gold hervorgehoben. **Browserprüfung:** Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell geprüft und bestätigt. Auf `feature/visuals-audio-polish` sind alle neun Möbeltypen an die warme Palette angeglichen; Suchende tragen zusätzliche Rollenaccessoires. Menü-, Spiel- und Pausenansicht sowie Audio-Schalter, Speicherung und unverzerrte Musikdaten werden automatisiert geprüft. Verbleibend: manuelle Grafikabnahme und Hörprobe inklusive Lautstärke auf realen Zielgeräten. Die frühere iPhone-Abnahme gilt nicht als Prüfung dieses neuen Grafikstands.
 9. **Offen – Beta-Feedback über GitHub Issues:** Issue-Formulare für Fehler und Feature-Ideen anlegen. Im Spiel gut auffindbare Aktionen **Fehler melden** und **Idee vorschlagen** ergänzen, die das jeweilige Formular in einem neuen Tab öffnen. Prüfen, dass die Beta-Tester das GitHub-Repository erreichen und Issues erstellen können.
 10. **Offen – Abschlusstest und Veröffentlichung:** Auf den Zielbrowsern testen und danach GitHub Pages einrichten.
+
+## Geplante Spielerweiterung: Team-Schlüssel
+
+**Offen – erfasst am 10.11.2026:** Vor dem Öffnen des Ausgangs muss die Spielfigur aus jedem Teamzimmer einen Schlüssel gefunden und eingesammelt haben. Die sieben Teamzimmer WCL, WSW, WDPS, EMS, MAC, M365 und CMS liefern je einen eigenen Schlüssel. Mehrfaches Aufnehmen desselben Schlüssels darf keinen weiteren Team-Schlüssel ersetzen.
+
+Zum gemeinsamen Entwicklungsschritt gehören:
+
+- **Spiel:** Schlüssel in allen sieben Teamzimmern platzieren und einsammelbar machen; gesammelte Team-Schlüssel eindeutig verwalten und den Fortschritt sichtbar machen.
+- **Ausgang:** Solange mindestens ein Team-Schlüssel fehlt, bleibt der Ausgang verschlossen und ein Sieg ist ausgeschlossen. Erst nach dem letzten fehlenden Schlüssel darf er sich öffnen; das Durchqueren löst den Sieg aus. Die allgemeine automatische Türöffnung darf diese Sperre nicht umgehen.
+- **So geht’s:** Den Abschnitt **Regeln** um die Suche in allen sieben Teamzimmern, das Einsammeln und die Öffnungsbedingung für den Ausgang erweitern. Vorgesehener Regeltext: „Finde und sammle in jedem der sieben Teamzimmer einen Schlüssel. Erst mit allen sieben Team-Schlüsseln kannst du den Ausgang öffnen und entkommen.“
+- **Versuchsneustart:** Gesammelte Schlüssel und Ausgangssperre für den neuen Versuch zurücksetzen; Pause erhält den Fortschritt.
+- **Abnahme:** Mit null bis sechs unterschiedlichen Team-Schlüsseln kein Öffnen/Sieg; mit allen sieben Öffnen und Flucht möglich. Doppelte Aufnahme zählt nicht zusätzlich. Alle Schlüssel sind erreichbar; Neustart, Pause, Touch-/Tastaturbedienung und Erklärung im Menü prüfen. Anschliessend die Machbarkeit innerhalb des Zeitlimits testen.
+
+Konkrete Schlüsselpositionen, Darstellung und Aufnahmebedienung werden bei der Umsetzung festgelegt. Die aktuelle Spielversion besitzt diese Schlüsselbedingung noch nicht. Bestehende Beschreibungen des Prototyps und seiner automatischen Türen beziehen sich auf den bisherigen Stand.
 
 ## Branch- und Merge-Regeln
 

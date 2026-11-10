@@ -18,6 +18,10 @@ Die vollständigen Spielregeln und Dialogtexte stehen in [GAME_DESIGN.md](GAME_D
 
 Dieser Branch basiert auf dem nach main gemergten Stand a199290. Eigene private Testdemo und echte Geräteabnahme werden hier isoliert geführt. Die sichtbare Testkennung unterscheidet die Demo vom Hauptstand; Spielregeln bleiben unverändert. [Prüfplan und Geräteprotokoll](IPHONE_SAFARI_TEST_PLAN.md).
 
+## Geplanter Entwicklungsschritt: Team-Schlüssel
+
+**Offen – noch nicht im Spiel umgesetzt:** In jedem der sieben Teamzimmer einen eigenen Schlüssel finden und einsammeln. Erst mit allen sieben unterschiedlichen Team-Schlüsseln darf der Ausgang geöffnet werden. Die Umsetzung umfasst die Spielmechanik und die entsprechende Erklärung unter **So geht’s → Regeln**. Aufgaben und Abnahmekriterien stehen im [Entwicklungsplan](DEVELOPMENT_PLAN.md#geplante-spielerweiterung-team-schlüssel); die Spielregel ist im [Spieldesign](GAME_DESIGN.md#geplant-team-schlüssel-als-voraussetzung-für-den-ausgang) vorgemerkt.
+
 ## Projektstatus
 
 **Freigegebener Funktionsstand:** Der Nutzer hat Grafik und Darstellung visuell bestätigt und die Übernahme nach `main` beauftragt. Echte iPhone-/Safari-Tests und die neue private Testdemo gehören zum separaten Branch `feature/iphone-safari-testing`, der vom gemergten `main` startet. Die bestehende private Demo wird dadurch nicht ersetzt.

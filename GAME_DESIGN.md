@@ -20,6 +20,14 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 - P&T bedeutet **People & Transformation**.
 - Kamera und Spielwelt bleiben in fester Draufsicht; die Kamera folgt der Spielfigur.
 
+## Geplant: Team-Schlüssel als Voraussetzung für den Ausgang
+
+**Offen – Nutzerwunsch vom 10.11.2026, noch nicht implementiert:** In jedem der sieben Teamzimmer (WCL, WSW, WDPS, EMS, MAC, M365 und CMS) muss ein eigener Schlüssel gefunden und eingesammelt werden. Erst mit allen sieben unterschiedlichen Team-Schlüsseln lässt sich der Ausgang öffnen und die Flucht abschliessen. Vorher darf weder die automatische Türöffnung noch das Betreten des Ausgangsfeldes einen Sieg ermöglichen.
+
+Die Umsetzung umfasst Schlüsselobjekte, das Verwalten und Anzeigen der eingesammelten Team-Schlüssel sowie die Ausgangssperre. Ein neuer Versuch setzt den Sammelfortschritt zurück und sperrt den Ausgang erneut; Pause erhält den Fortschritt. Positionen, Darstellung und Aufnahmebedienung sind noch festzulegen.
+
+Gleichzeitig muss **So geht’s → Regeln** die Suche und das Einsammeln in allen sieben Teamzimmern sowie die Öffnungsbedingung erklären: „Finde und sammle in jedem der sieben Teamzimmer einen Schlüssel. Erst mit allen sieben Team-Schlüsseln kannst du den Ausgang öffnen und entkommen.“ Die folgende Beschreibung des aktuellen Prototyps gilt bis zur Umsetzung weiterhin ohne Schlüsselbedingung. Abnahmekriterien stehen im Entwicklungsplan unter **Geplante Spielerweiterung: Team-Schlüssel**.
+
 ## Grundriss
 
 Der aktuelle Graybox-Grundriss ist im Prototyp umgesetzt. Die offenen Raumränder wurden am 05.11.2026 durch Aussenwände geschlossen. Die Teamzimmer haben je einen zwei Kacheln breiten Türdurchgang; Nebenräume haben je einen Türdurchgang, Meeting 1 hat als Ausnahme zwei Eingänge. Kein Teamzimmer muss durchquert werden, um vom Start zum Ausgang zu gelangen. Mauerrahmen markieren die tatsächlichen Wandöffnungen mit automatisch öffnenden, graugrünen Türblättern; die Schwellen sind in Gangfarben gehalten. Die inneren Raumschwellen werden als normaler Boden gezeichnet.
@@ -223,7 +231,7 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 |---|---|
 | Titel und kurzes Intro | Kleine Büro-Pixelszene, Titel Escape PI Planning und der Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“. Keine lange Pflichtsequenz. |
 | Spiel starten | Deutliche Hauptaktion. Beginnt einen frischen Versuch im PI-Raum; der 180-Sekunden-Timer startet weiterhin erst beim Verlassen des Raums. |
-| So geht's | Grössere, scrollbar angezeigte Erklärung, zuerst im fett und gold hervorgehobenen Unterkapitel **Regeln** (Ziel, 180 Sekunden ab Verlassen des PI-Raums, Steuerung, Pause und Tarnung), danach **Rollen** mit kurzen humorvollen Beschreibungen von RTE, P&T, BO, PM, PO und Scrum Master. Scrollen per Mausrad, Wischgeste oder Pfeiltasten/WASD. Zurück führt ins Menü. |
+| So geht's | Geplante Erweiterung (noch offen): Team-Schlüssel sammeln und Ausgang erst mit allen sieben Schlüsseln öffnen erklären. Aktuell: grössere, scrollbar angezeigte Erklärung, zuerst im fett und gold hervorgehobenen Unterkapitel **Regeln** (Ziel, 180 Sekunden ab Verlassen des PI-Raums, Steuerung, Pause und Tarnung), danach **Rollen** mit kurzen humorvollen Beschreibungen von RTE, P&T, BO, PM, PO und Scrum Master. Scrollen per Mausrad, Wischgeste oder Pfeiltasten/WASD. Zurück führt ins Menü. |
 | Einstellungen | **Musik** und **Töne** getrennt schalten. Töne umfassen Spielgeräusche wie Schritte, Warnung, Fang und Sieg; die Menünavigation bleibt stumm. Beide Einstellungen lokal speichern und im Pausenfenster direkt erreichbar machen. |
 | Infos / Credits | Kurze Projektinfo rund um den Versuch, sich vor dem PI Planning zu drücken, Urheber-/Lizenzangaben und kompakte Versionskennung für Fehlermeldungen. |
 | Beta-Feedback | Fehler melden und Idee vorschlagen als sekundäre Links, sobald die GitHub-Issue-Formulare aus Schritt 9 bereitstehen. |
