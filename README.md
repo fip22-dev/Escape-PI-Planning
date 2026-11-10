@@ -42,7 +42,7 @@ Im Dialogfenster werden Rollen ausgeschrieben: Release Train Engineer, People & 
 
 Die Rollendialoge und der reproduzierbare Neustart auf `feature/caught-dialogs` sind zusätzlich zu den automatisierten Tests vom Nutzer im lokalen Browser-Spieltest am 07.11.2026 abgenommen. Die iPhone-/Safari-Abnahme des integrierten Stands wurde am 08.11.2026 vom Nutzer bestätigt.
 
-Die mobile Steuerung entspricht der vom Nutzer bestätigten Demo: Richtungstasten antippen für einzelne Schritte oder gedrückt halten zum Laufen. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
+Die mobile Steuerung entspricht der vom Nutzer bestätigten Demo: den Joystick ziehen und halten zum Laufen; die Mitte und Loslassen stoppen die Eingabe. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
 
 Prüfung: Bewegung, Pause und Neustart im Browser geprüft, 23 vorhandene Tests und Produktionsbuild erfolgreich. Der Nutzer hat die mobile Demo bestätigt.
 
@@ -54,7 +54,7 @@ Die [Escape PI Planning – Demo](https://escape-pi-planning-demo-philippe.elect
 
 1. Den Demo-Link öffnen; auf dem iPhone beispielsweise in Safari, am PC im Browser.
 2. Bei Aufforderung mit dem ChatGPT-Konto anmelden, dem die Demo gehört. Die Demo ist privat; andere Personen erhalten über den Link allein keinen Zugriff.
-3. Auf dem iPhone die eingeblendeten Richtungstasten antippen oder halten. **Pause / Weiter** und **Neustart** sind ebenfalls als Tasten verfügbar. Hoch- und Querformat werden unterstützt.
+3. Auf dem iPhone den eingeblendeten Joystick ziehen und halten. **Pause / Weiter** und **Neustart** sind ebenfalls als Tasten verfügbar. Hoch- und Querformat werden unterstützt.
 4. Am PC mit **WASD oder Pfeiltasten** bewegen. **Esc** öffnet bzw. schliesst das Pausenmenü; alternativ die eingeblendeten Schaltflächen verwenden.
 
 Ein eigener Computer muss für den Online-Aufruf nicht eingeschaltet sein. Die Demo ist eine separat bereitgestellte Version und wird durch Änderungen auf GitHub nicht automatisch aktualisiert. Der GitHub-Repository-Link zeigt den Quellcode; er startet das Spiel nicht. GitHub Pages ist noch nicht eingerichtet.
@@ -134,7 +134,7 @@ Zusätzlich die [offenen Pull Requests](https://github.com/fip22-dev/Escape-PI-P
 
 Für Tests des freigegebenen Spielstands `main` verwenden; die Befehle stehen unter **Spiel auf Mobile und PC öffnen**. Ein Feature-Stand muss gezielt anhand des zugehörigen Pull Requests gewählt werden. Der frühere Möbelstand ist bereits in `main` integriert.
 
-Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zugriff. Beim blossen Öffnen des Spiels zählt dagegen der Stand des Servers oder Deployments; der Browser prüft oder wechselt keine Git-Branches. Die lokale Adresse `127.0.0.1` des Entwicklungsclients ist vom Phone aus nicht dessen Spielserver. Touch-Steuerung ist implementiert: vier Richtungstasten zum Antippen oder Halten sowie Pause/Weiter und direkter Neustart. Das Layout passt sich an Hoch- und Querformat an. WASD und Pfeiltasten bleiben verfügbar.
+Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zugriff. Beim blossen Öffnen des Spiels zählt dagegen der Stand des Servers oder Deployments; der Browser prüft oder wechselt keine Git-Branches. Die lokale Adresse `127.0.0.1` des Entwicklungsclients ist vom Phone aus nicht dessen Spielserver. Touch-Steuerung ist implementiert: ein Touch-Joystick zum Ziehen und Halten sowie Pause/Weiter und direkter Neustart. Das Layout passt sich an Hoch- und Querformat an. WASD und Pfeiltasten bleiben verfügbar.
 
 ### Entwicklungsregeln
 
@@ -186,7 +186,7 @@ Türplatzierung korrigiert: alle 14 Raumtüren sitzen in der jeweiligen Wandöff
 
 Mit der Taste **Vollbild** oberhalb des Spiels oder **F** die grosse Ansicht öffnen und schliessen; die Taste ist auch im Startmenü sichtbar. **Esc** beendet zuerst Vollbild/Grossansicht, ohne dabei den Spiel-/Pausenzustand zu ändern. Danach hat Esc wieder seine normale Spielfunktion. Der Ansichtsschalter ist auch per Tab und Enter/Leertaste bedienbar.
 
-Wenn Browser oder Einbettung echtes Vollbild nicht freigeben, verwendet das Spiel eine Grossansicht innerhalb der Seite und zeigt dies an. Browserleisten bleiben dort erhalten. Auf Touch-Geräten bleiben Richtungstasten, Pause und Neustart erreichbar; im Querformat stehen sie neben dem Spiel. Bei Maus-/Tastaturgeräten wird die Touch-Leiste in der grossen Ansicht ausgeblendet. Kartenausschnitt und Regeln bleiben unverändert; das Seitenverhältnis bleibt erhalten.
+Wenn Browser oder Einbettung echtes Vollbild nicht freigeben, verwendet das Spiel eine Grossansicht innerhalb der Seite und zeigt dies an. Browserleisten bleiben dort erhalten. Auf Touch-Geräten bleiben Joystick, Pause und Neustart erreichbar; im Querformat stehen sie neben dem Spiel. Bei Maus-/Tastaturgeräten wird die Touch-Leiste in der grossen Ansicht ausgeblendet. Kartenausschnitt und Regeln bleiben unverändert; das Seitenverhältnis bleibt erhalten.
 
 Die Türen haben graugrüne Paneele, dunkle Mauerrahmen und dezente Griffe. Die Schwellen verwenden Gangfarben statt gelber Flächen. Position, automatische Öffnung und Sichtschutz bleiben erhalten.
 

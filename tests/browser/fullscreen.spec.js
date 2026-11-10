@@ -126,8 +126,12 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   await tapCanvas(160, 151);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
   await expectFits(page);
-  await page.locator('[data-direction="right"]').tap();
+  const stick = await page.locator('.touch-joystick').boundingBox();
+  await page.mouse.move(stick.x + stick.width / 2, stick.y + stick.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(stick.x + stick.width / 2, stick.y + stick.height / 2 + 30);
   await page.waitForFunction(() => window.__game.scene.getScene("graybox").playerTile.x > 34);
+  await page.mouse.up();
   await page.locator('[data-action="pause"]').tap();
   expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("portrait-rotated-pause.png") });

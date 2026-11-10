@@ -11,7 +11,7 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 ## Festgelegte Eckpunkte für Version 0.1
 
 - Start im Raum **PI-Einführung**; der Ausgang liegt am nördlichen Ende des Hauptgangs.
-- Steuerung mit **Pfeiltasten, WASD oder vier Touch-Richtungstasten**. Antippen führt einen Schritt aus; Halten bewegt fortlaufend. **Pause / Weiter** pausiert oder setzt fort, **Neustart** startet den Versuch direkt neu. Bei Pointer-Cancel, Fokusverlust und Szenenneustart wird die Touch-Eingabe zurückgesetzt. Das Seitenlayout berücksichtigt Hoch- und Querformat.
+- Steuerung mit **Pfeiltasten, WASD oder Touch-Joystick**. Ziehen und Halten bewegt fortlaufend in vier Richtungen; Mitte und Loslassen stoppen weitere Schritte. **Pause / Weiter** pausiert oder setzt fort, **Neustart** startet den Versuch direkt neu. Bei Pointer-Cancel, Fokusverlust und Szenenneustart wird die Touch-Eingabe zurückgesetzt. Das Seitenlayout berücksichtigt Hoch- und Querformat.
 - Vorgesehener Timer: **180 Sekunden**. Er startet, wenn die Spielfigur die Flucht beginnt.
 - Wird die Spielfigur von einem der 15 Suchenden entdeckt, erscheint ein rollenspezifischer Dialog. Die sieben Product Owner werden dabei über ihr Teamkürzel unterschieden; Scrum Master wird ausgeschrieben. Danach startet der Versuch im PI-Einführungsraum neu.
 - Wiederholungsdialoge können übersprungen werden; während eines Dialogs steht der Timer still.

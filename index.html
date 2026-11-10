@@ -24,11 +24,9 @@
         <div id="game-container"></div>
       </section>
       <nav class="touch-controls" aria-label="Spielsteuerung">
-        <div class="direction-pad" aria-label="Bewegen">
-          <button type="button" data-direction="up" aria-label="Nach oben">▲</button>
-          <button type="button" data-direction="left" aria-label="Nach links">◀</button>
-          <button type="button" data-direction="down" aria-label="Nach unten">▼</button>
-          <button type="button" data-direction="right" aria-label="Nach rechts">▶</button>
+        <div class="touch-joystick" role="group" aria-label="Joystick zum Bewegen" aria-describedby="joystick-help">
+          <span class="joystick-track" aria-hidden="true"></span>
+          <span class="joystick-thumb" aria-hidden="true"></span>
         </div>
         <div class="touch-actions">
           <button type="button" data-action="pause">Pause / Weiter</button>
@@ -36,7 +34,7 @@
         </div>
       </nav>
       <footer class="controls">
-        <span>Richtungstaste halten zum Laufen · auch mit WASD oder Pfeiltasten</span>
+        <span id="joystick-help">Joystick ziehen und halten zum Laufen · loslassen zum Stoppen · auch mit WASD oder Pfeiltasten</span>
         <span>Die Kamera folgt deiner Spielfigur.</span>
       </footer>
     </main>
