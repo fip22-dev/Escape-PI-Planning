@@ -10,6 +10,7 @@ import * as movement from "./neutralMovement.js";
 import * as speech from "./neutralSpeech.js";
 import * as pixels from "./pixelArt.js";
 import * as doors from "./doors.js";
+import { chooseTouchStep } from "./touchMovement.js";
 
 test("all 15 searchers have complete first dialogues and skippable family repeats", () => {
   const plan = map.createFloorPlan();
@@ -54,11 +55,11 @@ function createScene() {
   }
   const controls = { clear() {}, destroy() {}, readDirection: () => null };
   const Phaser = { Scene: class {}, Input: { Keyboard: { KeyCodes: {} } }, Scenes: { Events: { SHUTDOWN: "shutdown" } } };
-  const bindings = { Phaser, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors,
+  const bindings = { Phaser, chooseTouchStep, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors,
     configureRendering() {}, routeRenderLayers() {}, RENDER_SCALE: 4,
     document: { querySelector: () => null }, CustomEvent: class {},
     getAudioEngine: () => ({ startMusic() {}, play() {}, getSettings: () => ({ music: true, sounds: true }) }),
-    bindTouchControls: () => controls, window: { addEventListener() {}, removeEventListener() {}, dispatchEvent() {} } };
+    bindTouchControls: ({ onClear }) => { controls.clear = () => onClear?.(); return controls; }, window: { addEventListener() {}, removeEventListener() {}, dispatchEvent() {} } };
   const source = readFileSync(new URL("../scenes/GrayboxScene.js", import.meta.url), "utf8")
     .replace(/import[\s\S]*?from "[^"]+";\s*/g, "").replace("export class", "class");
   const Scene = new Function(...Object.keys(bindings), `${source}\nreturn GrayboxScene;`)(...Object.values(bindings));
@@ -139,4 +140,24 @@ test("pause time does not advance the timer, detection or initial patrol delays"
   assert.equal(scene.time.now - scene.escapeStartedAt, 1000);
   assert.equal(scene.time.now - scene.searchers[0].visibleSince, 200);
   assert.equal(scene.neutralPeople[0].nextMoveAt, before + 5000);
+});
+
+
+test("real player update buffers held touch turns without changing speed or continuing after release", () => {
+  const scene=createScene();
+  scene.grid=Array.from({length:52},()=>Array(60).fill('#'));
+  for(const [x,y] of [[10,10],[11,10],[12,10],[12,9]])scene.grid[y][x]='r';
+  scene.playerTile={x:10,y:10};scene.roomObjects=[];scene.neutralPeople=[];scene.searchers=[];
+  for(const method of ['updateGameTimer','updateNeutralPeople','updateSearchers','updateSpeechBubble','updateDoors','onPlayerTileChanged'])scene[method]=()=>{};
+  let request={x:1,y:0};scene.touchControls.readDirection=()=>request;scene.readDirection=()=>null;
+  const steps=[];
+  for(let i=0;i<3;i++) {
+    scene.time.now+=105;scene.update(scene.time.now);
+    const tween=scene.tweens.active.pop();assert.ok(tween);assert.equal(tween.duration,105);
+    if(i===0)request={x:0,y:-1};
+    tween.onComplete();steps.push({...scene.playerTile});
+  }
+  assert.deepEqual(steps,[{x:11,y:10},{x:12,y:10},{x:12,y:9}]);
+  request=null;scene.touchControls.clear();assert.equal(scene.touchHeading,null);
+  scene.time.now+=105;scene.update(scene.time.now);assert.equal(scene.tweens.active.length,0);
 });

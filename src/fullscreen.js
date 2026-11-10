@@ -11,6 +11,16 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
     if (wasNative && !native) ignoreEscapeUntil = performance.now() + 150;
     wasNative = native;
     const active = native || expanded;
+    const viewport = window.visualViewport;
+    const width = viewport?.width ?? innerWidth;
+    const height = viewport?.height ?? innerHeight;
+    const mobile = matchMedia("(pointer: coarse)").matches && Math.min(width, height) <= 600;
+    target.style.setProperty("--mobile-width", `${width}px`);
+    target.style.setProperty("--mobile-height", `${height}px`);
+    target.style.setProperty("--mobile-left", `${viewport?.offsetLeft ?? 0}px`);
+    target.style.setProperty("--mobile-top", `${viewport?.offsetTop ?? 0}px`);
+    target.classList.toggle("is-mobile-landscape", active && mobile);
+    target.classList.toggle("is-rotated", active && mobile && height > width);
     target.classList.toggle("is-expanded", active);
     document.body.classList.toggle("has-expanded-game", active);
     target.dataset.displayMode = native ? "fullscreen" : expanded ? "expanded" : "normal";
@@ -26,7 +36,9 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
     pending = true;
     button.disabled = true;
     try {
-      if (document.fullscreenElement === target) await document.exitFullscreen();
+      if (document.fullscreenElement === target) {
+        await document.exitFullscreen();
+      }
       else if (expanded) expanded = false;
       else if (nativeAvailable()) {
         try {
@@ -64,6 +76,11 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
   button.addEventListener("click", () => { void toggle(); }, { signal: abort.signal });
   document.addEventListener("fullscreenchange", sync, { signal: abort.signal });
   window.addEventListener("keydown", onKey, { capture: true, signal: abort.signal });
+  // Resizing adapts the selected view; entering it always requires the button.
+  window.addEventListener("orientationchange", sync, { signal: abort.signal });
+  window.addEventListener("resize", sync, { signal: abort.signal });
+  window.visualViewport?.addEventListener("resize", sync, { signal: abort.signal });
+  window.visualViewport?.addEventListener("scroll", sync, { signal: abort.signal });
   sync();
   return { destroy() { abort.abort(); } };
 }

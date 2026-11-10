@@ -1,5 +1,5 @@
-// Game rules and layout use 320 × 240 logical units. Render four samples per
-// unit so text retains its curves instead of enlarging a 6–9 px raster.
+// UI uses a 320 × 240 reference layout; mobile expanded view widens the camera.
+// Render four samples per unit so text stays sharp without stretching.
 export const RENDER_SCALE = 4;
 export const VIEW_WIDTH = 320;
 export const VIEW_HEIGHT = 240;
@@ -15,6 +15,29 @@ export function configureRendering(scene, world = false) {
   } else {
     scene.cameras.main.setOrigin(0, 0).setScroll(0, 0);
   }
+  const layout = () => {
+    const width = scene.scale.width;
+    const height = scene.scale.height;
+    const extra = width / RENDER_SCALE - VIEW_WIDTH;
+    scene.cameras.main.setSize(width, height);
+    if (!world) {
+      scene.cameras.main.setScroll(-extra / 2, 0);
+      scene.drawWideBackdrop?.();
+    } else {
+      scene.uiCamera.setViewport(0, 0, width, height);
+      const anchored = new Set([scene.hudPanel, scene.hudLabel, scene.timerText,
+        ...(scene.speechBubbles ?? []).flatMap(bubble => [bubble.shape, bubble.tail, bubble.text])]);
+      for (const object of scene.children.list) {
+        if (object.scrollFactorX !== 0 || anchored.has(object)) continue;
+        object.uiBaseX ??= object.x;
+        object.x = object.uiBaseX + extra / 2;
+      }
+    }
+  };
+  scene.applyViewportLayout = layout;
+  scene.scale.on("resize", layout);
+  scene.events.once("shutdown", () => { scene.scale.off("resize", layout); scene.applyViewportLayout = null; });
+  layout();
 }
 
 export function routeRenderLayers(scene) {
@@ -23,4 +46,5 @@ export function routeRenderLayers(scene) {
   const world = scene.children.list.filter(object => !fixed.includes(object));
   scene.cameras.main.ignore(fixed);
   scene.uiCamera.ignore(world);
+  scene.applyViewportLayout?.();
 }

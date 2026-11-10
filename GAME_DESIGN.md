@@ -2,7 +2,9 @@
 
 ## Freigabe und Geräteprüfung
 
-**Erledigt – visuelle Nutzerabnahme:** Der Nutzer bestätigt den aktuellen Grafik-/Darstellungsstand und beauftragt Commit und Merge nach main. Die echten iPhone-/Safari-Prüfungen, Geräteperformance und Hörprobe werden separat auf `feature/iphone-safari-testing` durchgeführt; die dortige private Demo erhält einen eigenen Link. Dies bestätigt noch keinen realen iPhone-Spieltest dieses neuen Stands.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+
+Historische Prüfabschnitte weiter unten beschreiben frühere Zwischenstände. Dort offene reale Geräte-, Grafik- und Audio-Abnahmen sind mit der Nutzerbestätigung vom 10.11.2026 abgeschlossen; technische Grenzen früherer automatisierter Tests bleiben dokumentiert.
 
 ## Spielziel
 
@@ -11,7 +13,7 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 ## Festgelegte Eckpunkte für Version 0.1
 
 - Start im Raum **PI-Einführung**; der Ausgang liegt am nördlichen Ende des Hauptgangs.
-- Steuerung mit **Pfeiltasten, WASD oder vier Touch-Richtungstasten**. Antippen führt einen Schritt aus; Halten bewegt fortlaufend. **Pause / Weiter** pausiert oder setzt fort, **Neustart** startet den Versuch direkt neu. Bei Pointer-Cancel, Fokusverlust und Szenenneustart wird die Touch-Eingabe zurückgesetzt. Das Seitenlayout berücksichtigt Hoch- und Querformat.
+- Steuerung mit **Pfeiltasten, WASD oder gleitendes Touch-Steuerkreuz**. Vier grosse Richtungsflächen erlauben Halten zum Laufen und gleitenden Richtungswechsel ohne Loslassen. Die gewünschte Richtung wird hervorgehoben. Ein kleiner 20 × 20-Pixel-Mittelbereich und direkte Achsenwechsel erleichtern das Gleiten. Eine gehaltene Kurve wird am ersten freien Feld übernommen; bis dahin bleibt die bisherige Richtung aktiv, sofern sie frei ist. Die Schrittzeit bleibt 105 ms; Mitte, Verlassen der Fläche und Loslassen stoppen weitere Schritte. **Pause / Weiter** pausiert oder setzt fort, **Neustart** startet den Versuch direkt neu. Bei Pointer-Cancel, Fokusverlust und Szenenneustart wird die Touch-Eingabe zurückgesetzt. Das Seitenlayout berücksichtigt Hoch- und Querformat.
 - Vorgesehener Timer: **180 Sekunden**. Er startet, wenn die Spielfigur die Flucht beginnt.
 - Wird die Spielfigur von einem der 15 Suchenden entdeckt, erscheint ein rollenspezifischer Dialog. Die sieben Product Owner werden dabei über ihr Teamkürzel unterschieden; Scrum Master wird ausgeschrieben. Danach startet der Versuch im PI-Einführungsraum neu.
 - Wiederholungsdialoge können übersprungen werden; während eines Dialogs steht der Timer still.
@@ -19,6 +21,14 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 - **37 neutrale Personen** verteilen sich über die gesamte Etage. Alle bewegen sich auf festen Routen innerhalb ihres jeweiligen Raums oder Gangs und blockieren einander sowie die Spielfigur. Neutrale Personen lösen selbst keinen Alarm aus. Für den RTE-Piloten blockieren sie dynamisch die Sicht.
 - P&T bedeutet **People & Transformation**.
 - Kamera und Spielwelt bleiben in fester Draufsicht; die Kamera folgt der Spielfigur.
+
+## Geplant: Team-Schlüssel als Voraussetzung für den Ausgang
+
+**Offen – Nutzerwunsch vom 10.11.2026, noch nicht implementiert:** In jedem der sieben Teamzimmer (WCL, WSW, WDPS, EMS, MAC, M365 und CMS) muss ein eigener Schlüssel gefunden und eingesammelt werden. Erst mit allen sieben unterschiedlichen Team-Schlüsseln lässt sich der Ausgang öffnen und die Flucht abschliessen. Vorher darf weder die automatische Türöffnung noch das Betreten des Ausgangsfeldes einen Sieg ermöglichen.
+
+Die Umsetzung umfasst Schlüsselobjekte, das Verwalten und Anzeigen der eingesammelten Team-Schlüssel sowie die Ausgangssperre. Ein neuer Versuch setzt den Sammelfortschritt zurück und sperrt den Ausgang erneut; Pause erhält den Fortschritt. Positionen, Darstellung und Aufnahmebedienung sind noch festzulegen.
+
+Gleichzeitig muss **So geht’s → Regeln** die Suche und das Einsammeln in allen sieben Teamzimmern sowie die Öffnungsbedingung erklären: „Finde und sammle in jedem der sieben Teamzimmer einen Schlüssel. Erst mit allen sieben Team-Schlüsseln kannst du den Ausgang öffnen und entkommen.“ Die folgende Beschreibung des aktuellen Prototyps gilt bis zur Umsetzung weiterhin ohne Schlüsselbedingung. Abnahmekriterien stehen im Entwicklungsplan unter **Geplante Spielerweiterung: Team-Schlüssel**.
 
 ## Grundriss
 
@@ -77,7 +87,7 @@ Spielschleife implementiert: Der 180-Sekunden-Timer startet beim Verlassen des P
 
 **Erledigt und über PR #10 in `main` integriert:** Rollenspezifische Erst- und Wiederholungsdialoge mit stillstehendem Timer und reproduzierbarem Neustart. Automatisierte Prüfungen erfolgreich; der Nutzer hat den lokalen Browser-Spieltest am 07.11.2026 bestätigt. Einzelheiten und verbleibende Geräteprüfungen stehen im Entwicklungsplan.
 
-**Erledigt:** Neutrale Sprechblasen sind implementiert und automatisiert im Browser geprüft; der Nutzer hat den früheren Stand bestätigt. Auf dem aktuellen Folgebranch gelten zwei Sekunden Laufzeit mit fester Weltposition; eine neue Nutzerabnahme bleibt offen. **Noch offen:** Designentscheidung über nutzbare Deckungspositionen weiterer Möbel. Die Angleichung der finalen Pixelgrafik und Audio ist in Arbeit; Details stehen im Abschnitt Intro-Menü und Pixelstil.
+**Erledigt:** Neutrale Sprechblasen sind implementiert und automatisiert im Browser geprüft; der Nutzer hat den früheren Stand bestätigt. Auf dem aktuellen Folgebranch gelten zwei Sekunden Laufzeit mit Nachführung am sprechenden NPC; eine neue Nutzerabnahme bleibt offen. **Noch offen:** Designentscheidung über nutzbare Deckungspositionen weiterer Möbel. Die Angleichung der finalen Pixelgrafik und Audio ist in Arbeit; Details stehen im Abschnitt Intro-Menü und Pixelstil.
 
 ## Hauptfiguren und Routen – Entwurf für Version 0.1
 
@@ -194,10 +204,10 @@ Die ursprünglichen Bewegungsrouten wurden im Browser visuell abgenommen. Der RT
 
 Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die Spielfigur in ihre Nähe kommt.
 
-- Eine Sprechblase bleibt zwei Sekunden sichtbar; die Annäherungsdistanz beträgt höchstens zwei Kacheln im gleichen Raum beziehungsweise Gangbereich.
-- In jedem Team-, Meeting- und Pausenraum spricht höchstens eine Person gleichzeitig; nach Ende ihrer Blase kann die nächste Person desselben Raums sprechen. In Gängen und PI-Einführung können mehrere Personen gleichzeitig sprechen. Jede erhält eine abgerundete Blase mit Rahmen und einer Spitze zum Entstehungsort; nahe Textfelder werden einmalig nach Platzangebot versetzt. Keine globale Pause, mindestens 15 Sekunden zwischen Auslösungen derselben Person.
+- Eine Sprechblase bleibt zwei Sekunden sichtbar. Sichtbare NPCs in Meeting 1–5 benötigen keine Nähe oder Anwesenheit des Spielers im Raum; bei anderen NPCs gelten höchstens zwei Kacheln Entfernung im gleichen Bereich.
+- In jedem Team-, Meeting- und Pausenraum spricht höchstens eine Person gleichzeitig; nach Ende ihrer Blase kann die nächste Person desselben Raums sprechen. Es gibt insgesamt höchstens zwei aktive Blasen gleichzeitig, auch in Gängen und PI-Einführung. Wartende NPCs erhalten ihren Cooldown erst beim tatsächlichen Sprechen. Jede erhält eine abgerundete Blase mit Rahmen und einer Spitze zum aktuellen Sprecher; nahe Textfelder erhalten bei ihrer Entstehung einen möglichst überlappungsfreien Versatz relativ zum Sprecher. Keine globale Pause, mindestens 15 Sekunden zwischen Auslösungen derselben Person.
 - Sprechblasen sind nicht modal: Sie halten den Timer nicht an und blockieren keine Bewegung.
-- Jede neutrale Figur erhält zwei feste Sprüche aus dem folgenden Pool; bei Auslösung wird einer zufällig gewählt. Die Blase speichert die Weltposition des Sprechers bei ihrer Entstehung und bleibt dort unverändert. Die erstmalige Platzierung vermeidet nach Möglichkeit Zeitanzeige und andere Blasen; danach wird sie nicht erneut an Spieler, Sprecher oder Bildschirmrand ausgerichtet. Beim Kamerascrollen bewegt sie sich mit der Karte und kann aus dem Bild verschwinden. Während der Pause ist sie ausgeblendet und ihre Laufzeit samt Cooldowns eingefroren. Bei Fang endet sie; Neustart setzt Auswahlzustand und Cooldowns zurück. Implementierung auf `feature/neutral-speech-bubbles`; Prüfung und manuelle Abnahme siehe Entwicklungsplan.
+- Jede neutrale Figur erhält zwei feste Sprüche aus dem folgenden Pool; bei Auslösung wird einer zufällig gewählt. Der Anker wird bei jedem Spielupdate aus der interpolierten Sprite-Position des sprechenden NPCs ermittelt. Blasenkörper und Spitze folgen ihm; Nähe zur Spielfigur ist nur Auslöser und beeinflusst anschliessend nicht die Position. Blasenkörper, Text und Spitze werden über die Weltkamera gezeichnet. Ihr relativer Versatz zum NPC wird einmal gewählt und bleibt erhalten; die Kamera und die Spielerposition richten die Blase nicht neu aus. Am Bildschirmrand werden Blasen natürlich abgeschnitten, statt dem Spieler zu folgen. Verlässt der Sprecher den Kamerabereich, wird seine Blase ausgeblendet. Die Bewegung erneuert weder Text noch Ablaufzeit oder Cooldown. Während der Pause ist sie ausgeblendet und ihre Laufzeit samt Cooldowns eingefroren. Bei Fang endet sie; Neustart setzt Auswahlzustand und Cooldowns zurück. Implementierung auf `feature/neutral-speech-bubbles`; Prüfung und manuelle Abnahme siehe Entwicklungsplan.
 
 1. „Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.“
 2. „Juhu, endlich Stories schätzen! Ich wollte schon immer Fibonacci-Karten nach Gefühl werfen.“
@@ -217,13 +227,13 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 
 ## Intro-Menü und Pixelstil – in Arbeit
 
-**Teilweise erledigt:** Das Intro-Menü und die dazu passende Pixelgrafik sowie Audio wurden über PR #13 in `main` integriert. Die erste Version startet vor dem ersten Spielversuch mit Titel „Escape PI Planning“ und dem Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“ im freien dunklen Streifen oberhalb der Büro-Pixelszene. Titel und Untertitel verdecken die Illustration nicht. Auswahl: **Spiel starten**, **So geht's**, **Einstellungen** und **Infos & Credits**. Spielregeln und Patrouillen beginnen erst nach Spielstart. Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell im Browser geprüft. Auf `feature/visuals-audio-polish` sind Möbelpalette und Rollenaccessoires umgesetzt; manuelle Grafikabnahme und reale Geräte-Hörprobe bleiben offen.
+**Erledigt – Nutzerabnahme am 10.11.2026:** Das Intro-Menü und die dazu passende Pixelgrafik sowie Audio wurden über PR #13 in `main` integriert. Die erste Version startet vor dem ersten Spielversuch mit Titel „Escape PI Planning“ und dem Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“ im freien dunklen Streifen oberhalb der Büro-Pixelszene. Titel und Untertitel verdecken die Illustration nicht. Auswahl: **Spiel starten**, **So geht's**, **Einstellungen** und **Infos & Credits**. Spielregeln und Patrouillen beginnen erst nach Spielstart. Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell im Browser geprüft. Auf `feature/visuals-audio-polish` sind Möbelpalette und Rollenaccessoires umgesetzt; manuelle Grafikabnahme und reale Geräte-Hörprobe bleiben offen.
 
 | Inhalt | Vorgeschlagenes Verhalten |
 |---|---|
 | Titel und kurzes Intro | Kleine Büro-Pixelszene, Titel Escape PI Planning und der Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“. Keine lange Pflichtsequenz. |
 | Spiel starten | Deutliche Hauptaktion. Beginnt einen frischen Versuch im PI-Raum; der 180-Sekunden-Timer startet weiterhin erst beim Verlassen des Raums. |
-| So geht's | Grössere, scrollbar angezeigte Erklärung, zuerst im fett und gold hervorgehobenen Unterkapitel **Regeln** (Ziel, 180 Sekunden ab Verlassen des PI-Raums, Steuerung, Pause und Tarnung), danach **Rollen** mit kurzen humorvollen Beschreibungen von RTE, P&T, BO, PM, PO und Scrum Master. Scrollen per Mausrad, Wischgeste oder Pfeiltasten/WASD. Zurück führt ins Menü. |
+| So geht's | Geplante Erweiterung (noch offen): Team-Schlüssel sammeln und Ausgang erst mit allen sieben Schlüsseln öffnen erklären. Aktuell: grössere, scrollbar angezeigte Erklärung, zuerst im fett und gold hervorgehobenen Unterkapitel **Regeln** (Ziel, 180 Sekunden ab Verlassen des PI-Raums, Steuerung, Pause und Tarnung), danach **Rollen** mit kurzen humorvollen Beschreibungen von RTE, P&T, BO, PM, PO und Scrum Master. Scrollen per Mausrad, Wischgeste oder Pfeiltasten/WASD. Zurück führt ins Menü. |
 | Einstellungen | **Musik** und **Töne** getrennt schalten. Töne umfassen Spielgeräusche wie Schritte, Warnung, Fang und Sieg; die Menünavigation bleibt stumm. Beide Einstellungen lokal speichern und im Pausenfenster direkt erreichbar machen. |
 | Infos / Credits | Kurze Projektinfo rund um den Versuch, sich vor dem PI Planning zu drücken, Urheber-/Lizenzangaben und kompakte Versionskennung für Fehlermeldungen. |
 | Beta-Feedback | Fehler melden und Idee vorschlagen als sekundäre Links, sobald die GitHub-Issue-Formulare aus Schritt 9 bereitstehen. |
@@ -281,7 +291,7 @@ Die Umsetzungsreihenfolge und der Status der Arbeiten stehen in [DEVELOPMENT_PLA
 
 ## Darstellung und Schrittklang – Korrektur vom 09.11.2026
 
-**Teilweise erledigt:** Die logische Ansicht bleibt 320×240 Einheiten mit 16×16-Kacheln. Der Renderer zeichnet 1280×960 Pixel, mit Kamera-Zoom 4 und vierfach aufgelösten Texttexturen. Eine feste UI-Kamera trennt HUD, Dialoge und Sprechblasen von der folgenden Weltkamera. Maus-/Touch-Koordinaten der Anleitung werden in Kamerakoordinaten umgerechnet. CSS verwendet normale Bildskalierung statt pixelated-Vergrösserung eines 320×240-Rasters; der Pixelstil der ganzzahlig gezeichneten Welt bleibt bestehen. Die Spielengine übernimmt die Canvas-Zentrierung allein, damit keine zusätzlichen CSS-Verschiebungen entstehen. In der Normalansicht beträgt die höchste Desktopbreite für Menü und Spiel 960 CSS-Pixel; in Vollbild/Grossansicht entfällt diese Begrenzung; mobile Hoch-/Querformate bleiben erhalten. Dies verbessert Schärfe und Buchstabenformen, erzeugt aber keine zusätzlichen Details in den 16×16-Objekten. Grössere interne Auflösung beansprucht mehr Grafikleistung und muss auf realen Zielgeräten abgenommen werden.
+**Teilweise erledigt:** Die logische Ansicht bleibt 320×240 Einheiten mit 16×16-Kacheln. Der Renderer zeichnet 1280×960 Pixel, mit Kamera-Zoom 4 und vierfach aufgelösten Texttexturen. Eine feste UI-Kamera trennt HUD und Dialoge von der folgenden Weltkamera; NPC-Sprechblasen gehören zur Weltkamera. Maus-/Touch-Koordinaten der Anleitung werden in Kamerakoordinaten umgerechnet. CSS verwendet normale Bildskalierung statt pixelated-Vergrösserung eines 320×240-Rasters; der Pixelstil der ganzzahlig gezeichneten Welt bleibt bestehen. Die Spielengine übernimmt die Canvas-Zentrierung allein, damit keine zusätzlichen CSS-Verschiebungen entstehen. In der Normalansicht beträgt die höchste Desktopbreite für Menü und Spiel 960 CSS-Pixel; in Vollbild/Grossansicht entfällt diese Begrenzung; mobile Hoch-/Querformate bleiben erhalten. Dies verbessert Schärfe und Buchstabenformen, erzeugt aber keine zusätzlichen Details in den 16×16-Objekten. Grössere interne Auflösung beansprucht mehr Grafikleistung und muss auf realen Zielgeräten abgenommen werden.
 
 Menü-Untertext und Hinweise sind leicht vergrössert; die aktive Menüzeile skaliert die Buchstaben nicht mehr unterschiedlich. Rollenschilder verwenden 7 statt 6 logische Pixel. Pflanzen erhalten voneinander getrennte grüne Blattgruppen mit dunkler Kontur, hellen Blattspitzen und Terrakotta-Topfrand; der diffuse rechteckige Objektschatten wird durch einen schmalen Bodenschatten ersetzt. Objektregeln und Platzierung bleiben erhalten.
 
@@ -312,3 +322,25 @@ Türgrafik: dunkle Rahmen aus der Wandpalette, gedeckte graugrüne Paneele, klei
 45 Funktionstests, 15 gezielte Browserfälle und Build erfolgreich. Native Vollbildwechsel in Chromium, Firefox und mobilem Chromium tatsächlich geprüft; nicht verfügbare beziehungsweise verweigerte API zusätzlich kontrolliert simuliert. Getestet: Schalter, F, fokussierter Schalter per Enter, Esc, Bewegung, Erhalt des Pausenzustands, Rückkehr zur zentrierten Ansicht, mobiler Hoch-/Querformatmodus und Touch-Pause. Screenshots visuell kontrolliert. **Offen:** reale iPhone-/Safari-Abnahme; die visuelle Nutzerabnahme ist bestätigt. API-Verfügbarkeit ist browserabhängig; technische Referenz: [MDN requestFullscreen](https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen).
 
 **Erledigt – Prüfung zur Mergefreigabe:** Der vollständige aktuelle Stand besteht 45 Funktionstests und alle 51 Browserfälle (Chromium, Firefox, mobiles Chromium) sowie Produktionsbuild und Diff-Prüfung. Visuelle Nutzerabnahme und Mergefreigabe sind erteilt. Die reale iPhone-/Safari-Abnahme bleibt dem separaten Testbranch vorbehalten.
+
+## Abgeschlossene Geräte-Testdemo
+
+Der Testbranch startete von main a199290 (PR #14). Der Nutzer hat den aktuellen iPhone-/Safari-Stand am 10.11.2026 erfolgreich abgenommen und den Merge des gesamten Branchs nach main beauftragt. Mobile Grossansicht, Schutz gegen Textauswahl, NPC-gebundene Sprechblasen mit höchstens zwei gleichzeitig sowie gleitendes Steuerkreuz und vorgemerkte Kurven gehören zum abgenommenen Stand. Die bestehende private Hosting-Zuordnung und sichtbare Basiskennung bleiben erhalten; die Kennung bezeichnet die ursprüngliche Spielbasis. Es wird kein neuer Branch eröffnet. Geräteprotokoll und geprüfte Quellzuordnung: IPHONE_SAFARI_TEST_PLAN.md.
+
+
+## Mobile Rotation der Spieloberfläche
+
+Die mobile Grossansicht verwendet ein virtuelles Querformat: Im Hochformat wird die gesamte Bühne einschliesslich HTML-Tasten im Uhrzeigersinn gedreht. Phaser skaliert und zentriert anhand der ungedrehten lokalen Bühne; Canvas-Eingaben werden vor Kamera-/Objekt-Treffertests zurückgerechnet. Dadurch bleiben Menüauswahl, Anleitungsscrollen, Pause und Dialoge bedienbar. Bei echter Querformatlage wird nur die CSS-Drehung aufgehoben, ohne Szene oder Versuch neu zu starten. Physische Ausrichtung, Browser-Vollbild und CSS-Grossansicht sind getrennt. Explizites Verkleinern im Querformat darf durch eine Änderung der Browserleistenhöhe nicht rückgängig gemacht werden. Sichtbereichänderungen aktualisieren das Layout und löschen gehaltene Eingaben.
+
+
+Grossansicht wird in beiden Ausrichtungen ausschliesslich mit dem Ansichtsschalter aktiviert. Das Drehen des Geräts passt nur eine bereits gewählte Grossansicht an. So vergrössert der erste Tipp auch bei einem Start im Querformat; der nächste Tipp verkleinert.
+
+
+## Mobile Breitbild-Bühne und Eingabesicherheit
+
+In mobiler Grossansicht füllt der Canvas den sichtbaren Viewport in beiden Achsen. Die interne Renderhöhe bleibt 960 Pixel (240 logische Einheiten); die Breite folgt dem Bühnen-Seitenverhältnis. Die Weltkamera zeigt dadurch seitlich mehr Karte. Die Interface-Kamera übernimmt die neue Breite, zentriert Dialoge und belässt Timer und Welt-Sprechblasen an ihren vorgesehenen Ankern. Menüauswahl und Anleitungswischen werden weiterhin über Kamera-Koordinaten getroffen. Der Bürohintergrund wird seitlich erweitert, das Referenzlayout bleibt unverzerrt. Bei Rückkehr zur normalen Ansicht wird die Renderbreite auf 1280 Pixel zurückgesetzt. Regeln, Wege, Sichtweiten und Zeitfristen ändern sich nicht.
+
+Die ganze HTML-Spieloberfläche einschliesslich Canvas und Schaltern unterbindet Textauswahl, Touch-Callouts, Kontextmenüs und Ziehen. Bereits bestehende Spielauswahl wird bei Auswahländerung oder neuer Zeigereingabe entfernt. Das Standardverhalten von Klicks, Touch-Bedientasten und Audio-Freigabe bleibt erhalten. Die Visual-Viewport-Abmessungen und Offsets positionieren die mobile Bühne beim Ein-/Ausblenden oder Verschieben von Browserleisten.
+
+
+Touch-Eingabesicherheit: Die CSS-Auswahlsperre gilt ausdrücklich für html/body und alle Spielnachfahren. Spielüberschneidende DOM-Auswahlbereiche werden auch bei Body-Ankern entfernt. Nicht-passive Touch-Listener unterdrücken Standardaktionen erst nach den Canvas-Listenern. Aktionsbuttons werden beim Loslassen auf derselben Taste aktiviert; Verschieben, Abbrechen oder Loslassen ausserhalb aktiviert sie nicht. Ein nachfolgender Kompatibilitätsklick wird unterdrückt, Tastaturaktivierung bleibt erhalten. Kontext-/Abbruchaktionen löschen die Spieleingaben.

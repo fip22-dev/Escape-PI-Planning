@@ -3,13 +3,15 @@ import { IntroScene } from "./scenes/IntroScene.js";
 import { GrayboxScene } from "./scenes/GrayboxScene.js";
 import { RENDER_SCALE, VIEW_WIDTH, VIEW_HEIGHT } from "./game/rendering.js";
 import { bindFullscreen } from "./fullscreen.js";
+import { bindRotatedLayout } from "./rotatedLayout.js";
+import { bindGameSurface } from "./gameSurface.js";
 import "./style.css";
 
 window.addEventListener("game:mode", event => {
   document.querySelector(".page")?.classList.toggle("is-menu", event.detail?.mode === "menu");
   // Showing/hiding the page header moves the canvas without resizing the
   // viewport. Refresh its cached bounds before the next pointer interaction.
-  requestAnimationFrame(() => game.scale.refresh());
+  requestAnimationFrame(refreshLayout);
 });
 
 const game = new Phaser.Game({
@@ -27,17 +29,35 @@ const game = new Phaser.Game({
   },
 });
 
+function refreshLayout() {
+  const container = document.querySelector("#game-container");
+  const mobileExpanded = document.querySelector(".page").classList.contains("is-mobile-landscape");
+  const height = VIEW_HEIGHT * RENDER_SCALE;
+  const width = mobileExpanded && container.clientHeight
+    ? Math.max(VIEW_WIDTH * RENDER_SCALE, Math.round(container.clientWidth / container.clientHeight * height))
+    : VIEW_WIDTH * RENDER_SCALE;
+  game.scale.getParentBounds();
+  if (game.scale.width !== width) game.scale.setGameSize(width, height);
+  else game.scale.refresh();
+}
+
+const rotatedLayout = bindRotatedLayout(game, document.querySelector(".page"));
+function resetGameInput() {
+  for (const scene of game.scene.scenes) {
+    scene.touchControls?.clear();
+    scene.input?.keyboard?.resetKeys();
+  }
+}
+const gameSurface = bindGameSurface(document.querySelector(".page"), { onCancel: resetGameInput });
+
 const fullscreen = bindFullscreen({
   target: document.querySelector(".page"),
   button: document.querySelector(".fullscreen-button"),
   status: document.querySelector(".display-status"),
   onLayoutChange() {
-    for (const scene of game.scene.scenes) {
-      scene.touchControls?.clear();
-      scene.input?.keyboard?.resetKeys();
-    }
-    requestAnimationFrame(() => game.scale.refresh());
+    resetGameInput();
+    requestAnimationFrame(refreshLayout);
   },
 });
 
-window.addEventListener("beforeunload", () => { fullscreen.destroy(); game.destroy(true); });
+window.addEventListener("beforeunload", () => { fullscreen.destroy(); gameSurface.destroy(); rotatedLayout.destroy(); game.destroy(true); });

@@ -2,6 +2,8 @@ import { TILE_SIZE } from "./map.js";
 
 export const SPEECH_DURATION_MS = 2000;
 export const SPEECH_PERSON_COOLDOWN_MS = 15_000;
+export const MAX_ACTIVE_SPEECH = 2;
+export const isMeetingSpeaker = person => /^Meeting [1-5]$/.test(person.bounds?.label ?? "");
 export const NEUTRAL_SAYINGS = [
   "Ach, nicht schon wieder PI Planning. Ich hatte gerade eine freie Kalenderlücke gefunden.",
   "Juhu, endlich Stories schätzen! Ich wollte schon immer Fibonacci-Karten nach Gefühl werfen.",
@@ -25,14 +27,22 @@ export function createNeutralSpeech(now) {
 }
 
 export function updateNeutralSpeech(state, now, people, playerTile, eligible = () => true, random = Math.random) {
-  state.active = state.active.filter(bubble => now < bubble.expiresAt);
+  state.active = state.active.filter(bubble => now < bubble.expiresAt).slice(0, MAX_ACTIVE_SPEECH);
+  for (const bubble of state.active) {
+    const person = people[bubble.personIndex];
+    bubble.anchor = {
+      x: person.sprite?.x ?? (person.tile.x + 0.5) * TILE_SIZE,
+      y: (person.sprite?.y ?? (person.tile.y + 0.5) * TILE_SIZE) - 10,
+    };
+  }
   if (now < state.readyAt) return;
   const candidates = people.map((person, index) => ({
     person, index, distance: Math.abs(person.tile.x - playerTile.x) + Math.abs(person.tile.y - playerTile.y),
-  })).filter(({ person, index, distance }) => distance <= 2 && now >= (state.personReadyAt[index] ?? 0)
+  })).filter(({ person, index, distance }) => (distance <= 2 || isMeetingSpeaker(person)) && now >= (state.personReadyAt[index] ?? 0)
     && !state.active.some(bubble => bubble.personIndex === index) && eligible(person));
   candidates.sort((a, b) => a.distance - b.distance || a.index - b.index);
   for (const { index, person } of candidates) {
+    if (state.active.length >= MAX_ACTIVE_SPEECH) break;
     // Named bounds are team, meeting and break rooms. Hall/PI bounds are unnamed.
     const roomKey = person.bounds?.label ? `${person.bounds.x},${person.bounds.y}` : null;
     if (roomKey !== null && state.active.some(bubble => bubble.roomKey === roomKey)) continue;

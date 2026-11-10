@@ -4,7 +4,8 @@ import { createDoors, updateDoors, drawDoors, shiftDoorTime } from "../game/door
 import { configureRendering, routeRenderLayers, RENDER_SCALE } from "../game/rendering.js";
 import { drawPixelPerson, drawPixelTile, drawPixelFurniture } from "../game/pixelArt.js";
 import { advanceCaughtDialog, createCaughtDialog } from "../game/caughtDialog.js";
-import { createNeutralSpeech, updateNeutralSpeech, shiftNeutralSpeechTime } from "../game/neutralSpeech.js";
+import { createNeutralSpeech, updateNeutralSpeech, shiftNeutralSpeechTime, isMeetingSpeaker } from "../game/neutralSpeech.js";
+import { chooseTouchStep } from "../game/touchMovement.js";
 import { bindTouchControls } from "../touchControls.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
@@ -75,6 +76,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.playerTile = { ...start };
     this.isMoving = false;
     this.lastMoveAt = 0;
+    this.touchHeading = null;
     this.escapeStartedAt = null;
     this.gameResult = null;
     this.isPaused = false;
@@ -219,6 +221,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.input.keyboard.resetKeys();
     this.touchControls = bindTouchControls({
+      onClear: () => { this.touchHeading = null; },
       onPause: () => this.onEscapePressed(),
       onRestart: () => this.caughtDialog ? this.advanceDialog() : this.scene.restart(),
     });
@@ -289,16 +292,14 @@ export class GrayboxScene extends Phaser.Scene {
     this.updateSpeechBubble(time);
     if (this.isMoving || time - this.lastMoveAt < 105) return;
 
-    const direction = this.readDirection();
-    if (!direction) return;
-
+    const touchRequest = this.touchControls.readDirection();
+    const direction = touchRequest
+      ? chooseTouchStep(touchRequest, this.touchHeading, candidate => this.canPlayerStep(candidate))
+      : this.readDirection();
+    if (!direction || !this.canPlayerStep(direction)) return;
+    this.touchHeading = touchRequest ? direction : null;
     const targetX = this.playerTile.x + direction.x;
     const targetY = this.playerTile.y + direction.y;
-    if (this.grid[targetY]?.[targetX] === undefined || this.grid[targetY][targetX] === TILE_TYPES.WALL
-      || objectAt(this.roomObjects, targetX, targetY, "blocksMovement")
-      || isTileOccupiedByPeople({ x: targetX, y: targetY }, [...this.neutralPeople, ...this.searchers])) {
-      return;
-    }
 
     this.isMoving = true;
     this.lastMoveAt = time;
@@ -554,6 +555,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   pauseGame() {
+    this.touchControls.clear();
     this.hideSpeechBubbles();
     this.isPaused = true;
     this.pauseChoiceYes = false;
@@ -667,12 +669,12 @@ export class GrayboxScene extends Phaser.Scene {
 
   createGameHud() {
     this.speechBubbles = this.neutralPeople.map(() => ({
-      tail: this.add.graphics().setScrollFactor(0).setDepth(89).setVisible(false),
-      shape: this.add.graphics().setScrollFactor(0).setDepth(90).setVisible(false),
+      tail: this.add.graphics().setScrollFactor(1).setDepth(89).setVisible(false),
+      shape: this.add.graphics().setScrollFactor(1).setDepth(90).setVisible(false),
       text: this.add.text(0, 0, "", {
         resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px", color: "#20292a",
         padding: { x: 6, y: 5 }, wordWrap: { width: 124 }, lineSpacing: 2,
-      }).setScrollFactor(0).setDepth(91).setVisible(false),
+      }).setScrollFactor(1).setDepth(91).setVisible(false),
     }));
     this.dialogPanel = this.add.rectangle(160, 120, 288, 152, 0x172326, 0.98)
       .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(120).setVisible(false);
@@ -903,7 +905,7 @@ export class GrayboxScene extends Phaser.Scene {
         ? [TILE_TYPES.HALL, TILE_TYPES.DOOR].includes(this.grid[this.playerTile.y]?.[this.playerTile.x])
         : this.playerTile.x >= bounds.x && this.playerTile.x < bounds.x + bounds.width
           && this.playerTile.y >= bounds.y && this.playerTile.y < bounds.y + bounds.height;
-      return sameArea && camera.worldView.contains(person.sprite.x, person.sprite.y);
+      return (sameArea || isMeetingSpeaker(person)) && camera.worldView.contains(person.sprite.x, person.sprite.y);
     });
     const speakingNow = new Set(this.neutralSpeech.active.map(item => item.personIndex));
     for (const personIndex of speakingNow) {
@@ -913,31 +915,26 @@ export class GrayboxScene extends Phaser.Scene {
     this.hideSpeechBubbles();
     const placed = [];
     for (const active of this.neutralSpeech.active) {
+      if (!camera.worldView.contains(active.anchor.x, active.anchor.y)) continue;
       const { text, shape, tail } = this.speechBubbles[active.personIndex];
       if (text.text !== active.text) text.setText(active.text);
-      const tipX = active.anchor.x - camera.worldView.x;
-      const tipY = active.anchor.y - camera.worldView.y;
+      const tipX = active.anchor.x;
+      const tipY = active.anchor.y;
       const width = text.width;
       const height = text.height;
-      if (!active.layout) {
-        const baseX = Math.max(8, Math.min(312 - width, tipX - width / 2));
-        const baseY = Math.max(42, Math.min(222 - height, tipY - height - 8));
-        let position = { x: baseX, y: baseY };
-        // Resolve nearby bubbles once, then keep the rectangle in world space.
-        search: for (const x of [baseX, 8, 312 - width]) {
-          for (let y = baseY; y >= 42; y -= height + 6) {
-            if (placed.every(box => x + width + 4 <= box.x || x >= box.x + box.width + 4
-              || y + height + 4 <= box.y || y >= box.y + box.height + 4)) {
-              position = { x, y };
-              break search;
-            }
-          }
+      if (!active.offset) {
+        const x = tipX - width / 2;
+        let y = tipY - height - 8;
+        // Choose a speaker-relative offset once. Camera/player movement must
+        // never reposition the bubble in the world.
+        for (let attempt = 0; attempt < 2; attempt++) {
+          if (placed.every(box => x + width + 4 <= box.x || x >= box.x + box.width + 4
+            || y + height + 4 <= box.y || y >= box.y + box.height + 4)) break;
+          y -= height + 6;
         }
-        active.layout = { x: position.x + camera.worldView.x, y: position.y + camera.worldView.y };
+        active.offset = { x: x - tipX, y: y - tipY };
       }
-      const x = active.layout.x - camera.worldView.x;
-      const y = active.layout.y - camera.worldView.y;
-      if (x + width < 0 || x > 320 || y + height + 10 < 0 || y > 240) continue;
+      const x = tipX + active.offset.x, y = tipY + active.offset.y;
       placed.push({ x, y, width, height });
       const tailX = Math.max(x + 10, Math.min(x + width - 10, tipX));
       const tailTipX = Math.max(tailX - 8, Math.min(tailX + 8, tipX));
@@ -959,6 +956,14 @@ export class GrayboxScene extends Phaser.Scene {
       bubble.shape.setVisible(false);
       bubble.text.setVisible(false);
     }
+  }
+
+  canPlayerStep(direction) {
+    const x = this.playerTile.x + direction.x;
+    const y = this.playerTile.y + direction.y;
+    return this.grid[y]?.[x] !== undefined && this.grid[y][x] !== TILE_TYPES.WALL
+      && !objectAt(this.roomObjects, x, y, "blocksMovement")
+      && !isTileOccupiedByPeople({ x, y }, [...this.neutralPeople, ...this.searchers]);
   }
 
   readDirection() {

@@ -74,6 +74,8 @@ export class IntroScene extends Phaser.Scene {
 
   drawOffice() {
     this.cameras.main.setBackgroundColor(C.bg);
+    this.officeBackdrop = this.add.graphics().setDepth(-1);
+    this.drawWideBackdrop();
     const g = this.add.graphics();
     this.officeArt = g;
     g.fillStyle(C.wall).fillRect(0, 0, W, 140);
@@ -169,8 +171,22 @@ export class IntroScene extends Phaser.Scene {
     this.helpMask?.destroy();
     this.helpMask = null;
     this.children.list.slice().forEach(child => {
-      if (child !== this.officeArt) child.destroy();
+      if (child !== this.officeArt && child !== this.officeBackdrop) child.destroy();
     });
+  }
+
+  drawWideBackdrop() {
+    if (!this.officeBackdrop) return;
+    const width = this.scale.width / RENDER_SCALE;
+    const left = (W - width) / 2;
+    this.officeBackdrop.clear().fillStyle(C.wall).fillRect(left, 0, width, 137)
+      .fillStyle(0x806f54).fillRect(left, 137, width, H - 137);
+    for (let x = Math.floor(left / 24) * 24; x < left + width; x += 24) {
+      this.officeBackdrop.fillStyle(0x48554d).fillRect(x, 14, 1, 116);
+    }
+    for (let x = Math.floor(left / 16) * 16; x < left + width; x += 16) {
+      this.officeBackdrop.fillStyle(0x6d624d, 0.5).fillRect(x, 138, 1, H - 138);
+    }
   }
 
   markMenu(object) {

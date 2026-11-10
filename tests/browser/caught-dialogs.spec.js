@@ -351,7 +351,7 @@ test("pause, touch restart, win and timeout still work across repeated scene res
   expect((await sceneState(page)).timer).toBe("03:00");
 });
 
-test("neutral speech stays at its world position, pauses and resets with the attempt", async ({ page }, testInfo) => {
+test("neutral speech follows its speaker, pauses and resets with the attempt", async ({ page }, testInfo) => {
   await page.evaluate(() => {
     const s = window.__game.scene.getScene("graybox");
     const person = s.neutralPeople[28];
@@ -378,9 +378,9 @@ test("neutral speech stays at its world position, pauses and resets with the att
       elapsed: s.time.now - s.escapeStartedAt,
       timer: s.timerText.text, player: s.playerTile,
       speakerX: s.neutralPeople[28].sprite.x, speakerY: s.neutralPeople[28].sprite.y,
-      bubbleWorld: { x: bubble.text.x + s.cameras.main.worldView.x, y: bubble.text.y + s.cameras.main.worldView.y },
-      bubbleScreen: { x: bubble.text.x, y: bubble.text.y },
-      fits: bounds.left >= 8 && bounds.top >= 42 && bounds.right <= 312 && bounds.bottom <= 232,
+      bubbleWorld: { x: bubble.text.x, y: bubble.text.y },
+      bubbleScreen: { x: bubble.text.x - s.cameras.main.worldView.x, y: bubble.text.y - s.cameras.main.worldView.y },
+      fits: s.cameras.main.worldView.contains(s.neutralPeople[28].sprite.x, s.neutralPeople[28].sprite.y),
     };
   });
   const first = await readSpeech();
@@ -399,19 +399,31 @@ test("neutral speech stays at its world position, pauses and resets with the att
   const moving = await readSpeech();
   expect(moving.elapsed).toBeGreaterThan(first.elapsed);
   expect([moving.speakerX, moving.speakerY]).not.toEqual([first.speakerX, first.speakerY]);
-  expect(moving.bubbleWorld).toEqual(first.bubbleWorld);
+  expect(moving.bubbleWorld).not.toEqual(first.bubbleWorld);
+  const expectSpeakerAnchor = state => {
+    const anchor = state.active.find(b => b.personIndex === 28).anchor;
+    expect(anchor.x).toBeCloseTo(state.speakerX, 2);
+    expect(anchor.y).toBeCloseTo(state.speakerY - 10, 2);
+  };
+  expectSpeakerAnchor(moving);
   await page.evaluate(() => {
-    const camera = window.__game.scene.getScene("graybox").cameras.main;
+    const scene = window.__game.scene.getScene("graybox");
+    scene.tweens.killAll();
+    for (const person of scene.neutralPeople) person.nextMoveAt = Infinity;
+    const camera = scene.cameras.main;
     camera.setScroll(camera.scrollX + 16, camera.scrollY + 16);
   });
   await page.clock.runFor(50);
-  expect((await readSpeech()).bubbleWorld).toEqual(first.bubbleWorld);
+  expectSpeakerAnchor(await readSpeech());
+  expect((await readSpeech()).bubbleWorld).toEqual(moving.bubbleWorld);
   expect((await readSpeech()).bubbleScreen).not.toEqual(first.bubbleScreen);
   await page.keyboard.down("ArrowRight");
   await page.clock.runFor(250);
   await page.keyboard.up("ArrowRight");
   expect((await readSpeech()).player).not.toEqual(first.player);
-  expect((await readSpeech()).bubbleWorld).toEqual(first.bubbleWorld);
+  expectSpeakerAnchor(await readSpeech());
+  expect((await readSpeech()).bubbleWorld).toEqual(moving.bubbleWorld);
+  expect((await readSpeech()).speakerX).toBe(moving.speakerX);
   await page.screenshot({ path: testInfo.outputPath("neutral-speech.png"), fullPage: true });
   await page.keyboard.press("Escape");
   await page.clock.runFor(1000);
@@ -431,6 +443,40 @@ test("neutral speech stays at its world position, pauses and resets with the att
   })).toEqual({ active: [], cooldowns: {} });
 });
 
+test("visible meeting NPCs speak from outside their rooms with at most two bubbles globally", async ({ page }) => {
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.tweens.killAll(); s.updateSearcherDetection = () => false;
+    for (const person of s.neutralPeople) person.nextMoveAt = Infinity;
+    s.playerTile = { x: 12, y: 30 }; s.player.setPosition(200, 488);
+    s.cameras.main.stopFollow(); s.cameras.main.centerOn(384, 416);
+    s.neutralSpeech.active = []; s.neutralSpeech.readyAt = Infinity;
+  });
+  await page.clock.runFor(100);
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.neutralSpeech.personReadyAt = {};
+    s.neutralPeople.forEach((p, i) => {
+      if (!/^Meeting [1-5]$/.test(p.bounds.label ?? "")) s.neutralSpeech.personReadyAt[i] = Infinity;
+    });
+    s.neutralSpeech.readyAt = s.time.now;
+  });
+  await page.clock.runFor(100);
+  expect(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return { count: s.neutralSpeech.active.length, visible: s.speechBubbles.filter(b => b.text.visible).length,
+      outside: s.neutralSpeech.active.every(b => {
+        const p = s.neutralPeople[b.personIndex], t = s.playerTile, r = p.bounds;
+        return /^Meeting [1-5]$/.test(r.label ?? "")
+          && !(t.x >= r.x && t.x < r.x + r.width && t.y >= r.y && t.y < r.y + r.height);
+      }) };
+  })).toEqual({ count: 2, visible: 2, outside: true });
+  for (let i = 0; i < 12; i++) {
+    await page.clock.runFor(100);
+    expect(await page.evaluate(() => window.__game.scene.getScene("graybox").speechBubbles.filter(b => b.text.visible).length)).toBeLessThanOrEqual(2);
+  }
+});
+
 test("all side rooms show one speech bubble at a time; hall still allows two", async ({ page }) => {
   // Fourteen rendered room setups advance about 25 s of simulation time.
   test.setTimeout(60_000);
@@ -443,7 +489,7 @@ test("all side rooms show one speech bubble at a time; hall still allows two", a
       s.tweens.killAll();
       s.updateSearchers = () => {};
       s.neutralSpeech = { active: [], readyAt: s.time.now, personReadyAt: {} };
-      s.neutralPeople.forEach(p => { p.tile = { x: 0, y: 0 }; p.nextTile = null; p.nextMoveAt = Infinity; });
+      s.neutralPeople.forEach((p, i) => { p.tile = { x: 0, y: 0 }; p.nextTile = null; p.nextMoveAt = Infinity; if (i >= 2) s.neutralSpeech.personReadyAt[i] = Infinity; });
       s.playerTile = { x: room.x + 2, y: room.y + 2 };
       s.player.setPosition((s.playerTile.x + 0.5) * 16, (s.playerTile.y + 0.5) * 16);
       for (const [i, dx] of [-1, 1].entries()) {
