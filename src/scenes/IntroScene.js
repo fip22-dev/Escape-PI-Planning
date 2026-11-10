@@ -294,7 +294,7 @@ export class IntroScene extends Phaser.Scene {
     this.helpContent = [];
     addHelpText(top + 2, "REGELN", { fontSize: "9px", fontStyle: "bold", color: "#ffe3a1" });
     const rulesText = addHelpText(top + 15,
-      "Ziel: Schaff den Ausgang.\nZeit: 180 Sekunden ab Verlassen des PI-Raums.\nSteuerung: WASD/Pfeiltasten oder Touch.\nPause: ESC.\nTarnung: Nutze Wände, Möbel und Personen,\ndamit du nicht gesehen wirst.",
+      "Finde und sammle in jedem der sieben Teamzimmer einen Schlüssel. Erst mit allen sieben Team-Schlüsseln kannst du den Ausgang öffnen und entkommen.\nAufnahme: Laufe über den goldenen Schlüssel.\nBei jedem neuen Versuch liegen die Schlüssel an neuen zufälligen Orten im jeweiligen Teamzimmer.\nHUD: Zeigt nur Schlüssel 0/7 bis 7/7.\nZeit: 180 Sekunden ab Verlassen des PI-Raums.\nSteuerung: WASD/Pfeiltasten oder Touch.\nPause: ESC; Schlüssel bleiben erhalten.\nNeustart: Alle Schlüssel werden zurückgesetzt.\nTarnung: Nutze Wände, Möbel und Personen,\ndamit du nicht gesehen wirst.",
       { fontSize: "8px", color: C.cream });
     const rolesHeading = addHelpText(rulesText.y + rulesText.height + 4,
       "ROLLEN", { fontSize: "9px", fontStyle: "bold", color: "#ffe3a1" });

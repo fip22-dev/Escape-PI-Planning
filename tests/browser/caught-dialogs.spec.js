@@ -1,6 +1,116 @@
 import { test, expect } from "@playwright/test";
 import { isolatedFurnitureCases, furnitureSightLayout } from "../helpers/furnitureSight.js";
 
+test("team keys collect by movement, lock both exit lanes, survive pause and reset", async ({ page }, testInfo) => {
+  await page.screenshot({ path: testInfo.outputPath("keys-initial-hud.png") });
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.updateSearcherDetection = () => false;
+    s.tweens.killAll();
+    for (const p of [...s.neutralPeople, ...s.searchers]) {
+      p.tile = { x: 0, y: 0 }; p.nextTile = null; p.nextMoveAt = Infinity; p.sprite.setVisible(false);
+    }
+  });
+  const keys = await page.evaluate(() => window.__game.scene.getScene("graybox").teamKeys);
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.playerTile = { x: 34, y: 4 }; s.player.setPosition(34.5 * 16, 4.5 * 16); s.lastMoveAt = -Infinity;
+  });
+  await page.keyboard.down("ArrowUp"); await page.clock.runFor(120); await page.keyboard.up("ArrowUp"); await page.clock.runFor(120);
+  expect(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return { visible: s.exitHintText.visible, text: s.exitHintText.text, hud: s.keyHudText.text, result: s.gameResult };
+  })).toEqual({ visible: true, text: "Netter Fluchtversuch!\nOhne sieben Schlüssel gibt’s nur\nein weiteres Refinement.", hud: "Schlüssel 0/7", result: null });
+  await page.screenshot({ path: testInfo.outputPath("locked-exit-quip.png") });
+  await page.keyboard.down("ArrowDown"); await page.clock.runFor(120); await page.keyboard.up("ArrowDown"); await page.clock.runFor(120);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").exitHintText.visible)).toBe(false);
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.playerTile = { x: 34, y: 3 }; s.playerNextTile = null;
+    s.player.setPosition(34.5 * 16, 3.5 * 16);
+  });
+  await page.clock.runFor(32);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").exitHintText.visible)).toBe(true);
+  await page.clock.runFor(4100);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").exitHintText.visible)).toBe(false);
+  for (const [index, { x, y }] of keys.entries()) {
+    expect(await page.evaluate(() => {
+      const s = window.__game.scene.getScene("graybox");
+      const before = s.playerTile;
+      s.playerTile = { x: 34, y: 3 };
+      const blocked = !s.canPlayerStep({ x: 0, y: -1 });
+      s.onPlayerTileChanged(s.time.now, 34, 2);
+      s.searchers[0].tile = { x: 33, y: 2 };
+      s.updateDoors(s.time.now);
+      const closed = !s.doors.find(d => d.exit).open;
+      s.searchers[0].tile = { x: 0, y: 0 };
+      s.playerTile = before;
+      return blocked && closed && !s.gameResult;
+    })).toBe(true);
+    const direction = await page.evaluate(async ({ x, y }) => {
+      const s = window.__game.scene.getScene("graybox");
+      const { objectAt } = await import("/src/game/objects.js");
+      const [dx, dy] = [[0, 1], [0, -1], [1, 0], [-1, 0]].find(([dx, dy]) =>
+        s.grid[y + dy]?.[x + dx] && s.grid[y + dy][x + dx] !== "#" && !objectAt(s.roomObjects, x + dx, y + dy, "blocksMovement"));
+      s.playerTile = { x: x + dx, y: y + dy }; s.playerNextTile = null; s.isMoving = false; s.lastMoveAt = -Infinity;
+      s.player.setPosition((x + dx + .5) * 16, (y + dy + .5) * 16);
+      return dx === 1 ? "Left" : dx === -1 ? "Right" : dy === 1 ? "Up" : "Down";
+    }, { x, y });
+    if (testInfo.project.name.startsWith("mobile")) {
+      const pad = page.locator(".touch-dpad");
+      const box = await pad.boundingBox();
+      const px = direction === "Left" ? 20 : direction === "Right" ? box.width - 20 : box.width / 2;
+      const py = direction === "Up" ? 20 : direction === "Down" ? box.height - 20 : box.height / 2;
+      await pad.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "touch", clientX: box.x + px, clientY: box.y + py, buttons: 1 });
+      await page.clock.runFor(120);
+      await pad.dispatchEvent("pointerup", { pointerId: 7, pointerType: "touch", buttons: 0 });
+    } else {
+      await page.keyboard.down(`Arrow${direction}`);
+      await page.clock.runFor(120);
+      await page.keyboard.up(`Arrow${direction}`);
+    }
+    await page.clock.runFor(120);
+    expect(await page.evaluate(() => window.__game.scene.getScene("graybox").collectedTeamKeys.size)).toBe(index + 1);
+    if (index === 0) await page.screenshot({ path: testInfo.outputPath("first-key-collected.png") });
+  }
+  await page.keyboard.press("Escape");
+  await page.clock.runFor(500);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").collectedTeamKeys.size)).toBe(7);
+  await page.keyboard.press("Escape");
+  await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    s.playerTile = { x: 34, y: 3 }; s.player.setPosition(34.5 * 16, 3.5 * 16); s.lastMoveAt = -Infinity;
+  });
+  await page.keyboard.down("ArrowUp"); await page.clock.runFor(120); await page.keyboard.up("ArrowUp"); await page.clock.runFor(120);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").gameResult)).toBe("win");
+  await page.screenshot({ path: testInfo.outputPath("seven-keys-win.png") });
+  await page.evaluate(() => window.__game.scene.getScene("graybox").scene.restart());
+  await page.clock.runFor(100);
+  expect(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return { count: s.collectedTeamKeys.size, closed: !s.doors.find(d => d.exit).open, hud: s.keyHudText.text };
+  })).toEqual({ count: 0, closed: true, hud: "Schlüssel 0/7" });
+  expect(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    const text = s.keyHudText;
+    const normal = { x: text.x, y: text.y, originX: text.originX, font: text.style.fontSize, panel: Boolean(s.keyHudPanel) };
+    window.__game.scale.resize(1920, 960);
+    const wideX = text.x;
+    window.__game.scale.resize(1280, 960);
+    return { ...normal, wideX, restoredX: text.x };
+  })).toEqual({ x: 312, y: 8, originX: 1, font: '8px', panel: false, wideX: 472, restoredX: 312 });
+  expect(await page.evaluate(previous => window.__game.scene.getScene("graybox").teamKeys.every((key, i) =>
+    key.x !== previous[i].x || key.y !== previous[i].y), keys)).toBe(true);
+  await page.evaluate(() => window.__game.scene.getScene("graybox").scene.start("intro"));
+  await page.clock.runFor(100);
+  await page.keyboard.press("ArrowDown"); await page.keyboard.press("Enter"); await page.clock.runFor(100);
+  expect(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("intro");
+    return s.helpContent.some(text => text.text.includes("Erst mit allen sieben Team-Schlüsseln"));
+  })).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("key-rules.png") });
+});
+
 test("doors occupy the wall openings on every side of the floor", async ({ page }, testInfo) => {
   const positions = await page.evaluate(() => {
     const s = window.__game.scene.getScene("graybox");

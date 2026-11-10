@@ -57,13 +57,16 @@ export function doorBlocksSight(doors, x, y) {
   return Boolean(door && !door.open);
 }
 
-export function updateDoors(doors, actors, now) {
+export function updateDoors(doors, actors, now, exitUnlocked = true) {
   let changed = false;
   const occupied = new Set(actors.flatMap(actor => [actor.tile, actor.nextTile])
     .filter(Boolean).map(tile => `${tile.x},${tile.y}`));
   for (const door of doors) {
     const wasOpen = door.open;
-    if (door.tiles.some(tile => occupied.has(`${tile.x},${tile.y}`))) {
+    if (door.exit && !exitUnlocked) {
+      door.open = false;
+      door.closeAt = null;
+    } else if (door.tiles.some(tile => occupied.has(`${tile.x},${tile.y}`))) {
       door.open = true;
       door.closeAt = null;
     } else if (door.open) {
