@@ -270,7 +270,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 
 ### Zusätzliche Wiederholungsdialoge – freigegebene und implementierte Texte
 
-**Teilweise erledigt – integriert:** Die folgenden zwölf Texte sind vom Nutzer freigegeben und ins Spiel eingebaut; Browserprüfung, Demo-Veröffentlichung und Nutzerabnahme werden im Entwicklungsplan nachgeführt.
+**Teilweise erledigt – integriert:** Die folgenden zwölf Texte sind vom Nutzer freigegeben und ins Spiel eingebaut; Technische Browserprüfung und private Demo-Veröffentlichung sind abgeschlossen; die Nutzerabnahme steht aus. Prüfergebnisse im Entwicklungsplan.
 
 | Rolle | Neue Variante A | Neue Variante B |
 |---|---|---|
