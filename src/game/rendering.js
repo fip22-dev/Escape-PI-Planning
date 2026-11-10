@@ -25,7 +25,8 @@ export function configureRendering(scene, world = false) {
       scene.drawWideBackdrop?.();
     } else {
       scene.uiCamera.setViewport(0, 0, width, height);
-      const anchored = new Set([scene.hudPanel, scene.hudLabel, scene.timerText,
+      scene.keyHudText?.setX(width / RENDER_SCALE - 8);
+      const anchored = new Set([scene.hudPanel, scene.hudLabel, scene.timerText, scene.keyHudText,
         ...(scene.speechBubbles ?? []).flatMap(bubble => [bubble.shape, bubble.tail, bubble.text])]);
       for (const object of scene.children.list) {
         if (object.scrollFactorX !== 0 || anchored.has(object)) continue;

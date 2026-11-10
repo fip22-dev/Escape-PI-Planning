@@ -10,6 +10,7 @@ import * as movement from "./neutralMovement.js";
 import * as speech from "./neutralSpeech.js";
 import * as pixels from "./pixelArt.js";
 import * as doors from "./doors.js";
+import * as teamKeys from "./teamKeys.js";
 import { chooseTouchStep } from "./touchMovement.js";
 
 test("all 15 searchers have complete first dialogues and skippable family repeats", () => {
@@ -55,7 +56,7 @@ function createScene() {
   }
   const controls = { clear() {}, destroy() {}, readDirection: () => null };
   const Phaser = { Scene: class {}, Input: { Keyboard: { KeyCodes: {} } }, Scenes: { Events: { SHUTDOWN: "shutdown" } } };
-  const bindings = { Phaser, chooseTouchStep, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors,
+  const bindings = { Phaser, chooseTouchStep, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors, ...teamKeys,
     configureRendering() {}, routeRenderLayers() {}, RENDER_SCALE: 4,
     document: { querySelector: () => null }, CustomEvent: class {},
     getAudioEngine: () => ({ startMusic() {}, play() {}, getSettings: () => ({ music: true, sounds: true }) }),
@@ -65,7 +66,8 @@ function createScene() {
   const Scene = new Function(...Object.keys(bindings), `${source}\nreturn GrayboxScene;`)(...Object.values(bindings));
   const scene = new Scene();
   scene.time = { now: 50_000 };
-  scene.add = new Proxy({}, { get: () => () => display() });
+  scene.add = new Proxy({}, { get: (_, key) => key === "text"
+    ? (x, y, text) => display().setText(text) : () => display() });
   scene.cameras = { main: display() };
   scene.input = { keyboard: { addKeys: () => ({}), createCursorKeys: () => ({}), resetKeys() {}, on() {}, off() {} }, on() {}, off() {} };
   scene.events = { once: (_, fn) => { scene.shutdown = fn; } };
@@ -140,6 +142,70 @@ test("pause time does not advance the timer, detection or initial patrol delays"
   assert.equal(scene.time.now - scene.escapeStartedAt, 1000);
   assert.equal(scene.time.now - scene.searchers[0].visibleSince, 200);
   assert.equal(scene.neutralPeople[0].nextMoveAt, before + 5000);
+});
+
+test("real scene collects only while playing, keeps keys on pause and resets after catching or restart", () => {
+  const s = createScene();
+  const initialKeys = s.teamKeys.map(key => ({ ...key }));
+  for (const [i, key] of s.teamKeys.entries()) {
+    for (const x of [33, 34]) {
+      assert.equal(s.canPlayerStep({ x: x - s.playerTile.x, y: 2 - s.playerTile.y }), false);
+      s.onPlayerTileChanged(s.time.now, x, 2);
+      assert.equal(s.gameResult, null);
+    }
+    s.onPlayerTileChanged(s.time.now, key.x, key.y);
+    assert.equal(s.collectedTeamKeys.size, i + 1);
+    s.onPlayerTileChanged(s.time.now, key.x, key.y);
+    assert.equal(s.collectedTeamKeys.size, i + 1);
+    s.pauseGame();
+    s.onPlayerTileChanged(s.time.now, s.teamKeys[6].x, s.teamKeys[6].y);
+    assert.equal(s.collectedTeamKeys.size, i + 1);
+    s.resumeGame();
+  }
+  assert.equal(s.canPlayerStep({ x: 34 - s.playerTile.x, y: 2 - s.playerTile.y }), true);
+  s.onPlayerTileChanged(s.time.now, 34, 2);
+  assert.equal(s.gameResult, "win");
+  s.scene.restart();
+  assert.equal(s.collectedTeamKeys.size, 0);
+  assert.ok(s.teamKeys.every((key, i) => key.x !== initialKeys[i].x || key.y !== initialKeys[i].y));
+  s.onPlayerTileChanged(s.time.now, s.teamKeys[0].x, s.teamKeys[0].y);
+  assert.equal(s.collectedTeamKeys.size, 1);
+  const beforeCatch = s.teamKeys.map(key => ({ ...key }));
+  s.finishGame("caught", "PO · WCL");
+  while (s.caughtDialog) { s.time.now += 250; s.advanceDialog(); }
+  assert.equal(s.collectedTeamKeys.size, 0);
+  assert.ok(s.teamKeys.every((key, i) => key.x !== beforeCatch[i].x || key.y !== beforeCatch[i].y));
+  assert.ok(s.doors.filter(d => d.exit).every(d => !d.open));
+});
+
+test("locked exit quip appears on approach, expires without repetition and survives pause", () => {
+  const s = createScene();
+  s.playerTile = { x: 34, y: 3 };
+  s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, true);
+  assert.equal(s.exitHintText.text, teamKeys.LOCKED_EXIT_MESSAGE);
+  s.playerNextTile = { x: 34, y: 4 };
+  s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, false);
+  s.playerTile = { x: 34, y: 4 }; s.playerNextTile = null;
+  s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, false);
+  s.playerTile = { x: 34, y: 3 }; s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, true);
+  const until = s.exitHintUntil;
+  s.pauseGame(); s.time.now += 5000; s.resumeGame();
+  assert.equal(s.exitHintUntil, until + 5000);
+  s.time.now = s.exitHintUntil;
+  s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, false);
+  s.updateExitHint(s.time.now + 1);
+  assert.equal(s.exitHintText.visible, false);
+  s.playerTile = { x: 34, y: 4 }; s.updateExitHint(s.time.now);
+  s.playerTile = { x: 33, y: 3 }; s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, true);
+  s.collectedTeamKeys = new Set(s.teamKeys.map(key => key.team));
+  s.updateExitHint(s.time.now);
+  assert.equal(s.exitHintText.visible, false);
 });
 
 

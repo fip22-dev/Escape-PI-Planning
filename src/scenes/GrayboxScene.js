@@ -10,6 +10,7 @@ import { bindTouchControls } from "../touchControls.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
 import { timerWarningPresentation } from "../game/gameLoop.js";
+import { createTeamKeys, collectTeamKey, hasAllTeamKeys, teamKeyProgress, LOCKED_EXIT_MESSAGE } from "../game/teamKeys.js";
 import {
   canSearcherMoveToTile,
   canSearcherSeePlayer,
@@ -57,6 +58,12 @@ export class GrayboxScene extends Phaser.Scene {
     super("graybox");
   }
 
+  init(data = {}) {
+    this.startGuideRequested = Boolean(data.showStartGuide);
+    // Phaser retains scene data on restart; consume this one-time request.
+    data.showStartGuide = false;
+  }
+
   create() {
     configureRendering(this, true);
     document.querySelector(".page")?.classList.remove("is-menu");
@@ -73,6 +80,12 @@ export class GrayboxScene extends Phaser.Scene {
     this.doorGraphics = this.add.graphics().setDepth(2);
     this.rooms = rooms;
     this.roomObjects = createRoomObjects(rooms);
+    this.collectedTeamKeys = new Set();
+    this.teamKeys = createTeamKeys({ grid, rooms, start, objects: this.roomObjects }, Math.random, this.teamKeys);
+    this.exitHintUntil = 0;
+    this.exitHintNearby = false;
+    this.teamKeyGraphics = this.add.graphics().setDepth(2);
+    this.drawTeamKeys();
     this.playerTile = { ...start };
     this.isMoving = false;
     this.lastMoveAt = 0;
@@ -223,7 +236,9 @@ export class GrayboxScene extends Phaser.Scene {
     this.touchControls = bindTouchControls({
       onClear: () => { this.touchHeading = null; },
       onPause: () => this.onEscapePressed(),
-      onRestart: () => this.caughtDialog ? this.advanceDialog() : this.scene.restart(),
+      onRestart: () => {
+        if (!this.startGuideVisible) this.caughtDialog ? this.advanceDialog() : this.scene.restart();
+      },
     });
     this.input.on("pointerdown", this.restartIfFinished, this);
     this.handleWindowEscape = (event) => {
@@ -242,7 +257,7 @@ export class GrayboxScene extends Phaser.Scene {
         return;
       }
       if ((event.key === "Enter" || event.key === " " || event.code === "Space")
-        && (this.caughtDialog || this.isPaused || this.gameResult)) {
+        && (this.startGuideVisible || this.caughtDialog || this.isPaused || this.gameResult)) {
         event.preventDefault();
         event.stopImmediatePropagation();
         this.onConfirmPressed(event);
@@ -273,6 +288,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-SPACE", this.onConfirmPressed, this);
 
     this.createGameHud();
+    this.createStartGuide();
     this.updateDoors(this.time.now, true);
     routeRenderLayers(this);
   }
@@ -281,10 +297,11 @@ export class GrayboxScene extends Phaser.Scene {
     if (this.gameResult) {
       return;
     }
-    if (this.isPaused) return;
+    if (this.isPaused || this.startGuideVisible) return;
 
     this.updateGameTimer(time);
     if (this.gameResult) return;
+    this.updateExitHint(time);
 
     this.updateNeutralPeople(time);
     this.updateSearchers(time);
@@ -304,6 +321,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.isMoving = true;
     this.lastMoveAt = time;
     this.playerNextTile = { x: targetX, y: targetY };
+    this.updateExitHint(time);
     this.updateDoors(time);
     this.tweens.add({
       targets: this.player,
@@ -322,11 +340,16 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   restartIfFinished() {
+    if (this.startGuideVisible) {
+      this.dismissStartGuide();
+      return;
+    }
     if (this.caughtDialog) this.advanceDialog();
     else if (this.gameResult === "win") this.scene.restart();
   }
 
   onEscapePressed() {
+    if (this.startGuideVisible) return;
     if (this.gameResult === "timeout") {
       this.resultChoiceYes = false;
       this.updateResultChoice();
@@ -352,6 +375,11 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   onConfirmPressed(event) {
+    if (this.startGuideVisible) {
+      event?.preventDefault?.();
+      if (!event?.repeat) this.dismissStartGuide();
+      return;
+    }
     // The same Enter/Space must not also click a focused HTML control.
     if (this.caughtDialog || this.isPaused || this.gameResult) event?.preventDefault?.();
     if (event?.repeat) return;
@@ -366,6 +394,41 @@ export class GrayboxScene extends Phaser.Scene {
     } else if (this.gameResult === "win") {
       this.scene.restart();
     }
+  }
+
+  createStartGuide() {
+    this.startGuideVisible = this.startGuideRequested;
+    this.startGuideRequested = false;
+    this.startGuideOpenedAt = this.time.now;
+    const style = { resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", color: "#f5f0dc" };
+    this.startGuidePanel = this.add.rectangle(160, 120, 296, 192, 0x172326, 0.98)
+      .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(130);
+    this.startGuideTitle = this.add.text(160, 42, "Entkomme dem PI Planning", {
+      ...style, fontSize: "13px", fontStyle: "bold", color: "#ffe066",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(131);
+    this.startGuideBody = this.add.text(28, 62,
+      "Entkomme in 180 Sekunden und gehe den Suchenden aus dem Weg.\nSammle dafür in jedem der sieben Teamzimmer einen Schlüssel – laufe einfach darüber.\nHast du alle sieben Schlüssel, ist der Ausgang frei.\nWirst du erwischt, musst du am PI Planning teilnehmen.", {
+        ...style, fontSize: "10px", wordWrap: { width: 264 }, lineSpacing: 1,
+      }).setScrollFactor(0).setDepth(131);
+    this.startGuideButton = this.add.text(160, 196, "Zum Starten irgendwo tippen · Enter / Leertaste", {
+      ...style, fontSize: "9px", backgroundColor: "#364a3b", padding: { x: 8, y: 7 },
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(132).setInteractive({ useHandCursor: true });
+    this.startGuideButton.on("pointerdown", () => this.dismissStartGuide());
+    this.startGuideObjects = [this.startGuidePanel, this.startGuideTitle, this.startGuideBody, this.startGuideButton];
+    this.startGuideObjects.forEach(object => object.setVisible(this.startGuideVisible));
+  }
+
+  dismissStartGuide() {
+    // Ignore the input that selected Spiel starten in the previous scene.
+    if (!this.startGuideVisible || this.time.now - this.startGuideOpenedAt < 200) return;
+    const elapsed = this.time.now - this.startGuideOpenedAt;
+    for (const person of [...this.neutralPeople, ...this.searchers]) person.nextMoveAt += elapsed;
+    shiftNeutralSpeechTime(this.neutralSpeech, elapsed);
+    this.input.keyboard.resetKeys();
+    this.touchControls.clear();
+    this.touchHeading = null;
+    this.startGuideVisible = false;
+    this.startGuideObjects.forEach(object => object.setVisible(false));
   }
 
   advanceDialog() {
@@ -450,7 +513,7 @@ export class GrayboxScene extends Phaser.Scene {
   updateDoors(time, force = false) {
     const actors = [{ tile: this.playerTile, nextTile: this.playerNextTile },
       ...this.neutralPeople, ...this.searchers];
-    const changed = updateDoors(this.doors, actors, time);
+    const changed = updateDoors(this.doors, actors, time, hasAllTeamKeys(this.collectedTeamKeys));
     if (force || changed) drawDoors(this.doorGraphics, this.doors, TILE_SIZE);
   }
 
@@ -585,6 +648,7 @@ export class GrayboxScene extends Phaser.Scene {
     const pausedFor = Math.max(0, this.time.now - this.pauseStartedAt);
     shiftNeutralSpeechTime(this.neutralSpeech, pausedFor);
     shiftDoorTime(this.doors, pausedFor);
+    if (this.exitHintUntil) this.exitHintUntil += pausedFor;
     if (this.escapeStartedAt !== null) this.escapeStartedAt += pausedFor;
     for (const person of [...this.neutralPeople, ...this.searchers]) {
       person.nextMoveAt += pausedFor;
@@ -691,6 +755,17 @@ export class GrayboxScene extends Phaser.Scene {
     }).setOrigin(0.5).setScrollFactor(0).setDepth(121).setVisible(false);
     this.hudPanel = this.add.rectangle(8, 8, 76, 30, 0x24332b, 0.96)
       .setOrigin(0).setScrollFactor(0).setDepth(100);
+    this.keyHudText = this.add.text(312, 8, teamKeyProgress(this.collectedTeamKeys), {
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "8px",
+      backgroundColor: "#24332b", padding: { x: 4, y: 3 },
+      color: "#ded8bd", shadow: { offsetX: 0, offsetY: 1, color: "#172326", blur: 2, fill: true },
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(101);
+    this.exitHintPanel = this.add.rectangle(160, 66, 272, 48, 0x24332b, 0.97)
+      .setStrokeStyle(1, 0xd8b868).setScrollFactor(0).setDepth(102).setVisible(false);
+    this.exitHintText = this.add.text(160, 66, LOCKED_EXIT_MESSAGE, {
+      resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", fontSize: "10px",
+      color: "#ffe066", align: "center", lineSpacing: 2,
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(103).setVisible(false);
     this.hudLabel = this.add.text(14, 11, "ZEIT", {
       resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif",
       fontSize: "8px",
@@ -797,17 +872,25 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   onPlayerTileChanged(time, x, y) {
+    if (this.isPaused || this.gameResult) return;
+    if (collectTeamKey(this.collectedTeamKeys, { x, y }, this.teamKeys)) {
+      this.drawTeamKeys();
+      this.keyHudText.setText(teamKeyProgress(this.collectedTeamKeys));
+      this.updateDoors(time, true);
+    }
     const tileType = this.grid[y]?.[x];
     if (this.escapeStartedAt === null && tileType !== TILE_TYPES.START) {
       this.escapeStartedAt = time;
       this.hudLabel.setText("ZEIT ÜBRIG");
     }
-    if (tileType === TILE_TYPES.EXIT) this.finishGame("win");
+    if (tileType === TILE_TYPES.EXIT && hasAllTeamKeys(this.collectedTeamKeys)) this.finishGame("win");
   }
 
   finishGame(result, caughtRole = null) {
     if (this.gameResult) return;
     this.gameResult = result;
+    this.exitHintPanel.setVisible(false);
+    this.exitHintText.setVisible(false);
     this.audio.play(result === "caught" ? "caught" : result === "win" ? "win" : "timeout");
     this.neutralSpeech.active = [];
     this.hideSpeechBubbles();
@@ -962,6 +1045,7 @@ export class GrayboxScene extends Phaser.Scene {
     const x = this.playerTile.x + direction.x;
     const y = this.playerTile.y + direction.y;
     return this.grid[y]?.[x] !== undefined && this.grid[y][x] !== TILE_TYPES.WALL
+      && (this.grid[y][x] !== TILE_TYPES.EXIT || hasAllTeamKeys(this.collectedTeamKeys))
       && !objectAt(this.roomObjects, x, y, "blocksMovement")
       && !isTileOccupiedByPeople({ x, y }, [...this.neutralPeople, ...this.searchers]);
   }
@@ -974,6 +1058,35 @@ export class GrayboxScene extends Phaser.Scene {
     if (this.cursors.up.isDown || this.inputKeys.upW.isDown) return { x: 0, y: -1 };
     if (this.cursors.down.isDown || this.inputKeys.downS.isDown) return { x: 0, y: 1 };
     return null;
+  }
+
+  updateExitHint(time) {
+    const playerTile = this.playerNextTile ?? this.playerTile;
+    const nearby = this.doors.some(door => door.exit && door.tiles.some(tile =>
+      Math.abs(tile.x - playerTile.x) + Math.abs(tile.y - playerTile.y) <= 1));
+    if (nearby && !this.exitHintNearby && !hasAllTeamKeys(this.collectedTeamKeys)) {
+      this.exitHintUntil = time + 4000;
+    }
+    this.exitHintNearby = nearby;
+    if (!nearby) this.exitHintUntil = 0;
+    const visible = nearby && !hasAllTeamKeys(this.collectedTeamKeys) && time < this.exitHintUntil;
+    this.exitHintPanel.setVisible(visible);
+    this.exitHintText.setVisible(visible);
+  }
+
+  drawTeamKeys() {
+    const g = this.teamKeyGraphics;
+    g.clear();
+    for (const key of this.teamKeys) {
+      if (this.collectedTeamKeys.has(key.team)) continue;
+      const x = key.x * TILE_SIZE;
+      const y = key.y * TILE_SIZE;
+      g.fillStyle(0x24332b).fillRect(x + 1, y + 4, 14, 9);
+      g.lineStyle(2, 0xffdf70).strokeRect(x + 3, y + 6, 4, 4);
+      g.fillStyle(0xffdf70).fillRect(x + 7, y + 7, 7, 2);
+      g.fillRect(x + 11, y + 9, 2, 3);
+      g.fillStyle(0xfff3be).fillRect(x + 3, y + 5, 4, 1);
+    }
   }
 
   drawRoomObjects() {
