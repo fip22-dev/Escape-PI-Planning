@@ -15,4 +15,4 @@ Object.defineProperty(document, 'fullscreenEnabled', { configurable: true, value
 </script><script type="module" src="/.sites/qa/fixture.js"></script>`);
 await writeFile('.sites/qa/fixture.html', html);
 await writeFile('.sites/qa/index.html', await readFile('tests/helpers/mobileRotationHarness.html'));
-console.log('Open /.sites/qa/index.html on the Vite server for sixteen browser checks.');
+console.log('Open /.sites/qa/index.html on the Vite server for seventeen browser checks.');

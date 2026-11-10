@@ -1,8 +1,8 @@
 import { bindDirectionPad } from "./directionPad.js";
 
-export function bindTouchControls({ onPause, onRestart }) {
+export function bindTouchControls({ onPause, onRestart, onClear }) {
   const abort = new AbortController();
-  const pad = bindDirectionPad(document.querySelector(".touch-dpad"));
+  const pad = bindDirectionPad(document.querySelector(".touch-dpad"), { onClear });
   const listen = (target, event, callback) => target.addEventListener(event, callback, { signal: abort.signal });
   const clear = () => pad.clear();
   listen(document.querySelector('[data-action="pause"]'), 'click', () => { clear(); onPause(); });

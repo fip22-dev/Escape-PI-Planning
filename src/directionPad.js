@@ -4,15 +4,15 @@ export function directionPadState(dx, dy, size, rotated = false, previous = null
   const x = rotated ? dy : dx;
   const y = rotated ? -dx : dy;
   if (size <= 0 || Math.abs(x) > size / 2 || Math.abs(y) > size / 2) return null;
-  const centre = size / 6;
+  const centre = size / 15.6;
   if (Math.abs(x) <= centre && Math.abs(y) <= centre) return null;
   let horizontal = Math.abs(x) > Math.abs(y);
-  if (previous?.x && Math.abs(y) < Math.abs(x) * 1.15) horizontal = true;
-  if (previous?.y && Math.abs(x) < Math.abs(y) * 1.15) horizontal = false;
+  if (previous?.x && Math.abs(y) < Math.abs(x) * 1.03) horizontal = true;
+  if (previous?.y && Math.abs(x) < Math.abs(y) * 1.03) horizontal = false;
   return horizontal ? { x: Math.sign(x), y: 0 } : { x: 0, y: Math.sign(y) };
 }
 
-export function bindDirectionPad(element) {
+export function bindDirectionPad(element, { onClear = () => {} } = {}) {
   const abort = new AbortController();
   let active = null;
   let direction = null;
@@ -25,7 +25,7 @@ export function bindDirectionPad(element) {
   };
   const clear = () => {
     const previous = active;
-    active = null; direction = null; paint();
+    active = null; direction = null; paint(); onClear();
     if (previous?.kind === "pointer" && element.hasPointerCapture?.(previous.id)) {
       element.releasePointerCapture(previous.id);
     }
@@ -36,6 +36,7 @@ export function bindDirectionPad(element) {
     direction = directionPadState(clientX - rect.left - rect.width / 2,
       clientY - rect.top - rect.height / 2, Math.min(rect.width, rect.height), rotated, direction);
     paint();
+    if (!direction) onClear();
   };
   listen(element, "pointerdown", event => {
     if (event.button !== 0 || active) return;

@@ -144,9 +144,10 @@ kbd {
 .dpad-zone, .dpad-centre { display: grid; place-items: center; border: 1px solid #819885; border-radius: 10px; background: #294343d9; color: #f5f0dc; font: 600 24px system-ui, sans-serif; pointer-events: none; }
 .dpad-zone[data-pad-direction="up"] { grid-area: 1 / 2; }
 .dpad-zone[data-pad-direction="left"] { grid-area: 2 / 1; }
-.dpad-centre { grid-area: 2 / 2; font-size: 10px; color: #819885; border-color: transparent; border-radius: 0; }
+.dpad-centre { grid-area: 2 / 2; font-size: 0; color: #819885; border-color: transparent; border-radius: 0; }
 .dpad-zone[data-pad-direction="right"] { grid-area: 2 / 3; }
 .dpad-zone[data-pad-direction="down"] { grid-area: 3 / 2; }
+.dpad-centre::after { content: ""; width: 20px; height: 20px; border: 1px solid #819885; border-radius: 50%; }
 .dpad-zone.is-active { background: #d0b969; color: #142124; border-color: #f5f0dc; }
 .touch-actions { display: grid; gap: 8px; }
 .touch-actions button { padding: 0 12px; }

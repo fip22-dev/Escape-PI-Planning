@@ -6,11 +6,14 @@ test('pad regions select four directions, centre and outside stop movement', () 
   for (const [x,y] of [[55,0],[-55,0],[0,55],[0,-55]]) {
     assert.deepEqual(directionPadState(x,y,156),{x:Math.sign(x),y:Math.sign(y)});
   }
-  for(const [x,y] of [[0,0],[25,25],[26,0],[80,0],[0,-80]]) assert.equal(directionPadState(x,y,156),null);
+  for(const [x,y] of [[0,0],[9,9],[10,0],[80,0],[0,-80]]) assert.equal(directionPadState(x,y,156),null);
   assert.equal(directionPadState(0,0,0),null);
+  assert.deepEqual(directionPadState(12,0,156),{x:1,y:0});
+  assert.deepEqual(directionPadState(0,12,156),{x:0,y:1});
+  assert.deepEqual(directionPadState(50,52,156,false,{x:1,y:0}),{x:0,y:1});
 });
 test('sliding turns without release, diagonal drift keeps axis and rotated input stays correct', () => {
-  assert.deepEqual(directionPadState(50,52,156,false,{x:1,y:0}),{x:1,y:0});
+  assert.deepEqual(directionPadState(50,51,156,false,{x:1,y:0}),{x:1,y:0});
   assert.deepEqual(directionPadState(20,55,156,false,{x:1,y:0}),{x:0,y:1});
   assert.deepEqual(directionPadState(-55,20,156,false,{x:0,y:1}),{x:-1,y:0});
   assert.deepEqual(directionPadState(0,55,156,true),{x:1,y:0});
@@ -26,7 +29,8 @@ test('held pointer, ignored second finger, interruption and listener cleanup', (
     setPointerCapture:id=>capture.add(id),hasPointerCapture:id=>capture.has(id),releasePointerCapture:id=>capture.delete(id)});
   const send=(target,type,props={})=>{const event=new Event(type,{cancelable:true});Object.assign(event,props);target.dispatchEvent(event);};
   const pointer=(target,type,id,x=80,y=50)=>send(target,type,{button:0,pointerId:id,clientX:x,clientY:y});
-  const controls=bindDirectionPad(element);
+  let clears=0;
+  const controls=bindDirectionPad(element,{onClear:()=>clears++});
   try {
     pointer(element,'pointerdown',1);
     assert.deepEqual(controls.readDirection(),{x:1,y:0});
@@ -50,6 +54,7 @@ test('held pointer, ignored second finger, interruption and listener cleanup', (
     touch('touchcancel',3);assert.equal(controls.readDirection(),null);
     pointer(element,'pointerdown',1);touch('touchstart',3);pointer(win,'pointerup',1);
     assert.equal(controls.readDirection(),null);
+    assert.ok(clears>=6,'release, centre and interruptions notify movement reset');
     controls.destroy();pointer(element,'pointerdown',1);assert.equal(controls.readDirection(),null);
   } finally {controls.destroy();globalThis.window=oldWindow;globalThis.document=oldDocument;}
 });

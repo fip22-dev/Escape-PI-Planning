@@ -5,6 +5,7 @@ import { configureRendering, routeRenderLayers, RENDER_SCALE } from "../game/ren
 import { drawPixelPerson, drawPixelTile, drawPixelFurniture } from "../game/pixelArt.js";
 import { advanceCaughtDialog, createCaughtDialog } from "../game/caughtDialog.js";
 import { createNeutralSpeech, updateNeutralSpeech, shiftNeutralSpeechTime, isMeetingSpeaker } from "../game/neutralSpeech.js";
+import { chooseTouchStep } from "../game/touchMovement.js";
 import { bindTouchControls } from "../touchControls.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
@@ -75,6 +76,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.playerTile = { ...start };
     this.isMoving = false;
     this.lastMoveAt = 0;
+    this.touchHeading = null;
     this.escapeStartedAt = null;
     this.gameResult = null;
     this.isPaused = false;
@@ -219,6 +221,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.input.keyboard.resetKeys();
     this.touchControls = bindTouchControls({
+      onClear: () => { this.touchHeading = null; },
       onPause: () => this.onEscapePressed(),
       onRestart: () => this.caughtDialog ? this.advanceDialog() : this.scene.restart(),
     });
@@ -289,16 +292,14 @@ export class GrayboxScene extends Phaser.Scene {
     this.updateSpeechBubble(time);
     if (this.isMoving || time - this.lastMoveAt < 105) return;
 
-    const direction = this.readDirection();
-    if (!direction) return;
-
+    const touchRequest = this.touchControls.readDirection();
+    const direction = touchRequest
+      ? chooseTouchStep(touchRequest, this.touchHeading, candidate => this.canPlayerStep(candidate))
+      : this.readDirection();
+    if (!direction || !this.canPlayerStep(direction)) return;
+    this.touchHeading = touchRequest ? direction : null;
     const targetX = this.playerTile.x + direction.x;
     const targetY = this.playerTile.y + direction.y;
-    if (this.grid[targetY]?.[targetX] === undefined || this.grid[targetY][targetX] === TILE_TYPES.WALL
-      || objectAt(this.roomObjects, targetX, targetY, "blocksMovement")
-      || isTileOccupiedByPeople({ x: targetX, y: targetY }, [...this.neutralPeople, ...this.searchers])) {
-      return;
-    }
 
     this.isMoving = true;
     this.lastMoveAt = time;
@@ -554,6 +555,7 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   pauseGame() {
+    this.touchControls.clear();
     this.hideSpeechBubbles();
     this.isPaused = true;
     this.pauseChoiceYes = false;
@@ -954,6 +956,14 @@ export class GrayboxScene extends Phaser.Scene {
       bubble.shape.setVisible(false);
       bubble.text.setVisible(false);
     }
+  }
+
+  canPlayerStep(direction) {
+    const x = this.playerTile.x + direction.x;
+    const y = this.playerTile.y + direction.y;
+    return this.grid[y]?.[x] !== undefined && this.grid[y][x] !== TILE_TYPES.WALL
+      && !objectAt(this.roomObjects, x, y, "blocksMovement")
+      && !isTileOccupiedByPeople({ x, y }, [...this.neutralPeople, ...this.searchers]);
   }
 
   readDirection() {

@@ -209,7 +209,7 @@ try {
  frame.style.width='844px';frame.style.height='390px';await until(()=>!page.classList.contains('is-rotated')&&fits());
  assert(stick.getBoundingClientRect().width>=150,'direction pad too small');
  drag('touchstart',71,55,0);assert(highlighted('right'),'right highlight missing');
- drag('touchmove',71,50,52);assert(controls.readDirection()?.x===1,'diagonal drift changed direction');
+ drag('touchmove',71,50,51);assert(controls.readDirection()?.x===1,'diagonal drift changed direction');
  drag('touchmove',71,0,55);assert(highlighted('down')&&controls.readDirection()?.y===1,'sliding down failed');
  drag('touchmove',71,-55,0);assert(highlighted('left')&&controls.readDirection()?.x===-1,'sliding left failed');
  drag('touchmove',71,0,-55);assert(highlighted('up')&&controls.readDirection()?.y===-1,'sliding up failed');
@@ -217,7 +217,29 @@ try {
  drag('touchmove',71,55,0);assert(highlighted('right'),'sliding back into pad failed');drag('touchend',71);
  assert(!stick.querySelector('.is-active'),'release retained highlight');
  pass('Large gliding pad highlights all four directions, switches without release and stops in centre/outside in both layouts');
+ await wait(200);
+ drag('touchstart',81,12,0);assert(controls.readDirection()?.x===1,'small centre prevents short drag');
+ drag('touchmove',81,50,52);assert(controls.readDirection()?.y===1,'axis switch still delayed');drag('touchend',81);
+ await wait(200);
+ const turnScene=game.scene.getScene('graybox');
+ turnScene.tweens.killTweensOf(turnScene.player);
+ turnScene.isMoving=false;turnScene.playerNextTile=null;turnScene.touchControls.clear();
+ turnScene.grid=Array.from({length:52},()=>Array(60).fill('#'));
+ for(const [x,y] of [[10,10],[11,10],[12,10],[12,9]])turnScene.grid[y][x]='r';
+ turnScene.roomObjects=[];turnScene.neutralPeople=[];turnScene.searchers=[];
+ turnScene.neutralSpeech.active=[];turnScene.neutralSpeech.readyAt=Infinity;
+ turnScene.playerTile={x:10,y:10};turnScene.player.setPosition(10.5*16,10.5*16);turnScene.lastMoveAt=0;
+ const trace=[];turnScene.onPlayerTileChanged=(_time,x,y)=>trace.push([x,y]);
+ drag('touchstart',82,55,0);await until(()=>turnScene.isMoving);
+ drag('touchmove',82,0,-55);
+ await until(()=>turnScene.playerTile.x===12 && turnScene.playerTile.y===9);
+ assert(JSON.stringify(trace)===JSON.stringify([[11,10],[12,10],[12,9]]),'early turn did not continue then turn at first opening');
+ drag('touchend',82);assert(turnScene.touchHeading===null,'release retained heading');
+ turnScene.touchHeading={x:1,y:0};turnScene.pauseGame();assert(turnScene.touchHeading===null,'pause retained heading');turnScene.resumeGame();
+ drag('touchstart',83,55,0);drag('touchmove',83,0,0);assert(turnScene.touchHeading===null,'centre retained turn');drag('touchend',83);
+ turnScene.scene.restart();await wait(300);
+ pass('Small centre and direct switch work; held early turn reaches first opening at unchanged step speed, release and pause clear it');
  document.title='PASS – mobile rotation browser checks';
- results.insertAdjacentHTML('afterend','<h2>All 16 browser checks passed</h2>');
+ results.insertAdjacentHTML('afterend','<h2>All 17 browser checks passed</h2>');
 } catch(error) { results.insertAdjacentHTML('beforeend',`<li style="color:red">FAIL: ${error.stack}</li>`); document.title='FAIL – mobile rotation browser checks'; }
 </script></body></html>
