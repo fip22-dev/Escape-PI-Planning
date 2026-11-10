@@ -277,7 +277,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 | RTE | Dein Fluchtweg ist gut geplant. Leider fehlt noch das Alignment mit allen, die dich aufhalten. | Du willst den Zug verlassen? Das besprechen wir zuerst im nächsten ART Sync. |
 | P&T | Bevor du gehst: Auf einer Skala von eins bis zehn, wie sehr brauchst du diese Pause? | Ich höre einen starken Wunsch nach Freiheit. Lass uns dazu einen Workshop machen. |
 | BO | Deine Flucht hat Potenzial. Wie hoch sind die Einsparungen pro vermiedenem Meeting? | Ich unterstütze deinen Abgang. Sobald wir den Nutzen im Steering vorgestellt haben. |
-| PM | Dein Wunsch nach Freiheit ist erfasst. Im nächsten PI priorisieren wir ihn gegen die anderen Wünsche. | Wir liefern den Ausgang inkrementell. Heute gibt es schon mal die Türklinke. |
+| PM | Dein Wunsch nach Freiheit ist erfasst. Im nächsten PI priorisieren wir ihn gegen andere Wünsche. | Wir liefern den Ausgang inkrementell. Heute gibt es schon mal die Türklinke. |
 | PO | Du wolltest nur kurz raus? Klingt klein. Lass uns trotzdem erst die Story schätzen. | Dein Fluchtticket ist fast fertig. Es fehlt nur noch die Abnahme durch alle Stakeholder. |
 | Scrum Master | Du läufst im Kreis. Perfekt, dann sind wir schon mitten im nächsten Sprint. | Ich halte dich nur kurz auf. Wir müssen noch klären, warum unsere kurzen Meetings so lange dauern. |
 
