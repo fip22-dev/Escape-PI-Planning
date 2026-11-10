@@ -13,6 +13,32 @@ import * as doors from "./doors.js";
 import * as teamKeys from "./teamKeys.js";
 import { chooseTouchStep } from "./touchMovement.js";
 
+test("repeat variants cycle independently by family and advance only on confirmation", () => {
+  const seen = new Set();
+  const counts = new Map();
+  for (const role of ["RTE", "P&T", "BO", "PM", "PO · WCL", "Scrum Master"]) {
+    const first = dialogs.createCaughtDialog(role, seen, counts);
+    while (!dialogs.advanceCaughtDialog(first, seen, counts)) {}
+    const texts = [];
+    for (let i = 0; i < 7; i++) {
+      const currentRole = role.startsWith("PO") && i % 2 ? "PO · CMS" : role;
+      const dialog = dialogs.createCaughtDialog(currentRole, seen, counts);
+      assert.equal(dialog.repeated, true);
+      assert.equal(dialog.repeatIndex, i % 3);
+      assert.equal(dialog.pages.length, 1);
+      assert.equal(dialogs.createCaughtDialog(currentRole, seen, counts).pages[0], dialog.pages[0]);
+      if (i < 3) texts.push(dialog.pages[0]);
+      else assert.equal(dialog.pages[0], texts[i % 3]);
+      assert.equal(dialogs.advanceCaughtDialog(dialog, seen, counts), true);
+    }
+    assert.equal(new Set(texts).size, 3);
+  }
+  assert.equal(dialogs.createCaughtDialog("RTE", new Set(), new Map()).repeated, false);
+  assert.equal(counts.size, 6);
+  // All other families completed their own cycles without advancing RTE.
+  assert.equal(dialogs.createCaughtDialog("RTE", seen, counts).repeatIndex, 1);
+});
+
 test("all 15 searchers have complete first dialogues and skippable family repeats", () => {
   const plan = map.createFloorPlan();
   const searchers = detection.createSearcherPatrols({ ...plan, objects: objects.createRoomObjects(plan.rooms) });

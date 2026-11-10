@@ -72,6 +72,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.audio.startMusic();
     this.speakingPeople = new Set();
     this.seenDialogRoles ??= new Set();
+    this.repeatDialogCounts ??= new Map();
     this.caughtDialog = null;
     this.neutralSpeech = createNeutralSpeech(this.time.now);
     const { grid, rooms, start } = createFloorPlan();
@@ -436,7 +437,7 @@ export class GrayboxScene extends Phaser.Scene {
     // A held key must not dismiss multiple pages or restart several attempts.
     if (this.time.now - this.dialogLastAdvancedAt < 200) return;
     this.dialogLastAdvancedAt = this.time.now;
-    if (advanceCaughtDialog(this.caughtDialog, this.seenDialogRoles)) this.scene.restart();
+    if (advanceCaughtDialog(this.caughtDialog, this.seenDialogRoles, this.repeatDialogCounts)) this.scene.restart();
     else this.updateDialogText();
   }
 
@@ -900,7 +901,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.tweens.killAll();
     this.touchControls.clear();
     if (result === "caught") {
-      this.caughtDialog = createCaughtDialog(caughtRole, this.seenDialogRoles);
+      this.caughtDialog = createCaughtDialog(caughtRole, this.seenDialogRoles, this.repeatDialogCounts);
       this.dialogLastAdvancedAt = this.time.now;
       this.updateDialogText();
       this.dialogPanel.setVisible(true);

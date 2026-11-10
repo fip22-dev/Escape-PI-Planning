@@ -31,7 +31,7 @@ Die bestehende private Demo und `.openai/hosting.json` bleiben erhalten. Abnahme
 
 ## Zusätzliche Rollendialoge
 
-**In Arbeit – Textabstimmung:** Auf `feature/role-dialogue-variants` sind zwei zusätzliche Wiederholungstexte pro Rollenfamilie vorgeschlagen. Die zwölf Texte stehen in GAME_DESIGN.md. Noch nicht ins Spiel eingebaut; die private Demo bleibt beim abgenommenen Schlüssel-/Kurzanleitungsstand.
+**Teilweise erledigt – zusätzliche Rollendialoge implementiert, Nutzerabnahme offen:** Die zwölf freigegebenen Texte sind auf `feature/role-dialogue-variants` eingebaut. Nach dem unveränderten Ersttext wechseln bisheriger Wiederholungstext und zwei neue Varianten je Rollenfamilie reihum. Bestätigung schaltet weiter; Neuversuche und Hauptmenü erhalten den Verlauf, Neuladen setzt ihn zurück. Texte und Auswahlregeln stehen in GAME_DESIGN.md. Privates Demo-Update in Vorbereitung.
 
 ## Projektstatus
 

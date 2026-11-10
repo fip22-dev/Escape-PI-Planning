@@ -253,7 +253,7 @@ Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: 
 
 ## Dialoge bei Entdeckung – implementierte Texte
 
-**In Arbeit – Textabstimmung:** Zwei zusätzliche Wiederholungstexte pro Rollenfamilie sind unten vorgeschlagen. Sie sind noch nicht freigegeben oder implementiert; aktuell besitzt jede Rollenfamilie einen Erst- und einen Wiederholungstext.
+**Teilweise erledigt – implementiert, Nutzerabnahme offen:** Je Rollenfamilie sind ein unveränderter Ersttext und drei Wiederholungstexte vorhanden. Die zwölf zusätzlichen Texte und die Reihum-Auswahl sind vom Nutzer freigegeben und auf feature/role-dialogue-variants implementiert.
 
 Die Dialogüberschrift zeigt den ausgeschriebenen Rollennamen: **Release Train Engineer**, **People & Transformation**, **Business Owner**, **Product Manager**, **Product Owner** (zusätzlich mit Teamkürzel) oder **Scrum Master**. Die kurzen Rollenmarkierungen an den Figuren bleiben bestehen.
 
@@ -268,9 +268,9 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 | PO | „Ich habe deinen Flucht-Backlog priorisiert. Eine kleine Akzeptanzkriterien-Frage hätte ich noch.“ | „Das Ticket ‹Ausgang benutzen› ist noch offen. Akzeptanzkriterium: Du bist draussen. Status: fast.“ |
 | SM | „Erwischt! Ich wollte gerade eine kurze Retrospektive über deinen Fluchtversuch machen.“ | „Sind die DoR für deinen Abgang schon ready? Der Ausgang ist erst ready, wenn deine Flucht ready ist. Ich hätte dazu nur noch ein kleines Refinement.“ |
 
-### Zusätzliche Wiederholungsdialoge – Entwurf zur Abstimmung
+### Zusätzliche Wiederholungsdialoge – freigegebene und implementierte Texte
 
-**In Arbeit – nur Textentwurf:** Erst die Texte mit dem Nutzer abstimmen, anschliessend implementieren. Die folgende Auswahl ist noch nicht Teil des Spiels oder der Demo.
+**Teilweise erledigt – integriert:** Die folgenden zwölf Texte sind vom Nutzer freigegeben und ins Spiel eingebaut; Browserprüfung, Demo-Veröffentlichung und Nutzerabnahme werden im Entwicklungsplan nachgeführt.
 
 | Rolle | Neue Variante A | Neue Variante B |
 |---|---|---|
@@ -281,7 +281,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 | PO | Du wolltest nur kurz raus? Klingt klein. Lass uns trotzdem erst die Story schätzen. | Dein Fluchtticket ist fast fertig. Es fehlt nur noch die Abnahme durch alle Stakeholder. |
 | Scrum Master | Du läufst im Kreis. Perfekt, dann sind wir schon mitten im nächsten Sprint. | Ich halte dich nur kurz auf. Wir müssen noch klären, warum unsere kurzen Meetings so lange dauern. |
 
-**Offen – Auswahlregel zur Abstimmung:** Erster Dialog je Rollenfamilie unverändert; bei späteren Begegnungen bisherigen Wiederholungstext, Variante A und Variante B reihum anzeigen. Kein unmittelbar gleicher Wiederholungstext derselben Rollenfamilie. Die sieben PO-Teams teilen einen Verlauf; die vier Scrum Master ebenfalls. Verlauf nur während der Spielsitzung, keine dauerhafte Speicherung. Seitenanzeige, Überspringen und Timerstillstand bleiben erhalten. Umsetzung und Tests erst nach Textfreigabe.
+**Implementierte Auswahlregel:** Erster Dialog je Rollenfamilie unverändert; bei späteren Begegnungen bisherigen Wiederholungstext, Variante A und Variante B reihum anzeigen. Erst Bestätigung eines Wiederholungsdialogs schaltet auf den nächsten Text; reines Öffnen ändert den Verlauf nicht. Kein unmittelbar gleicher Wiederholungstext derselben Rollenfamilie. Die sieben PO-Teams teilen einen Verlauf; die vier Scrum Master ebenfalls. Verlauf nur während der Spielsitzung, keine dauerhafte Speicherung. Seitenanzeige, Überspringen und Timerstillstand bleiben erhalten. Die Freigabe ist erteilt; technische Prüfung siehe Entwicklungsplan.
 
 ## Grafik und Audio – Stand und Entwurf
 
