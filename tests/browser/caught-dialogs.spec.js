@@ -401,6 +401,35 @@ async function confirm(page, input) {
   await page.clock.runFor(250);
 }
 
+test("all families render three rotating repeats across restarts and reset on reload", async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  const input = testInfo.project.name.startsWith("mobile") ? "tap" : "Enter";
+  for (const role of ["RTE", "P&T", "BO", "PM", "PO · WCL", "Scrum Master"]) {
+    await catchRole(page, role);
+    while ((await sceneState(page)).dialog) await confirm(page, input);
+    const texts = [];
+    for (let i = 0; i < 4; i++) {
+      await catchRole(page, role === "PO · WCL" && i % 2 ? "PO · CMS" : role);
+      const state = await sceneState(page);
+      expect(state.dialog.repeatIndex).toBe(i % 3);
+      const text = state.dialog.pages[0];
+      if (i < 3) texts.push(text);
+      else expect(text).toBe(texts[0]);
+      await page.clock.runFor(1000);
+      expect((await sceneState(page)).timer).toBe(state.timer);
+      if (i === 2) await page.screenshot({ path: testInfo.outputPath(`repeat-${role.replace(/[^a-z]/gi, "")}.png`) });
+      const generation = state.generation;
+      await confirm(page, input);
+      expect((await sceneState(page)).generation).toBe(generation + 1);
+    }
+    expect(new Set(texts).size).toBe(3);
+  }
+  await page.reload();
+  await page.clock.runFor(100);
+  await catchRole(page, "RTE");
+  expect((await sceneState(page)).dialog.repeated).toBe(false);
+});
+
 test("every searcher shows first and repeat dialogue, with complete reproducible restarts", async ({ page }, testInfo) => {
   // Thirty rendered scene restarts can exceed 30 s on software-rendered Firefox.
   test.setTimeout(60_000);
