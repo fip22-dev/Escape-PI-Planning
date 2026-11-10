@@ -232,7 +232,7 @@ export class IntroScene extends Phaser.Scene {
         audioReady.then(ready => { if (ready) this.audio.play("start"); });
         this.homeRows?.forEach(row => row.disableInteractive());
         // Let Phaser finish the current pointer/key event before switching scenes.
-        this.time.delayedCall(0, () => this.scene.start("graybox"));
+        this.time.delayedCall(0, () => this.scene.start("graybox", { showStartGuide: true }));
       } else if (this.selection === 1) this.showPanel("help");
       else if (this.selection === 2) this.showPanel("settings");
       else this.showPanel("credits");

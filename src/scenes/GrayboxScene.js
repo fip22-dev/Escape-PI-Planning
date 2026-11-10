@@ -58,6 +58,12 @@ export class GrayboxScene extends Phaser.Scene {
     super("graybox");
   }
 
+  init(data = {}) {
+    this.startGuideRequested = Boolean(data.showStartGuide);
+    // Phaser retains scene data on restart; consume this one-time request.
+    data.showStartGuide = false;
+  }
+
   create() {
     configureRendering(this, true);
     document.querySelector(".page")?.classList.remove("is-menu");
@@ -230,7 +236,9 @@ export class GrayboxScene extends Phaser.Scene {
     this.touchControls = bindTouchControls({
       onClear: () => { this.touchHeading = null; },
       onPause: () => this.onEscapePressed(),
-      onRestart: () => this.caughtDialog ? this.advanceDialog() : this.scene.restart(),
+      onRestart: () => {
+        if (!this.startGuideVisible) this.caughtDialog ? this.advanceDialog() : this.scene.restart();
+      },
     });
     this.input.on("pointerdown", this.restartIfFinished, this);
     this.handleWindowEscape = (event) => {
@@ -249,7 +257,7 @@ export class GrayboxScene extends Phaser.Scene {
         return;
       }
       if ((event.key === "Enter" || event.key === " " || event.code === "Space")
-        && (this.caughtDialog || this.isPaused || this.gameResult)) {
+        && (this.startGuideVisible || this.caughtDialog || this.isPaused || this.gameResult)) {
         event.preventDefault();
         event.stopImmediatePropagation();
         this.onConfirmPressed(event);
@@ -280,6 +288,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-SPACE", this.onConfirmPressed, this);
 
     this.createGameHud();
+    this.createStartGuide();
     this.updateDoors(this.time.now, true);
     routeRenderLayers(this);
   }
@@ -288,7 +297,7 @@ export class GrayboxScene extends Phaser.Scene {
     if (this.gameResult) {
       return;
     }
-    if (this.isPaused) return;
+    if (this.isPaused || this.startGuideVisible) return;
 
     this.updateGameTimer(time);
     if (this.gameResult) return;
@@ -331,11 +340,16 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   restartIfFinished() {
+    if (this.startGuideVisible) {
+      this.dismissStartGuide();
+      return;
+    }
     if (this.caughtDialog) this.advanceDialog();
     else if (this.gameResult === "win") this.scene.restart();
   }
 
   onEscapePressed() {
+    if (this.startGuideVisible) return;
     if (this.gameResult === "timeout") {
       this.resultChoiceYes = false;
       this.updateResultChoice();
@@ -361,6 +375,11 @@ export class GrayboxScene extends Phaser.Scene {
   }
 
   onConfirmPressed(event) {
+    if (this.startGuideVisible) {
+      event?.preventDefault?.();
+      if (!event?.repeat) this.dismissStartGuide();
+      return;
+    }
     // The same Enter/Space must not also click a focused HTML control.
     if (this.caughtDialog || this.isPaused || this.gameResult) event?.preventDefault?.();
     if (event?.repeat) return;
@@ -375,6 +394,41 @@ export class GrayboxScene extends Phaser.Scene {
     } else if (this.gameResult === "win") {
       this.scene.restart();
     }
+  }
+
+  createStartGuide() {
+    this.startGuideVisible = this.startGuideRequested;
+    this.startGuideRequested = false;
+    this.startGuideOpenedAt = this.time.now;
+    const style = { resolution: RENDER_SCALE, fontFamily: "Arial, sans-serif", color: "#f5f0dc" };
+    this.startGuidePanel = this.add.rectangle(160, 120, 296, 192, 0x172326, 0.98)
+      .setStrokeStyle(2, 0xd8b868).setScrollFactor(0).setDepth(130);
+    this.startGuideTitle = this.add.text(160, 42, "Entkomme dem PI Planning", {
+      ...style, fontSize: "13px", fontStyle: "bold", color: "#ffe066",
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(131);
+    this.startGuideBody = this.add.text(28, 62,
+      "Entkomme in 180 Sekunden und gehe den Suchenden aus dem Weg.\nSammle dafür in jedem der sieben Teamzimmer einen Schlüssel – laufe einfach darüber.\nHast du alle sieben Schlüssel, ist der Ausgang frei.\nWirst du erwischt, musst du am PI Planning teilnehmen.", {
+        ...style, fontSize: "10px", wordWrap: { width: 264 }, lineSpacing: 1,
+      }).setScrollFactor(0).setDepth(131);
+    this.startGuideButton = this.add.text(160, 196, "Zum Starten irgendwo tippen · Enter / Leertaste", {
+      ...style, fontSize: "9px", backgroundColor: "#364a3b", padding: { x: 8, y: 7 },
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(132).setInteractive({ useHandCursor: true });
+    this.startGuideButton.on("pointerdown", () => this.dismissStartGuide());
+    this.startGuideObjects = [this.startGuidePanel, this.startGuideTitle, this.startGuideBody, this.startGuideButton];
+    this.startGuideObjects.forEach(object => object.setVisible(this.startGuideVisible));
+  }
+
+  dismissStartGuide() {
+    // Ignore the input that selected Spiel starten in the previous scene.
+    if (!this.startGuideVisible || this.time.now - this.startGuideOpenedAt < 200) return;
+    const elapsed = this.time.now - this.startGuideOpenedAt;
+    for (const person of [...this.neutralPeople, ...this.searchers]) person.nextMoveAt += elapsed;
+    shiftNeutralSpeechTime(this.neutralSpeech, elapsed);
+    this.input.keyboard.resetKeys();
+    this.touchControls.clear();
+    this.touchHeading = null;
+    this.startGuideVisible = false;
+    this.startGuideObjects.forEach(object => object.setVisible(false));
   }
 
   advanceDialog() {

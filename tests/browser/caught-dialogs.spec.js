@@ -1,6 +1,54 @@
 import { test, expect } from "@playwright/test";
 import { isolatedFurnitureCases, furnitureSightLayout } from "../helpers/furnitureSight.js";
 
+test("start guide freezes the attempt, confirms with keyboard or touch and skips retries", async ({ page }, testInfo) => {
+  await page.evaluate(() => window.__game.scene.getScene("graybox").scene.start("intro"));
+  await page.clock.runFor(100);
+  await page.keyboard.press("Enter");
+  await page.clock.runFor(300);
+  const snapshot = () => page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return { visible: s.startGuideVisible, player: s.playerTile, people: [...s.neutralPeople, ...s.searchers].map(p => p.tile), timer: s.escapeStartedAt };
+  });
+  const before = await snapshot();
+  expect(before.visible).toBe(true);
+  await page.keyboard.down("ArrowUp");
+  await page.clock.runFor(5000);
+  await page.keyboard.up("ArrowUp");
+  expect(await snapshot()).toEqual(before);
+  await page.keyboard.press("Escape");
+  expect(await snapshot()).toEqual(before);
+  expect(await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return s.startGuideBody.y + s.startGuideBody.height < s.startGuideButton.y - s.startGuideButton.height / 2;
+  })).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("start-guide.png") });
+  if (testInfo.project.name.startsWith("mobile")) {
+    const point = await page.evaluate(() => {
+      const s = window.__game.scene.getScene("graybox");
+      const r = s.game.canvas.getBoundingClientRect();
+      // Tap the corner outside the instruction panel, not the start button.
+      return { x: r.x + 8, y: r.y + 8 };
+    });
+    await page.touchscreen.tap(point.x, point.y);
+  } else await page.keyboard.press("Space");
+  await page.clock.runFor(100);
+  expect((await snapshot()).visible).toBe(false);
+  expect((await snapshot()).timer).toBeNull();
+  await page.clock.runFor(2500);
+  expect((await snapshot()).people).not.toEqual(before.people);
+  await page.evaluate(() => window.__game.scene.getScene("graybox").scene.restart());
+  await page.clock.runFor(100);
+  expect((await snapshot()).visible).toBe(false);
+  await page.evaluate(() => window.__game.scene.getScene("graybox").scene.restart({ showStartGuide: true }));
+  await page.clock.runFor(300);
+  expect((await snapshot()).visible).toBe(true);
+  const canvas = await page.locator("canvas").boundingBox();
+  await page.mouse.click(canvas.x + canvas.width / 2, canvas.y + canvas.height / 3);
+  await page.clock.runFor(100);
+  expect((await snapshot()).visible).toBe(false);
+});
+
 test("team keys collect by movement, lock both exit lanes, survive pause and reset", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("keys-initial-hud.png") });
   await page.evaluate(() => {
