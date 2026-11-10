@@ -2,7 +2,7 @@
 
 ## Freigabe und Geräteprüfung
 
-**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands. `feature/iphone-safari-testing` ist über [PR #15](https://github.com/fip22-dev/Escape-PI-Planning/pull/15) am 10.11.2026 nach `main` gemergt und abgeschlossen. Dieser Abschluss gilt für den bisherigen Spielstand. Die neu beauftragte Team-Schlüssel-Erweiterung wird auf `feature/team-keys` umgesetzt; die vollständige Spielrunde am PC ist vom Nutzer am 10.11.2026 erfolgreich bestätigt. Die iPhone-Prüfung der Erweiterung einschliesslich Schliessen der Startanleitung durch Tippen in die Spielansicht ist vom Nutzer bestätigt.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands. `feature/iphone-safari-testing` ist über [PR #15](https://github.com/fip22-dev/Escape-PI-Planning/pull/15) am 10.11.2026 nach `main` gemergt und abgeschlossen. Dieser Abschluss gilt für den bisherigen Spielstand. Die Team-Schlüssel-Erweiterung ist über [PR #16](https://github.com/fip22-dev/Escape-PI-Planning/pull/16) nach `main` übernommen; die vollständige Spielrunde am PC ist vom Nutzer am 10.11.2026 erfolgreich bestätigt. Die iPhone-Prüfung der Erweiterung einschliesslich Schliessen der Startanleitung durch Tippen in die Spielansicht ist vom Nutzer bestätigt.
 
 Historische Prüfabschnitte weiter unten beschreiben frühere Zwischenstände. Dort offene reale Geräte-, Grafik- und Audio-Abnahmen sind mit der Nutzerbestätigung vom 10.11.2026 abgeschlossen; technische Grenzen früherer automatisierter Tests bleiben dokumentiert.
 
@@ -24,7 +24,7 @@ Ein humorvolles 2D-Browserspiel in fester Draufsicht und eigener Retro-Pixelopti
 
 ## Team-Schlüssel als Voraussetzung für den Ausgang
 
-**Erledigt – vollständige Spielrunde am PC:** Vom Nutzer am 10.11.2026 erfolgreich bestätigt. **Erledigt – iPhone-Abnahme:** Der Nutzer bestätigt am 10.11.2026, dass der veröffentlichte Schlüssel-/Kurzanleitungsstand auch auf dem iPhone gut funktioniert. **Erledigt – Tippfläche abgenommen:** Der Nutzer bestätigt auch die Umsetzung des Wegtippens als gut. Die private Demo ist aktualisiert und abgenommen. Der Nutzer hat den Branchabschluss samt Übernahme nach main beauftragt.
+**Erledigt – vollständige Spielrunde am PC:** Vom Nutzer am 10.11.2026 erfolgreich bestätigt. **Erledigt – iPhone-Abnahme:** Der Nutzer bestätigt am 10.11.2026, dass der veröffentlichte Schlüssel-/Kurzanleitungsstand auch auf dem iPhone gut funktioniert. **Erledigt – Tippfläche abgenommen:** Der Nutzer bestätigt auch die Umsetzung des Wegtippens als gut. Die private Demo ist aktualisiert und abgenommen. Der Branchabschluss samt Übernahme nach main ist über PR #16 erfolgt.
 
 **Erledigt – Kurzanleitung beim Spielstart implementiert und vom Nutzer abgenommen:** Nach „Spiel starten“ erscheint die Kurzanleitung mit dem Titel „Entkomme dem PI Planning“: „Entkomme in 180 Sekunden und gehe den Suchenden aus dem Weg. Sammle dafür in jedem der sieben Teamzimmer einen Schlüssel – laufe einfach darüber. Hast du alle sieben Schlüssel, ist der Ausgang frei. Wirst du erwischt, musst du am PI Planning teilnehmen.“ Enter, Leertaste oder Tippen irgendwo in die Spielansicht bestätigt; die auslösende Menüeingabe bestätigt nicht gleichzeitig die Anleitung. Figuren und Timer stehen während der Einblendung still. Pause und Touch-Neustart bleiben währenddessen ohne Wirkung. Bestätigung löscht gehaltene Eingaben und verschiebt die Startfristen der Figuren um die Lesezeit. Der Timer startet weiterhin beim Verlassen des PI-Raums. Neuversuche wiederholen die Einblendung nicht; ein neuer Start über das Hauptmenü zeigt sie wieder. Die Regeln unter „So geht’s“ bleiben zusätzlich verfügbar.
 
@@ -253,7 +253,7 @@ Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: 
 
 ## Dialoge bei Entdeckung – implementierte Texte
 
-**Offen:** Weitere Dialogvarianten für die Rollen ergänzen. Zusätzliche Texte und ihre Auswahlregeln sind noch zu entwerfen; aktuell besitzt jede Rollenfamilie einen Erst- und einen Wiederholungstext.
+**In Arbeit – Textabstimmung:** Zwei zusätzliche Wiederholungstexte pro Rollenfamilie sind unten vorgeschlagen. Sie sind noch nicht freigegeben oder implementiert; aktuell besitzt jede Rollenfamilie einen Erst- und einen Wiederholungstext.
 
 Die Dialogüberschrift zeigt den ausgeschriebenen Rollennamen: **Release Train Engineer**, **People & Transformation**, **Business Owner**, **Product Manager**, **Product Owner** (zusätzlich mit Teamkürzel) oder **Scrum Master**. Die kurzen Rollenmarkierungen an den Figuren bleiben bestehen.
 
@@ -267,6 +267,21 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 | PM | „Du gehst schon? Ich nehme ‹Heimweg› in die Roadmap auf. Zieltermin: nach dem nächsten PI.“ | „Dein Heimweg steht auf der Roadmap, aber noch ohne Liefertermin. Ich schaue ihn mir im nächsten PI an.“ |
 | PO | „Ich habe deinen Flucht-Backlog priorisiert. Eine kleine Akzeptanzkriterien-Frage hätte ich noch.“ | „Das Ticket ‹Ausgang benutzen› ist noch offen. Akzeptanzkriterium: Du bist draussen. Status: fast.“ |
 | SM | „Erwischt! Ich wollte gerade eine kurze Retrospektive über deinen Fluchtversuch machen.“ | „Sind die DoR für deinen Abgang schon ready? Der Ausgang ist erst ready, wenn deine Flucht ready ist. Ich hätte dazu nur noch ein kleines Refinement.“ |
+
+### Zusätzliche Wiederholungsdialoge – Entwurf zur Abstimmung
+
+**In Arbeit – nur Textentwurf:** Erst die Texte mit dem Nutzer abstimmen, anschliessend implementieren. Die folgende Auswahl ist noch nicht Teil des Spiels oder der Demo.
+
+| Rolle | Neue Variante A | Neue Variante B |
+|---|---|---|
+| RTE | Dein Fluchtweg ist gut geplant. Leider fehlt noch das Alignment mit allen, die dich aufhalten. | Du willst den Zug verlassen? Das besprechen wir zuerst im nächsten ART Sync. |
+| P&T | Bevor du gehst: Auf einer Skala von eins bis zehn, wie sehr brauchst du diese Pause? | Ich höre einen starken Wunsch nach Freiheit. Lass uns dazu einen Workshop machen. |
+| BO | Deine Flucht hat Potenzial. Wie hoch sind die Einsparungen pro vermiedenem Meeting? | Ich unterstütze deinen Abgang. Sobald wir den Nutzen im Steering vorgestellt haben. |
+| PM | Dein Wunsch nach Freiheit ist erfasst. Im nächsten PI priorisieren wir ihn gegen die anderen Wünsche. | Wir liefern den Ausgang inkrementell. Heute gibt es schon mal die Türklinke. |
+| PO | Du wolltest nur kurz raus? Klingt klein. Lass uns trotzdem erst die Story schätzen. | Dein Fluchtticket ist fast fertig. Es fehlt nur noch die Abnahme durch alle Stakeholder. |
+| Scrum Master | Du läufst im Kreis. Perfekt, dann sind wir schon mitten im nächsten Sprint. | Ich halte dich nur kurz auf. Wir müssen noch klären, warum unsere kurzen Meetings so lange dauern. |
+
+**Offen – Auswahlregel zur Abstimmung:** Erster Dialog je Rollenfamilie unverändert; bei späteren Begegnungen bisherigen Wiederholungstext, Variante A und Variante B reihum anzeigen. Kein unmittelbar gleicher Wiederholungstext derselben Rollenfamilie. Die sieben PO-Teams teilen einen Verlauf; die vier Scrum Master ebenfalls. Verlauf nur während der Spielsitzung, keine dauerhafte Speicherung. Seitenanzeige, Überspringen und Timerstillstand bleiben erhalten. Umsetzung und Tests erst nach Textfreigabe.
 
 ## Grafik und Audio – Stand und Entwurf
 
