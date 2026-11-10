@@ -114,7 +114,8 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   const tapCanvas = async (x, y) => {
     const point = await page.locator("canvas").evaluate((canvas, { x, y }) => {
       const r = canvas.getBoundingClientRect();
-      return { x: r.right - y / 240 * r.width, y: r.top + x / 320 * r.height };
+      const width = window.__game.scale.width / 4;
+      return { x: r.right - y / 240 * r.width, y: r.top + (x + (width - 320) / 2) / width * r.height };
     }, { x, y });
     await page.touchscreen.tap(point.x, point.y);
   };
@@ -163,4 +164,32 @@ test("mobile landscape first tap enlarges and exit stays closed during browser v
   await page.locator(".fullscreen-button").tap();
   await page.setViewportSize({ width: 844, height: 360 });
   await expect(page.locator(".page")).not.toHaveClass(/is-expanded/);
+});
+
+test("mobile widescreen uses the entire visible viewport and suppresses accidental selection", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("mobile"), "Phone touch layout");
+  await page.addInitScript(() => Object.defineProperty(document, "fullscreenEnabled", { configurable: true, value: false }));
+  await page.setViewportSize({ width: 874, height: 292 });
+  await boot(page);
+  const button = page.locator(".fullscreen-button");
+  await button.tap();
+  await expect.poll(() => page.locator("canvas").evaluate(canvas => {
+    const r = canvas.getBoundingClientRect();
+    return Math.max(Math.abs(r.width - innerWidth), Math.abs(r.height - innerHeight));
+  })).toBeLessThan(2);
+  await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector(".page"));
+    getSelection().addRange(range);
+  });
+  await page.waitForFunction(() => getSelection().rangeCount === 0);
+  expect(await page.locator("canvas").evaluate(canvas => getComputedStyle(canvas).userSelect)).toBe("none");
+  expect(await button.evaluate(element => {
+    const event = new Event("contextmenu", { bubbles: true, cancelable: true });
+    element.dispatchEvent(event);
+    return event.defaultPrevented;
+  })).toBe(true);
+  await button.tap();
+  await page.waitForFunction(() => window.__game.scale.width === 1280);
+  await expectFits(page);
 });

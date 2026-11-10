@@ -4,6 +4,7 @@ import { GrayboxScene } from "./scenes/GrayboxScene.js";
 import { RENDER_SCALE, VIEW_WIDTH, VIEW_HEIGHT } from "./game/rendering.js";
 import { bindFullscreen } from "./fullscreen.js";
 import { bindRotatedLayout } from "./rotatedLayout.js";
+import { bindGameSurface } from "./gameSurface.js";
 import "./style.css";
 
 window.addEventListener("game:mode", event => {
@@ -29,11 +30,19 @@ const game = new Phaser.Game({
 });
 
 function refreshLayout() {
+  const container = document.querySelector("#game-container");
+  const mobileExpanded = document.querySelector(".page").classList.contains("is-mobile-landscape");
+  const height = VIEW_HEIGHT * RENDER_SCALE;
+  const width = mobileExpanded && container.clientHeight
+    ? Math.max(VIEW_WIDTH * RENDER_SCALE, Math.round(container.clientWidth / container.clientHeight * height))
+    : VIEW_WIDTH * RENDER_SCALE;
   game.scale.getParentBounds();
-  game.scale.refresh();
+  if (game.scale.width !== width) game.scale.setGameSize(width, height);
+  else game.scale.refresh();
 }
 
 const rotatedLayout = bindRotatedLayout(game, document.querySelector(".page"));
+const gameSurface = bindGameSurface(document.querySelector(".page"));
 
 const fullscreen = bindFullscreen({
   target: document.querySelector(".page"),
@@ -48,4 +57,4 @@ const fullscreen = bindFullscreen({
   },
 });
 
-window.addEventListener("beforeunload", () => { fullscreen.destroy(); rotatedLayout.destroy(); game.destroy(true); });
+window.addEventListener("beforeunload", () => { fullscreen.destroy(); gameSurface.destroy(); rotatedLayout.destroy(); game.destroy(true); });

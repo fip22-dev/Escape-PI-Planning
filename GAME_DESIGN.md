@@ -326,3 +326,10 @@ Die mobile Grossansicht verwendet ein virtuelles Querformat: Im Hochformat wird 
 
 
 Grossansicht wird in beiden Ausrichtungen ausschliesslich mit dem Ansichtsschalter aktiviert. Das Drehen des Geräts passt nur eine bereits gewählte Grossansicht an. So vergrössert der erste Tipp auch bei einem Start im Querformat; der nächste Tipp verkleinert.
+
+
+## Mobile Breitbild-Bühne und Eingabesicherheit
+
+In mobiler Grossansicht füllt der Canvas den sichtbaren Viewport in beiden Achsen. Die interne Renderhöhe bleibt 960 Pixel (240 logische Einheiten); die Breite folgt dem Bühnen-Seitenverhältnis. Die Weltkamera zeigt dadurch seitlich mehr Karte. Die Interface-Kamera übernimmt die neue Breite, zentriert Dialoge und belässt Timer und Welt-Sprechblasen an ihren vorgesehenen Ankern. Menüauswahl und Anleitungswischen werden weiterhin über Kamera-Koordinaten getroffen. Der Bürohintergrund wird seitlich erweitert, das Referenzlayout bleibt unverzerrt. Bei Rückkehr zur normalen Ansicht wird die Renderbreite auf 1280 Pixel zurückgesetzt. Regeln, Wege, Sichtweiten und Zeitfristen ändern sich nicht.
+
+Die ganze HTML-Spieloberfläche einschliesslich Canvas und Schaltern unterbindet Textauswahl, Touch-Callouts, Kontextmenüs und Ziehen. Bereits bestehende Spielauswahl wird bei Auswahländerung oder neuer Zeigereingabe entfernt. Das Standardverhalten von Klicks, Touch-Bedientasten und Audio-Freigabe bleibt erhalten. Die Visual-Viewport-Abmessungen und Offsets positionieren die mobile Bühne beim Ein-/Ausblenden oder Verschieben von Browserleisten.

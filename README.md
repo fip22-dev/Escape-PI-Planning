@@ -213,3 +213,12 @@ Technische Prüfung: 46 Funktionstests, Produktionsbuild und sechs Chromium-Harn
 Grossansicht wird in beiden Ausrichtungen ausschliesslich mit dem Ansichtsschalter aktiviert. Das Drehen des Geräts passt nur eine bereits gewählte Grossansicht an. So vergrössert der erste Tipp auch bei einem Start im Querformat; der nächste Tipp verkleinert.
 
 Aktueller Prüfstand für den Querformat-Schalter: 46 Funktionstests, Build und sieben gezielte Chromium-Harness-Prüfungen erfolgreich.
+
+
+## Mobile Breitbildansicht und Schutz vor versehentlicher Markierung
+
+Die mobile Grossansicht nutzt die gesamte sichtbare Breite und Höhe. Statt eines festen 4:3-Bildes erweitert sich der Kartenausschnitt seitlich; Figuren und Texte werden nicht verzerrt. Menü und Dialoge bleiben zentriert, der Timer links oben. Die Büroillustration im Startmenü erhält einen breiten Hintergrund. Beim Verkleinern gilt wieder das 4:3-Referenzformat. Safari-Leisten bleiben im Browser sichtbar; die verfügbare Fläche sowie deren Versatz werden mit Visual Viewport nachgeführt.
+
+Textauswahl, Kopiermenüs durch langes Drücken und Ziehen sind innerhalb der Spieloberfläche gesperrt. Eine bestehende Auswahl im Spiel wird automatisch entfernt, ohne Auswahl ausserhalb des Spiels zu löschen. Prüfstatus und verbleibende reale Safari-Abnahme stehen im Geräteprüfplan.
+
+Aktueller Prüfstand: 47 Funktionstests, Build und zehn gezielte Chromium-Harness-Prüfungen erfolgreich. Die echte iPhone-/Safari-Prüfung von Breitbild und langem Drücken bleibt offen; der Playwright-Lauf ist hier durch fehlende Browserdateien blockiert.

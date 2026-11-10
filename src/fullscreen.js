@@ -17,6 +17,8 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
     const mobile = matchMedia("(pointer: coarse)").matches && Math.min(width, height) <= 600;
     target.style.setProperty("--mobile-width", `${width}px`);
     target.style.setProperty("--mobile-height", `${height}px`);
+    target.style.setProperty("--mobile-left", `${viewport?.offsetLeft ?? 0}px`);
+    target.style.setProperty("--mobile-top", `${viewport?.offsetTop ?? 0}px`);
     target.classList.toggle("is-mobile-landscape", active && mobile);
     target.classList.toggle("is-rotated", active && mobile && height > width);
     target.classList.toggle("is-expanded", active);
@@ -78,6 +80,7 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
   window.addEventListener("orientationchange", sync, { signal: abort.signal });
   window.addEventListener("resize", sync, { signal: abort.signal });
   window.visualViewport?.addEventListener("resize", sync, { signal: abort.signal });
+  window.visualViewport?.addEventListener("scroll", sync, { signal: abort.signal });
   sync();
   return { destroy() { abort.abort(); } };
 }

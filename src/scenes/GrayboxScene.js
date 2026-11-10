@@ -897,6 +897,7 @@ export class GrayboxScene extends Phaser.Scene {
 
   updateSpeechBubble(time) {
     const camera = this.cameras.main;
+    const viewWidth = camera.width / camera.zoom;
     updateNeutralSpeech(this.neutralSpeech, time, this.neutralPeople, this.playerTile, person => {
       const bounds = person.bounds;
       const sameArea = bounds.area === "hall"
@@ -920,11 +921,11 @@ export class GrayboxScene extends Phaser.Scene {
       const width = text.width;
       const height = text.height;
       if (!active.layout) {
-        const baseX = Math.max(8, Math.min(312 - width, tipX - width / 2));
+        const baseX = Math.max(8, Math.min(viewWidth - 8 - width, tipX - width / 2));
         const baseY = Math.max(42, Math.min(222 - height, tipY - height - 8));
         let position = { x: baseX, y: baseY };
         // Resolve nearby bubbles once, then keep the rectangle in world space.
-        search: for (const x of [baseX, 8, 312 - width]) {
+        search: for (const x of [baseX, 8, viewWidth - 8 - width]) {
           for (let y = baseY; y >= 42; y -= height + 6) {
             if (placed.every(box => x + width + 4 <= box.x || x >= box.x + box.width + 4
               || y + height + 4 <= box.y || y >= box.y + box.height + 4)) {
@@ -937,7 +938,7 @@ export class GrayboxScene extends Phaser.Scene {
       }
       const x = active.layout.x - camera.worldView.x;
       const y = active.layout.y - camera.worldView.y;
-      if (x + width < 0 || x > 320 || y + height + 10 < 0 || y > 240) continue;
+      if (x + width < 0 || x > viewWidth || y + height + 10 < 0 || y > 240) continue;
       placed.push({ x, y, width, height });
       const tailX = Math.max(x + 10, Math.min(x + width - 10, tipX));
       const tailTipX = Math.max(tailX - 8, Math.min(tailX + 8, tipX));
