@@ -2,7 +2,7 @@
 
 ## Freigabe und Geräteprüfung
 
-**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands. `feature/iphone-safari-testing` ist über [PR #15](https://github.com/fip22-dev/Escape-PI-Planning/pull/15) am 10.11.2026 nach `main` gemergt und abgeschlossen. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
 
 Historische Prüfabschnitte weiter unten beschreiben frühere Zwischenstände. Dort offene reale Geräte-, Grafik- und Audio-Abnahmen sind mit der Nutzerbestätigung vom 10.11.2026 abgeschlossen; technische Grenzen früherer automatisierter Tests bleiben dokumentiert.
 

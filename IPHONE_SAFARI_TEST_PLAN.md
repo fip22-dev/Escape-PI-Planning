@@ -2,13 +2,13 @@
 
 ## Abschluss – 10.11.2026
 
-**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands. `feature/iphone-safari-testing` ist über [PR #15](https://github.com/fip22-dev/Escape-PI-Planning/pull/15) am 10.11.2026 nach `main` gemergt und abgeschlossen. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
 
 Die Prüfliste ist aufgrund der ausdrücklichen Gesamtbestätigung des Nutzers abgeschlossen. Dies ist eine reale Nutzerabnahme, keine neu durch den Agenten ausgeführte Safari-Prüfung. Gerätemodell, genaue iOS-/Safari-Version, Zoom, Lautstärke und Einzelbefunde wurden nicht separat mitgeteilt und werden nicht ergänzt. Frühere offene Vermerke weiter unten bleiben als historischer Prüfverlauf erhalten.
 
 ## Zuordnung
 
-- Abgeschlossener Arbeitsbranch: feature/iphone-safari-testing; Merge nach main vom Nutzer beauftragt.
+- Abgeschlossener Arbeitsbranch: feature/iphone-safari-testing; über PR #15 nach main gemergt.
 - Freigegebene Spielbasis: main a199290e4b00ebb57029d59aafb5007eb4b2901a ([PR #14](https://github.com/fip22-dev/Escape-PI-Planning/pull/14)).
 - **Erledigt – technische Hauptstand-Prüfung:** 45 Funktionstests, alle 51 Browserfälle in Chromium/Firefox/mobilem Chromium, Produktionsbuild und Diff-Prüfung erfolgreich. Das ist keine reale iPhone-/Safari-Abnahme.
 - Eigene owner-private Testdemo, Site-ID: appgprj_6af23d83574c81919296181569f39729. Die alte Demo wird nicht mehr benötigt; ihre Löschung ist beauftragt und noch offen.
@@ -58,7 +58,7 @@ Die Prüfliste ist aufgrund der ausdrücklichen Gesamtbestätigung des Nutzers a
 
 ## Demo und Rückführung
 
-Die bestätigte private Demo verwendet GitHub-Spielquelle `d9673f701ce4aaa5b3aff41173b4fb23af73c72f`, Sites-Quelle `d69f138b7e49da60dd9dad53c4a8026e941c5354` und Deployment `appgdep_6af31bad97cc81918a19793421df6ae5`. Dokumentationscommit `9c0d806` ergänzte danach ausschliesslich die geplante Schlüsselmechanik. Der gesamte Testbranch wird nach Nutzerfreigabe nach main übernommen, einschliesslich bestehender Hosting-Zuordnung und sichtbarer Basiskennung. Zugang bleibt owner-private; es wird keine neue Site und kein neuer Entwicklungsbranch eröffnet. Der Merge löst keine automatische Neuveröffentlichung aus.
+Die bestätigte private Demo verwendet GitHub-Spielquelle `d9673f701ce4aaa5b3aff41173b4fb23af73c72f`, Sites-Quelle `d69f138b7e49da60dd9dad53c4a8026e941c5354` und Deployment `appgdep_6af31bad97cc81918a19793421df6ae5`. Dokumentationscommit `9c0d806` ergänzte danach ausschliesslich die geplante Schlüsselmechanik. Der gesamte Testbranch wurde nach Nutzerfreigabe über PR #15 nach main übernommen, einschliesslich bestehender Hosting-Zuordnung und sichtbarer Basiskennung. Zugang bleibt owner-private; es wird keine neue Site und kein neuer Entwicklungsbranch eröffnet. Der Merge löst keine automatische Neuveröffentlichung aus.
 
 ## Historischer Prüfverlauf
 
