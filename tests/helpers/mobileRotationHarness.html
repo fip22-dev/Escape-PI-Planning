@@ -1,0 +1,67 @@
+<!doctype html><html><head><title>Mobile rotation browser checks</title></head>
+<body style="background:#eef2f2;font:16px system-ui"><h1>Mobile rotation browser checks</h1>
+<p>Coarse pointer and missing Fullscreen API simulated; real Phaser canvas and DOM input.</p>
+<ol id="results"></ol><iframe id="phone" src="./fixture.html" style="border:1px solid;width:390px;height:844px"></iframe>
+<script type="module">
+const frame = document.querySelector('iframe');
+const results = document.querySelector('#results');
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const until = async fn => { for(let i=0;i<100;i++){if(fn())return;await wait(80);}throw Error('Timed out'); };
+const assert = (value, message) => { if(!value) throw Error(message); };
+const pass = label => results.insertAdjacentHTML('beforeend', `<li>PASS: ${label}</li>`);
+try {
+ await until(()=>frame.contentWindow.__game?.scene.isActive('intro'));
+ const win = frame.contentWindow, doc = frame.contentDocument, game = win.__game;
+ const page = doc.querySelector('.page'), button = doc.querySelector('.fullscreen-button');
+ const canvas = doc.querySelector('canvas');
+ const fits = () => { const r=canvas.getBoundingClientRect(); return r.left>=-1 && r.top>=-1 && r.right<=win.innerWidth+1 && r.bottom<=win.innerHeight+1; };
+ const accessible = el => { const r=el.getBoundingClientRect(); return doc.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')===el; };
+ const point = (x,y) => { const r=canvas.getBoundingClientRect(); return page.classList.contains('is-rotated') ? {x:r.right-y/240*r.width,y:r.top+x/320*r.height} : {x:r.left+x/320*r.width,y:r.top+y/240*r.height}; };
+ const mouse = (type,x,y,buttons=0) => { const p=point(x,y); canvas.dispatchEvent(new win.MouseEvent(type,{bubbles:true,clientX:p.x,clientY:p.y,button:0,buttons})); };
+ const tap = async (x,y) => { mouse('mousemove',x,y); await wait(80); mouse('mousedown',x,y,1); await wait(80); mouse('mouseup',x,y); await wait(250); };
+ assert(!page.classList.contains('is-rotated'),'normal portrait unexpectedly rotated');
+ button.click();
+ await until(()=>page.classList.contains('is-rotated') && fits());
+ assert(Math.abs(canvas.clientWidth/canvas.clientHeight-4/3)<0.01,'canvas aspect ratio');
+ assert(accessible(button),'exit button unreachable'); await wait(300);
+ pass('Portrait button rotates stage, fits canvas and preserves proportions');
+ await tap(160,171);
+ await until(()=>game.scene.getScene('intro').view==='help');
+ mouse('mousedown',160,145,1); mouse('mousemove',160,95,1); mouse('mouseup',160,95);
+ await until(()=>game.scene.getScene('intro').helpScroll>0);
+ pass('Inverse-rotated menu hit testing and help dragging');
+ await tap(160,194); await until(()=>game.scene.getScene('intro').view==='home'); await wait(150);
+ await tap(160,151);
+ await until(()=>game.scene.isActive('graybox'));
+ await until(fits);
+ for(const el of doc.querySelectorAll('.touch-controls button')) assert(accessible(el), `${el.textContent} unreachable`);
+ doc.querySelector('[data-action="pause"]').click();
+ await until(()=>game.scene.getScene('graybox').isPaused);
+ assert(fits(),'paused canvas exceeds viewport');
+ await tap(160,124);
+ await until(()=>game.scene.isActive('intro'));
+ pass('Rotated game start, all control hit regions, pause and canvas menu return');
+ await tap(160,151); await until(()=>game.scene.isActive('graybox'));
+ const scene=game.scene.getScene('graybox');
+ frame.style.width='844px'; frame.style.height='390px';
+ await until(()=>!page.classList.contains('is-rotated') && fits());
+ assert(page.classList.contains('is-expanded'),'lost expanded view');
+ assert(game.scene.getScene('graybox')===scene,'scene restarted');
+ pass('Physical landscape removes CSS rotation without restarting');
+ frame.style.width='390px'; frame.style.height='700px';
+ await until(()=>page.classList.contains('is-rotated') && fits());
+ doc.querySelector('[data-action="restart"]').click(); await wait(150);
+ assert(scene.playerTile.x===34 && scene.playerTile.y===47,'restart did not reset player');
+ button.click(); await until(()=>!page.classList.contains('is-expanded'));
+ assert(!page.classList.contains('is-rotated'),'rotation remains after exit');
+ pass('Portrait height changes, restart and return to normal view');
+ frame.style.width='844px'; frame.style.height='390px';
+ await until(()=>page.classList.contains('is-expanded') && fits());
+ button.click(); win.dispatchEvent(new win.Event('resize')); await wait(200);
+ assert(!page.classList.contains('is-expanded'),'resize undid explicit exit');
+ pass('Landscape auto-expansion respects explicit exit');
+ frame.style.width='390px'; frame.style.height='844px'; await wait(150); button.click(); await until(()=>page.classList.contains('is-rotated') && fits());
+ document.title='PASS – mobile rotation browser checks';
+ results.insertAdjacentHTML('afterend','<h2>All 6 browser checks passed</h2>');
+} catch(error) { results.insertAdjacentHTML('beforeend',`<li style="color:red">FAIL: ${error.stack}</li>`); document.title='FAIL – mobile rotation browser checks'; }
+</script></body></html>

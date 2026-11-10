@@ -100,3 +100,61 @@ for (const reason of ["unavailable", "denied"]) {
     expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(false);
   });
 }
+
+test("mobile expanded view rotates portrait, maps touch input and survives orientation changes", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("mobile"), "Phone touch layout");
+  await page.addInitScript(() => Object.defineProperty(document, "fullscreenEnabled", { configurable: true, value: false }));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await boot(page);
+  const stage = page.locator(".page");
+  const button = page.locator(".fullscreen-button");
+  await button.tap();
+  await expect(stage).toHaveClass(/is-rotated/);
+  await expectFits(page);
+  const tapCanvas = async (x, y) => {
+    const point = await page.locator("canvas").evaluate((canvas, { x, y }) => {
+      const r = canvas.getBoundingClientRect();
+      return { x: r.right - y / 240 * r.width, y: r.top + x / 320 * r.height };
+    }, { x, y });
+    await page.touchscreen.tap(point.x, point.y);
+  };
+  await tapCanvas(160, 171);
+  await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "help");
+  await tapCanvas(160, 194);
+  await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "home");
+  await tapCanvas(160, 151);
+  await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
+  await expectFits(page);
+  await page.locator('[data-direction="right"]').tap();
+  await page.waitForFunction(() => window.__game.scene.getScene("graybox").playerTile.x > 34);
+  await page.locator('[data-action="pause"]').tap();
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("portrait-rotated-pause.png") });
+  await tapCanvas(160, 124);
+  await page.waitForFunction(() => window.__game.scene.isActive("intro"));
+  await tapCanvas(160, 151);
+  await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
+  await page.locator('[data-action="pause"]').tap();
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect(stage).not.toHaveClass(/is-rotated/);
+  await expect(stage).toHaveClass(/is-expanded/);
+  await expectFits(page);
+  expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(true);
+  await page.setViewportSize({ width: 390, height: 700 });
+  await expect(stage).toHaveClass(/is-rotated/);
+  await expectFits(page);
+  await page.locator('[data-action="restart"]').tap();
+  await page.waitForFunction(() => !window.__game.scene.getScene("graybox").isPaused);
+  await button.tap();
+  await expect(stage).not.toHaveClass(/is-rotated|is-expanded/);
+});
+
+test("mobile landscape exit stays closed during browser viewport resize", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("mobile"), "Phone touch layout");
+  await page.setViewportSize({ width: 844, height: 390 });
+  await boot(page);
+  await expect(page.locator(".page")).toHaveClass(/is-expanded/);
+  await page.locator(".fullscreen-button").tap();
+  await page.setViewportSize({ width: 844, height: 360 });
+  await expect(page.locator(".page")).not.toHaveClass(/is-expanded/);
+});

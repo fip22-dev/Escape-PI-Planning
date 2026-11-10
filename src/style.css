@@ -161,7 +161,7 @@ kbd {
   .touch-actions button { font-size: 12px; padding: 4px 6px; }
 }
 
-body.has-expanded-game { overflow: hidden; }
+body.has-expanded-game { overflow: hidden; overscroll-behavior: none; }
 .page.is-expanded {
   position: fixed; inset: 0; z-index: 1000; width: 100%; max-width: none;
   height: 100dvh; margin: 0; padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
@@ -191,82 +191,99 @@ body.has-expanded-game { overflow: hidden; }
 .page.is-expanded .test-build-label { display: none; }
 
 /* Edge-to-edge landscape play on touch devices. UI floats above the stage. */
-@media (orientation: landscape) and (pointer: coarse) and (max-height: 600px) {
-  html, body { overscroll-behavior: none; }
-  .page.is-expanded {
-    inset: 0;
-    width: 100%;
-    height: 100dvh;
-    padding: 0;
-    display: block;
-    overflow: hidden;
-    touch-action: none;
-  }
-  .page.is-expanded .game-shell {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-  }
-  .page.is-expanded #game-container {
-    width: 100%;
-    height: 100%;
-  }
-  .page.is-expanded .game-toolbar {
-    position: absolute;
-    z-index: 3;
-    top: max(6px, env(safe-area-inset-top));
-    right: max(8px, env(safe-area-inset-right));
-    width: auto;
-    min-height: 32px;
-    margin: 0;
-  }
-  .page.is-expanded .fullscreen-button {
-    min-height: 32px;
-    padding: 4px 9px;
-    font-size: 11px;
-    background: #142124cc;
-  }
-  .page.is-expanded .display-status { display: none; }
-  .page.is-expanded:not(.is-menu) .touch-controls {
-    position: absolute;
-    z-index: 2;
-    inset: auto 0 0;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0 max(12px, env(safe-area-inset-right))
-      max(8px, env(safe-area-inset-bottom))
-      max(12px, env(safe-area-inset-left));
-    gap: 12px;
-    pointer-events: none;
-  }
-  .page.is-expanded .touch-controls button {
-    background: #294343b8;
-    pointer-events: auto;
-  }
-  .page.is-expanded .touch-controls button:active,
-  .page.is-expanded .touch-controls button.held {
-    background: #d0b969;
-  }
-  .page.is-expanded .direction-pad {
-    grid-template-columns: repeat(3, 44px);
-    grid-template-rows: repeat(2, 42px);
-    gap: 4px;
-  }
-  .page.is-expanded .touch-controls button { min-height: 42px; }
-  .page.is-expanded .touch-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .page.is-expanded .touch-actions button {
-    min-height: 36px;
-    padding: 4px 8px;
-  }
-  .page.is-expanded.is-menu .touch-controls { display: none; }
+.page.is-expanded.is-mobile-landscape {
+  inset: 0;
+  height: var(--mobile-height);
+  width: var(--mobile-width);
+  padding: 0;
+  display: block;
+  overflow: hidden;
+  touch-action: none;
+}
+.page.is-expanded.is-mobile-landscape .game-shell {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+.page.is-expanded.is-mobile-landscape #game-container {
+  width: 100%;
+  height: 100%;
+}
+.page.is-expanded.is-mobile-landscape .game-toolbar {
+  position: absolute;
+  z-index: 3;
+  top: max(6px, var(--stage-safe-top));
+  right: max(8px, var(--stage-safe-right));
+  width: auto;
+  min-height: 32px;
+  margin: 0;
+}
+.page.is-expanded.is-mobile-landscape .fullscreen-button {
+  min-height: 32px;
+  padding: 4px 9px;
+  font-size: 11px;
+  background: #142124cc;
+}
+.page.is-expanded.is-mobile-landscape .display-status { display: none; }
+.page.is-expanded.is-mobile-landscape:not(.is-menu) .touch-controls {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 max(12px, var(--stage-safe-right))
+    max(8px, var(--stage-safe-bottom))
+    max(12px, var(--stage-safe-left));
+  gap: 12px;
+  pointer-events: none;
+}
+.page.is-expanded.is-mobile-landscape .touch-controls button {
+  background: #294343b8;
+  pointer-events: auto;
+}
+.page.is-expanded.is-mobile-landscape .touch-controls button:active,
+.page.is-expanded.is-mobile-landscape .touch-controls button.held {
+  background: #d0b969;
+}
+.page.is-expanded.is-mobile-landscape .direction-pad {
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(2, 42px);
+  gap: 4px;
+}
+.page.is-expanded.is-mobile-landscape .touch-controls button { min-height: 42px; }
+.page.is-expanded.is-mobile-landscape .touch-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.page.is-expanded.is-mobile-landscape .touch-actions button {
+  min-height: 36px;
+  padding: 4px 8px;
+}
+.page.is-expanded.is-mobile-landscape.is-menu .touch-controls { display: none; }
+
+.page.is-mobile-landscape {
+  --stage-safe-top: env(safe-area-inset-top, 0px);
+  --stage-safe-right: env(safe-area-inset-right, 0px);
+  --stage-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --stage-safe-left: env(safe-area-inset-left, 0px);
+}
+.page.is-expanded.is-mobile-landscape.is-rotated {
+  --stage-safe-top: env(safe-area-inset-right, 0px);
+  --stage-safe-right: env(safe-area-inset-bottom, 0px);
+  --stage-safe-bottom: env(safe-area-inset-left, 0px);
+  --stage-safe-left: env(safe-area-inset-top, 0px);
+  inset: auto;
+  left: 0;
+  top: 0;
+  width: var(--mobile-height);
+  height: var(--mobile-width);
+  transform-origin: top left;
+  transform: translateX(var(--mobile-width)) rotate(90deg);
 }

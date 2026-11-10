@@ -201,3 +201,10 @@ Abschliessender Prüfstand vor der Übernahme nach main: 45 Funktionstests, alle
 ## Gerätezweig – Bereitstellung
 
 **Erledigt – veröffentlicht:** Die eigene [private iPhone-/Safari-Testdemo](https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site) wurde als Version 1 erfolgreich bereitgestellt. In Safari gegebenenfalls mit dem zugehörigen ChatGPT-Konto anmelden. Die alte Demo wird nicht mehr benötigt; ihre Löschung ist beauftragt und noch offen. **Offen:** reale Geräteabnahme I01–I14. Zusätzliche Browseröffnung hier wegen nicht verfügbarem Browser-Dienst blockiert. Site-ID und statisches Ausgabeziel stehen in .openai/hosting.json; Publikationsstand und Quellzuordnung im [Geräteprüfplan](IPHONE_SAFARI_TEST_PLAN.md). Hauptstand-Merge: PR #14, main a199290.
+
+
+## Mobile Grossansicht mit automatischer Spielrotation
+
+Auf Smartphones dreht der Ansichtsschalter im Hochformat die gesamte Spieloberfläche um 90 Grad ins Querformat, inklusive Touch-Tasten. Das Gerät muss dafür nicht physisch gedreht werden. Beim tatsächlichen Wechsel ins Querformat entfällt die zusätzliche Drehung; Spiel und Pause bleiben erhalten. „Ansicht verkleinern“ stellt die normale Darstellung wieder her. Die Drehung gilt für Menü, Anleitung, Spiel und Dialoge. Safari-Browserleisten bleiben im normalen Tab erhalten. Für eine Ansicht ohne Safari-Leisten die Demo über Teilen → Zu Home-Bildschirm hinzufügen → Als Web-App öffnen starten. Eine vom Betriebssystem erzwungene Bildschirmdrehung wird nicht vorausgesetzt.
+
+Technische Prüfung: 46 Funktionstests, Produktionsbuild und sechs Chromium-Harness-Prüfungen bestanden. Reale iPhone-/Safari-Abnahme offen. Die neuen Playwright-Fälle sind ergänzt; ein fehlendes Browser-Binary verhindert hier deren Ausführung. Als reproduzierbare Zusatzprüfung: `node tests/helpers/prepareMobileRotationHarness.mjs` ausführen und bei laufendem Vite `/.sites/qa/index.html` öffnen. Dieser Harness verwendet einen Iframe mit simuliertem grobem Zeiger, deaktivierter Fullscreen API und synthetischen Mausereignissen; erzeugte Testdateien bleiben unter `.sites/` und gelangen nicht in den Produktionsbuild.

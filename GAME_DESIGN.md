@@ -318,3 +318,8 @@ Türgrafik: dunkle Rahmen aus der Wandpalette, gedeckte graugrüne Paneele, klei
 Dieser Branch startet von main a199290 (PR #14). Für die iPhone-/Safari-Demo kommen nur eine sichtbare Basiskennung, eigener Seitentitel und private Hosting-Zuordnung hinzu. Die Kennung verschwindet in Grossansicht, damit Bedienelemente Platz behalten. Spielregeln, Türpositionen und Dialoge entsprechen der freigegebenen Basis. Reale Geräteprüfung ist offen; siehe IPHONE_SAFARI_TEST_PLAN.md. Spätere Spielkorrekturen werden gezielt zurückgeführt, die Demo-Konfiguration bleibt getrennt.
 
 **Erledigt – private Testdemo veröffentlicht:** Version 1 verwendet GitHub-Quelle 2e46d80 und Sites-Quelle 2aeac12, Spielbasis main a199290. Eigene private Adresse und offene reale Geräteprüfungen I01–I14 stehen im Geräteplan. Veröffentlichung bestätigt keine Safari-Spielabnahme.
+
+
+## Mobile Rotation der Spieloberfläche
+
+Die mobile Grossansicht verwendet ein virtuelles Querformat: Im Hochformat wird die gesamte Bühne einschliesslich HTML-Tasten im Uhrzeigersinn gedreht. Phaser skaliert und zentriert anhand der ungedrehten lokalen Bühne; Canvas-Eingaben werden vor Kamera-/Objekt-Treffertests zurückgerechnet. Dadurch bleiben Menüauswahl, Anleitungsscrollen, Pause und Dialoge bedienbar. Bei echter Querformatlage wird nur die CSS-Drehung aufgehoben, ohne Szene oder Versuch neu zu starten. Physische Ausrichtung, Browser-Vollbild und CSS-Grossansicht sind getrennt. Explizites Verkleinern im Querformat darf durch eine Änderung der Browserleistenhöhe nicht rückgängig gemacht werden. Sichtbereichänderungen aktualisieren das Layout und löschen gehaltene Eingaben.

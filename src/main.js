@@ -3,13 +3,14 @@ import { IntroScene } from "./scenes/IntroScene.js";
 import { GrayboxScene } from "./scenes/GrayboxScene.js";
 import { RENDER_SCALE, VIEW_WIDTH, VIEW_HEIGHT } from "./game/rendering.js";
 import { bindFullscreen } from "./fullscreen.js";
+import { bindRotatedLayout } from "./rotatedLayout.js";
 import "./style.css";
 
 window.addEventListener("game:mode", event => {
   document.querySelector(".page")?.classList.toggle("is-menu", event.detail?.mode === "menu");
   // Showing/hiding the page header moves the canvas without resizing the
   // viewport. Refresh its cached bounds before the next pointer interaction.
-  requestAnimationFrame(() => game.scale.refresh());
+  requestAnimationFrame(refreshLayout);
 });
 
 const game = new Phaser.Game({
@@ -27,6 +28,13 @@ const game = new Phaser.Game({
   },
 });
 
+function refreshLayout() {
+  game.scale.getParentBounds();
+  game.scale.refresh();
+}
+
+const rotatedLayout = bindRotatedLayout(game, document.querySelector(".page"));
+
 const fullscreen = bindFullscreen({
   target: document.querySelector(".page"),
   button: document.querySelector(".fullscreen-button"),
@@ -36,8 +44,8 @@ const fullscreen = bindFullscreen({
       scene.touchControls?.clear();
       scene.input?.keyboard?.resetKeys();
     }
-    requestAnimationFrame(() => game.scale.refresh());
+    requestAnimationFrame(refreshLayout);
   },
 });
 
-window.addEventListener("beforeunload", () => { fullscreen.destroy(); game.destroy(true); });
+window.addEventListener("beforeunload", () => { fullscreen.destroy(); rotatedLayout.destroy(); game.destroy(true); });

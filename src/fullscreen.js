@@ -1,7 +1,7 @@
 export function bindFullscreen({ target, button, status, onLayoutChange }) {
   const abort = new AbortController();
   let expanded = false;
-  let autoLandscape = false;
+  let dismissedLandscape = false;
   const landscapePhone = () => matchMedia("(orientation: landscape) and (pointer: coarse) and (max-height: 600px)").matches;
   let pending = false;
   let wasNative = false;
@@ -13,6 +13,14 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
     if (wasNative && !native) ignoreEscapeUntil = performance.now() + 150;
     wasNative = native;
     const active = native || expanded;
+    const viewport = window.visualViewport;
+    const width = viewport?.width ?? innerWidth;
+    const height = viewport?.height ?? innerHeight;
+    const mobile = matchMedia("(pointer: coarse)").matches && Math.min(width, height) <= 600;
+    target.style.setProperty("--mobile-width", `${width}px`);
+    target.style.setProperty("--mobile-height", `${height}px`);
+    target.classList.toggle("is-mobile-landscape", active && mobile);
+    target.classList.toggle("is-rotated", active && mobile && height > width);
     target.classList.toggle("is-expanded", active);
     document.body.classList.toggle("has-expanded-game", active);
     target.dataset.displayMode = native ? "fullscreen" : expanded ? "expanded" : "normal";
@@ -25,23 +33,22 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
   };
   const onOrientation = () => {
     const shouldExpand = landscapePhone();
-    if (shouldExpand && !expanded && document.fullscreenElement !== target) {
+    if (!shouldExpand) dismissedLandscape = false;
+    if (shouldExpand && !dismissedLandscape && !expanded && document.fullscreenElement !== target) {
       expanded = true;
-      autoLandscape = true;
-      sync();
-    } else if (!shouldExpand && autoLandscape) {
-      expanded = false;
-      autoLandscape = false;
-      sync();
     }
+    sync();
   };
   const toggle = async () => {
     if (pending) return;
     pending = true;
     button.disabled = true;
     try {
-      if (document.fullscreenElement === target) await document.exitFullscreen();
-      else if (expanded) { expanded = false; autoLandscape = false; }
+      if (document.fullscreenElement === target) {
+        dismissedLandscape = landscapePhone();
+        await document.exitFullscreen();
+      }
+      else if (expanded) { expanded = false; dismissedLandscape = landscapePhone(); }
       else if (nativeAvailable()) {
         try {
           await target.requestFullscreen();
@@ -80,6 +87,7 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
   window.addEventListener("keydown", onKey, { capture: true, signal: abort.signal });
   window.addEventListener("orientationchange", onOrientation, { signal: abort.signal });
   window.addEventListener("resize", onOrientation, { signal: abort.signal });
+  window.visualViewport?.addEventListener("resize", onOrientation, { signal: abort.signal });
   onOrientation();
   sync();
   return { destroy() { abort.abort(); } };
