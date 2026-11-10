@@ -14,9 +14,11 @@ Ein humorvolles 2D-Browserspiel in Draufsicht: Während des PI Plannings versuch
 
 Die vollständigen Spielregeln und Dialogtexte stehen in [GAME_DESIGN.md](GAME_DESIGN.md).
 
-## iPhone-/Safari-Testbranch
+## iPhone-/Safari-Abnahme abgeschlossen
 
-Dieser Branch basiert auf dem nach main gemergten Stand a199290. Eigene private Testdemo und echte Geräteabnahme werden hier isoliert geführt. Die sichtbare Testkennung unterscheidet die Demo vom Hauptstand; Spielregeln bleiben unverändert. [Prüfplan und Geräteprotokoll](IPHONE_SAFARI_TEST_PLAN.md).
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+
+Die bestehende private Demo und `.openai/hosting.json` bleiben erhalten. Abnahme und Publikationszuordnung stehen im [Geräteprotokoll](IPHONE_SAFARI_TEST_PLAN.md). Ein Git-Merge veröffentlicht die Demo nicht erneut.
 
 ## Geplanter Entwicklungsschritt: Team-Schlüssel
 
@@ -24,7 +26,7 @@ Dieser Branch basiert auf dem nach main gemergten Stand a199290. Eigene private 
 
 ## Projektstatus
 
-**Freigegebener Funktionsstand:** Der Nutzer hat Grafik und Darstellung visuell bestätigt und die Übernahme nach `main` beauftragt. Echte iPhone-/Safari-Tests und die neue private Testdemo gehören zum separaten Branch `feature/iphone-safari-testing`, der vom gemergten `main` startet. Die bestehende private Demo wird dadurch nicht ersetzt.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
 
 Der Graybox-Prototyp zeigt die Etage mit sieben Teamzimmern, sechs Nebenräumen und 37 neutralen Personen. Alle Personen bewegen sich auf festen, raum- oder ganggebundenen Routen. Ein Kachelschritt dauert 650 ms, danach pausieren neutrale Personen 700 ms; ihre Wege reichen bis zu vier Kacheln weit. Die fünf Routen im Pausenraum sind voneinander getrennt, damit die Personen dort nicht an denselben Engstellen warten. Die Person in Meeting 2 läuft um den Tisch. Insgesamt patrouillieren 15 Suchende: RTE, P&T, BO, PM, sieben teambezogene PO (WCL, WSW, WDPS, EMS, MAC, M365 und CMS) sowie vier als „Scrum Master“ beschriftete Figuren. Jede PO startet und endet im eigenen Teamraum und patrouilliert im benachbarten Gangabschnitt. Bei Sichtkontakt wechselt die Warnung nach 300 ms auf Rot; nach 600 ms Sichtkontakt wird die Spielfigur entdeckt. Bei wiederholter Blockade suchen Suchende und neutrale Personen einen freien Umweg innerhalb ihres Bereichs und setzen ihre Route fort. Solide Möbel und Personen blockieren die Wege; Türen öffnen automatisch und blockieren geschlossen die Sicht; die Spielfigur kann auch während einer Bewegung keine aktuelle oder reservierte Personenkachel betreten. Die Spielschleife hat einen 180-Sekunden-Timer, Sieg am Ausgang, Ablaufmeldung und Neustart. ESC pausiert das Spiel; im Pausenmenü startet Ja neu, Nein setzt fort, Musik und Töne lassen sich getrennt umschalten. ESC setzt das pausierte Spiel fort. „Zurück zum Startmenü“ ist mit ↑/↓ und Enter sowie per Klick/Tippen direkt erreichbar. Die letzten 30 Sekunden erscheinen rot, die letzten 15 blinken rot. Der Nutzer hat die Mehrrollenansicht mit PO-Rückkehr und Ausweichwegen im Browser bestätigt; Routentests und Produktionsbuild sind erfolgreich. Rollenspezifische Erst- und Wiederholungsdialoge mit Timerstillstand und reproduzierbarem Figurenneustart sind über PR #10 in `main` integriert und automatisiert im Browser geprüft. Startmenü, Pixelgrafik und Büro-Jazz sind über PR #13 in `main` integriert und vom Nutzer im Browser geprüft. Möbelpalette, Suchendenaccessoires, scharfe Schrift, dezente Schritte, Zwei-Sekunden-Sprechblasen, automatische Türen und Vollbild sind Bestandteil dieses freigegebenen Funktionsstands. Visuelle Abnahme bestätigt; reale Geräteprüfung und Hörprobe folgen separat.
 
@@ -48,13 +50,13 @@ Die Rollendialoge und der reproduzierbare Neustart auf `feature/caught-dialogs` 
 
 Die mobile Steuerung verwendet ein grosses, gleitendes Steuerkreuz mit vier 52-Pixel-Richtungsflächen. Eine Richtung halten zum Laufen; den Finger ohne Loslassen auf eine andere Fläche schieben zum Abbiegen. Die gewünschte Richtung wird hervorgehoben. Der neutrale Mittelbereich ist 20 × 20 CSS-Pixel klein; Richtungswechsel reagieren direkt. Eine gehaltene Kurve wird an der ersten freien Abzweigung übernommen, bis dahin läuft die Figur in ihrer bisherigen Richtung weiter, sofern diese frei ist. Die Schrittzeit bleibt 105 ms. Mitte, Verlassen der Fläche und Loslassen stoppen weitere Schritte. **Pause / Weiter** hält das Spiel an oder setzt es fort; **Neustart** setzt den Versuch direkt zurück. Bei Fokusverlust oder abgebrochener Berührung wird die Richtungseingabe gelöscht. Die Touch-Steuerung ist im Projekt enthalten; für einen Aufruf unterwegs muss dieser Stand auf einem erreichbaren Server bereitgestellt sein.
 
-Prüfung des aktuellen Testbranchs: 58 Funktionstests, Produktionsbuild und 17 gezielte Chromium-Harness-Fälle erfolgreich, einschliesslich direktem Richtungswechsel, kleinerem Neutralbereich, vorgemerkten Kurven und gedrehter Ansicht. Der Harness simuliert Touch-Eingaben; die iPhone-/Safari-Abnahme des gleitenden Steuerkreuzes bleibt offen.
+Prüfung des aktuellen Testbranchs: 58 Funktionstests, Produktionsbuild und 17 gezielte Chromium-Harness-Fälle erfolgreich, einschliesslich direktem Richtungswechsel, kleinerem Neutralbereich, vorgemerkten Kurven und gedrehter Ansicht. Der Harness simuliert Touch-Eingaben; die iPhone-/Safari-Abnahme einschliesslich Steuerkreuz und Kurvenhilfe ist am 10.11.2026 vom Nutzer bestätigt.
 
 ## Spiel auf Mobile und PC öffnen
 
 ### Online-Demo – ohne Installation
 
-Die [Escape PI Planning – Demo](https://escape-pi-planning-demo-philippe.electgleam1.chatgpt.site/) lässt sich auf dem iPhone und am PC im Browser öffnen.
+Die [Escape PI Planning – Demo](https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site/) lässt sich auf dem iPhone und am PC im Browser öffnen.
 
 1. Den Demo-Link öffnen; auf dem iPhone beispielsweise in Safari, am PC im Browser.
 2. Bei Aufforderung mit dem ChatGPT-Konto anmelden, dem die Demo gehört. Die Demo ist privat; andere Personen erhalten über den Link allein keinen Zugriff.
@@ -150,7 +152,7 @@ Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zug
 
 ## Neutrale Sprechblasen – aktueller Feature-Stand
 
-Sichtbare NPCs in Meeting 1–5 können auch sprechen, wenn die Spielfigur ausserhalb des Raums oder weiter als zwei Kacheln entfernt steht. Andere neutrale Personen sprechen weiterhin bei Annäherung bis zwei Kacheln im gleichen Bereich. Die Blasen bleiben zwei Sekunden sichtbar und folgen dabei der aktuellen Position des sprechenden NPCs, auch während eines Kachelschritts. Blasenkörper und Spitze liegen direkt in der Spielwelt und folgen nicht der Spielfigur oder dem Bildschirmrand. Verlässt der Sprecher den sichtbaren Kartenausschnitt, wird seine Blase ausgeblendet. Insgesamt höchstens zwei aktive Blasen gleichzeitig, zusätzlich höchstens eine pro Team-, Meeting- und Pausenraum; weiterhin 15 Sekunden Cooldown pro Person. Timer und Bewegung laufen weiter. Pause friert Anzeigezeit und Cooldowns ein; Fang und Neustart räumen die Blasen auf. Aktuelle Prüfungen und offene Nutzerabnahme stehen im Entwicklungsplan.
+Sichtbare NPCs in Meeting 1–5 können auch sprechen, wenn die Spielfigur ausserhalb des Raums oder weiter als zwei Kacheln entfernt steht. Andere neutrale Personen sprechen weiterhin bei Annäherung bis zwei Kacheln im gleichen Bereich. Die Blasen bleiben zwei Sekunden sichtbar und folgen dabei der aktuellen Position des sprechenden NPCs, auch während eines Kachelschritts. Blasenkörper und Spitze liegen direkt in der Spielwelt und folgen nicht der Spielfigur oder dem Bildschirmrand. Verlässt der Sprecher den sichtbaren Kartenausschnitt, wird seine Blase ausgeblendet. Insgesamt höchstens zwei aktive Blasen gleichzeitig, zusätzlich höchstens eine pro Team-, Meeting- und Pausenraum; weiterhin 15 Sekunden Cooldown pro Person. Timer und Bewegung laufen weiter. Pause friert Anzeigezeit und Cooldowns ein; Fang und Neustart räumen die Blasen auf. Aktuelle Prüfungen und die bestätigte Nutzerabnahme stehen im Entwicklungsplan.
 
 Der Product Manager startet bei Q2 auf (28, 20), Scrum Master 2 im ersten horizontalen Gang Q1 auf (28, 8). Damit stehen beide zu Beginn abseits des RTE-Laufwegs vor der PI-Einführung. Routen und Startversätze bleiben erhalten; später können sich Patrouillen weiterhin begegnen.
 
@@ -158,7 +160,11 @@ Der Product Manager startet bei Q2 auf (28, 20), Scrum Master 2 im ersten horizo
 
 Historischer Prüfstand vom 07.11.2026: 41 Funktionstests, neun neue Möbel-Browserfälle und alle 18 bisherigen Browserfälle erfolgreich; Build erfolgreich. Der am 08.11.2026 aufgetretene Fehler im synthetischen Möbel-Kontrolltest ist auf eine zu frühe Dialogbestätigung zurückgeführt und im Test korrigiert; 30 Wiederholungen und anschliessend alle 27 Browserfälle erfolgreich. Die Sichtregeln stimmen, Tischdeckung ist auch auf der Originalkarte geprüft. Pflanzen, Sideboards und Drucker bieten mit der aktuellen Platzierung keine freie begehbare Sichtachse innerhalb der Sichtweite; Kaffeemaschinen liegen ohne zulässigen Suchenden-Standort. Eine Entscheidung über ihre spielerisch nutzbare Platzierung bleibt offen. Methodik und Ergebnisse stehen in [FURNITURE_SIGHT_TEST.md](FURNITURE_SIGHT_TEST.md).
 
-## iPhone-Abnahme und nächster Schritt
+## Historische Entwicklung und frühere Prüfstände
+
+Die folgenden Abschnitte halten frühere Zwischenstände fest. Damals offene iPhone-/Safari-, Grafik- und Audio-Abnahmen sind durch die Nutzerbestätigung vom 10.11.2026 abgeschlossen; aktuelle Freigabe siehe oben. Beta-Feedback, Schlüsselmechanik und spätere Veröffentlichung bleiben offene Aufgaben.
+
+### iPhone-Abnahme vom 08.11.2026
 
 Der Nutzer hat am 08.11.2026 alle vorgesehenen iPhone-/Safari-Tests der aktualisierten privaten Online-Demo bestätigt: Hoch-/Querformat, Touch-Steuerung, Fokusverlust, Pause/Weiter, Neustart, Fangdialoge und Überspringen, Sprechblasen, Raumbegrenzung und vollständiger Spielversuch. Die Demo enthält die Spielquellen aus main (21483a7, PR #11). Git-Merges aktualisieren sie weiterhin nicht automatisch.
 

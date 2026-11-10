@@ -2,7 +2,9 @@
 
 ## Freigabe und Geräteprüfung
 
-**Erledigt – visuelle Nutzerabnahme:** Der Nutzer bestätigt den aktuellen Grafik-/Darstellungsstand und beauftragt Commit und Merge nach main. Die echten iPhone-/Safari-Prüfungen, Geräteperformance und Hörprobe werden separat auf `feature/iphone-safari-testing` durchgeführt; die dortige private Demo erhält einen eigenen Link. Dies bestätigt noch keinen realen iPhone-Spieltest dieses neuen Stands.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+
+Historische Prüfabschnitte weiter unten beschreiben frühere Zwischenstände. Dort offene reale Geräte-, Grafik- und Audio-Abnahmen sind mit der Nutzerbestätigung vom 10.11.2026 abgeschlossen; technische Grenzen früherer automatisierter Tests bleiben dokumentiert.
 
 ## Spielziel
 
@@ -225,7 +227,7 @@ Neutrale Personen können kurze, zufällig ausgewählte Sprüche sagen, wenn die
 
 ## Intro-Menü und Pixelstil – in Arbeit
 
-**Teilweise erledigt:** Das Intro-Menü und die dazu passende Pixelgrafik sowie Audio wurden über PR #13 in `main` integriert. Die erste Version startet vor dem ersten Spielversuch mit Titel „Escape PI Planning“ und dem Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“ im freien dunklen Streifen oberhalb der Büro-Pixelszene. Titel und Untertitel verdecken die Illustration nicht. Auswahl: **Spiel starten**, **So geht's**, **Einstellungen** und **Infos & Credits**. Spielregeln und Patrouillen beginnen erst nach Spielstart. Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell im Browser geprüft. Auf `feature/visuals-audio-polish` sind Möbelpalette und Rollenaccessoires umgesetzt; manuelle Grafikabnahme und reale Geräte-Hörprobe bleiben offen.
+**Erledigt – Nutzerabnahme am 10.11.2026:** Das Intro-Menü und die dazu passende Pixelgrafik sowie Audio wurden über PR #13 in `main` integriert. Die erste Version startet vor dem ersten Spielversuch mit Titel „Escape PI Planning“ und dem Untertitel „Schaffst du es, dich vor dem PI Planning zu drücken, ohne erwischt zu werden?“ im freien dunklen Streifen oberhalb der Büro-Pixelszene. Titel und Untertitel verdecken die Illustration nicht. Auswahl: **Spiel starten**, **So geht's**, **Einstellungen** und **Infos & Credits**. Spielregeln und Patrouillen beginnen erst nach Spielstart. Der Nutzer hat den aktuellen Menü-/Audio-Funktionsschnitt manuell im Browser geprüft. Auf `feature/visuals-audio-polish` sind Möbelpalette und Rollenaccessoires umgesetzt; manuelle Grafikabnahme und reale Geräte-Hörprobe bleiben offen.
 
 | Inhalt | Vorgeschlagenes Verhalten |
 |---|---|
@@ -321,11 +323,9 @@ Türgrafik: dunkle Rahmen aus der Wandpalette, gedeckte graugrüne Paneele, klei
 
 **Erledigt – Prüfung zur Mergefreigabe:** Der vollständige aktuelle Stand besteht 45 Funktionstests und alle 51 Browserfälle (Chromium, Firefox, mobiles Chromium) sowie Produktionsbuild und Diff-Prüfung. Visuelle Nutzerabnahme und Mergefreigabe sind erteilt. Die reale iPhone-/Safari-Abnahme bleibt dem separaten Testbranch vorbehalten.
 
-## Isolierte Geräte-Testdemo
+## Abgeschlossene Geräte-Testdemo
 
-Dieser Branch startet von main a199290 (PR #14). Für die iPhone-/Safari-Demo kommen nur eine sichtbare Basiskennung, eigener Seitentitel und private Hosting-Zuordnung hinzu. Die Kennung verschwindet in Grossansicht, damit Bedienelemente Platz behalten. Spielregeln, Türpositionen und Dialoge entsprechen der freigegebenen Basis. Reale Geräteprüfung ist offen; siehe IPHONE_SAFARI_TEST_PLAN.md. Spätere Spielkorrekturen werden gezielt zurückgeführt, die Demo-Konfiguration bleibt getrennt.
-
-**Erledigt – private Testdemo veröffentlicht:** Version 1 verwendet GitHub-Quelle 2e46d80 und Sites-Quelle 2aeac12, Spielbasis main a199290. Eigene private Adresse und offene reale Geräteprüfungen I01–I14 stehen im Geräteplan. Veröffentlichung bestätigt keine Safari-Spielabnahme.
+Der Testbranch startete von main a199290 (PR #14). Der Nutzer hat den aktuellen iPhone-/Safari-Stand am 10.11.2026 erfolgreich abgenommen und den Merge des gesamten Branchs nach main beauftragt. Mobile Grossansicht, Schutz gegen Textauswahl, NPC-gebundene Sprechblasen mit höchstens zwei gleichzeitig sowie gleitendes Steuerkreuz und vorgemerkte Kurven gehören zum abgenommenen Stand. Die bestehende private Hosting-Zuordnung und sichtbare Basiskennung bleiben erhalten; die Kennung bezeichnet die ursprüngliche Spielbasis. Es wird kein neuer Branch eröffnet. Geräteprotokoll und geprüfte Quellzuordnung: IPHONE_SAFARI_TEST_PLAN.md.
 
 
 ## Mobile Rotation der Spieloberfläche

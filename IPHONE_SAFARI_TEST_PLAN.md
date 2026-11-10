@@ -1,8 +1,14 @@
 # iPhone-/Safari-Geräteabnahme
 
+## Abschluss – 10.11.2026
+
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands und gibt den Abschluss von `feature/iphone-safari-testing` sowie den Merge nach `main` frei. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+
+Die Prüfliste ist aufgrund der ausdrücklichen Gesamtbestätigung des Nutzers abgeschlossen. Dies ist eine reale Nutzerabnahme, keine neu durch den Agenten ausgeführte Safari-Prüfung. Gerätemodell, genaue iOS-/Safari-Version, Zoom, Lautstärke und Einzelbefunde wurden nicht separat mitgeteilt und werden nicht ergänzt. Frühere offene Vermerke weiter unten bleiben als historischer Prüfverlauf erhalten.
+
 ## Zuordnung
 
-- Arbeitsbranch: feature/iphone-safari-testing.
+- Abgeschlossener Arbeitsbranch: feature/iphone-safari-testing; Merge nach main vom Nutzer beauftragt.
 - Freigegebene Spielbasis: main a199290e4b00ebb57029d59aafb5007eb4b2901a ([PR #14](https://github.com/fip22-dev/Escape-PI-Planning/pull/14)).
 - **Erledigt – technische Hauptstand-Prüfung:** 45 Funktionstests, alle 51 Browserfälle in Chromium/Firefox/mobilem Chromium, Produktionsbuild und Diff-Prüfung erfolgreich. Das ist keine reale iPhone-/Safari-Abnahme.
 - Eigene owner-private Testdemo, Site-ID: appgprj_6af23d83574c81919296181569f39729. Die alte Demo wird nicht mehr benötigt; ihre Löschung ist beauftragt und noch offen.
@@ -27,33 +33,36 @@
 
 | ID | Prüfung und erwartetes Ergebnis | Status |
 |---|---|---|
-| I01 | Privater Zugriff funktioniert; eigene Testdemo/Basiskennung korrekt. | **Offen** |
-| I02 | Menü, Anleitung (Scrollen/Wischen), Einstellungen und Zurück funktionieren ohne verdeckte Texte. | **Offen** |
-| I03 | Gleitendes Steuerkreuz: vier grosse Richtungsflächen, aktive Richtung hervorgehoben, direkter Wechsel ohne Loslassen, Kurve vor Abzweigung halten (geradeaus weiter und am ersten freien Feld abbiegen), kleiner 20 × 20-Pixel-Mittelbereich und Verlassen der Fläche stoppen, Loslassen/Abbruch/App-Wechsel stoppt weitere Schritte. Zweiten Finger ignorieren; auch in gedrehter Grossansicht prüfen. | **Offen** |
-| I04 | Nach App-/Tabwechsel oder Fokusverlust hängt keine Richtung fest. Für Fristvergleiche zuvor bewusst pausieren; Hintergrundwechsel ist keine zugesicherte automatische Spielpause. | **Offen** |
-| I05 | Im Hochformat Grossansicht wählen: Bühne und Tasten drehen automatisch quer. Menü, Anleitung per Wischen, Spiel, Pause und Dialoge treffen korrekt. Echtes Drehen und Zurückdrehen erhalten den Versuch; Verkleinern stellt die normale Ansicht her. | **Offen** |
-| I06 | Vollbildtaste: natives Vollbild, wenn freigegeben; sonst benannte Grossansicht mit erhaltenen Browserleisten. Zurück-Taste bleibt erreichbar. Kein Anspruch auf native API auf jedem iPhone. | **Offen** |
-| I07 | Pause/Weiter friert Timer/Figuren/Sprechblasen und Türfristen ein. Neustart setzt den Versuch zurück. Direkter Startmenü-Eintrag führt ohne zweite Abfrage zurück. | **Offen** |
-| I08 | Musik und Töne getrennt schaltbar und nach Neuladen gespeichert. Audio beginnt erst nach Nutzeraktion. Musik/Schritte auf Lautsprecher und gegebenenfalls Kopfhörer dezent; Lautstärkeeinstellung notieren. | **Offen** |
-| I09 | Texte (Rollen, Räume, HUD, Dialoge) lesbar; Pflanzen, Türen und Möbel klar. Keine Störungen beim Laufen oder in Grossansicht. | **Offen** |
-| I10 | Sprechblasen folgen zwei Spielsekunden lang dem sprechenden NPC einschliesslich Bewegung zwischen Kacheln, nicht dem Spieler. Blasenkörper und Spitze folgen gemeinsam; ausserhalb des Kamerabereichs ausgeblendet. Höchstens zwei insgesamt, höchstens eine pro Seitenraum; sichtbare Meeting-NPCs sprechen auch bei Spieler ausserhalb des Raums. Spieler-/Kamerabewegung darf den Weltversatz zum NPC nicht ändern; Pause friert Laufzeit ein. | **Offen** |
-| I11 | Spieler und zulässige NPCs öffnen Türen in der Wandöffnung. Kein Schliessen auf belegter/reservierter Kachel; 250 ms nach letzter Freigabe geschlossen. Geschlossene Tür blockiert Sicht, offene nicht. Wartende NPCs in der Tür halten sie offen. | **Offen** |
-| I12 | Fangdialoge vollständig lesbar, Wiederholung überspringbar; Neustart setzt Spieler und alle NPCs sauber zurück. | **Offen** |
-| I13 | Vollständiger Versuch: Timer ab Verlassen des PI-Raums, Zeitablauf oder Sieg erreichbar, danach sauberer Neustart. | **Offen** |
-| I14 | Kaltstart, längerer Spielversuch und wiederholte Neustarts laufen flüssig; Gerätewärme/auffällige Verzögerungen notieren. | **Offen** |
+| I01 | Privater Zugriff funktioniert; eigene Testdemo/Basiskennung korrekt. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I02 | Menü, Anleitung (Scrollen/Wischen), Einstellungen und Zurück funktionieren ohne verdeckte Texte. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I03 | Gleitendes Steuerkreuz: vier grosse Richtungsflächen, aktive Richtung hervorgehoben, direkter Wechsel ohne Loslassen, Kurve vor Abzweigung halten (geradeaus weiter und am ersten freien Feld abbiegen), kleiner 20 × 20-Pixel-Mittelbereich und Verlassen der Fläche stoppen, Loslassen/Abbruch/App-Wechsel stoppt weitere Schritte. Zweiten Finger ignorieren; auch in gedrehter Grossansicht prüfen. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I04 | Nach App-/Tabwechsel oder Fokusverlust hängt keine Richtung fest. Für Fristvergleiche zuvor bewusst pausieren; Hintergrundwechsel ist keine zugesicherte automatische Spielpause. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I05 | Im Hochformat Grossansicht wählen: Bühne und Tasten drehen automatisch quer. Menü, Anleitung per Wischen, Spiel, Pause und Dialoge treffen korrekt. Echtes Drehen und Zurückdrehen erhalten den Versuch; Verkleinern stellt die normale Ansicht her. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I06 | Vollbildtaste: natives Vollbild, wenn freigegeben; sonst benannte Grossansicht mit erhaltenen Browserleisten. Zurück-Taste bleibt erreichbar. Kein Anspruch auf native API auf jedem iPhone. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I07 | Pause/Weiter friert Timer/Figuren/Sprechblasen und Türfristen ein. Neustart setzt den Versuch zurück. Direkter Startmenü-Eintrag führt ohne zweite Abfrage zurück. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I08 | Musik und Töne getrennt schaltbar und nach Neuladen gespeichert. Audio beginnt erst nach Nutzeraktion. Musik/Schritte auf Lautsprecher und gegebenenfalls Kopfhörer dezent; Lautstärkeeinstellung notieren. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I09 | Texte (Rollen, Räume, HUD, Dialoge) lesbar; Pflanzen, Türen und Möbel klar. Keine Störungen beim Laufen oder in Grossansicht. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I10 | Sprechblasen folgen zwei Spielsekunden lang dem sprechenden NPC einschliesslich Bewegung zwischen Kacheln, nicht dem Spieler. Blasenkörper und Spitze folgen gemeinsam; ausserhalb des Kamerabereichs ausgeblendet. Höchstens zwei insgesamt, höchstens eine pro Seitenraum; sichtbare Meeting-NPCs sprechen auch bei Spieler ausserhalb des Raums. Spieler-/Kamerabewegung darf den Weltversatz zum NPC nicht ändern; Pause friert Laufzeit ein. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I11 | Spieler und zulässige NPCs öffnen Türen in der Wandöffnung. Kein Schliessen auf belegter/reservierter Kachel; 250 ms nach letzter Freigabe geschlossen. Geschlossene Tür blockiert Sicht, offene nicht. Wartende NPCs in der Tür halten sie offen. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I12 | Fangdialoge vollständig lesbar, Wiederholung überspringbar; Neustart setzt Spieler und alle NPCs sauber zurück. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I13 | Vollständiger Versuch: Timer ab Verlassen des PI-Raums, Zeitablauf oder Sieg erreichbar, danach sauberer Neustart. | **Erledigt – Nutzerabnahme 10.11.2026** |
+| I14 | Kaltstart, längerer Spielversuch und wiederholte Neustarts laufen flüssig; Gerätewärme/auffällige Verzögerungen notieren. | **Erledigt – Nutzerabnahme 10.11.2026** |
 
 ## Geräteprotokoll
 
-**Offen:** Noch kein reales Gerät dieses Stands protokolliert.
+**Erledigt – Nutzerabnahme:** Erfolgreicher iPhone-/Safari-Test des aktuellen Stands am 10.11.2026 ausdrücklich bestätigt. Einzelne Geräteparameter wurden nicht separat mitgeteilt.
 
 | Datum | Modell | iOS/Safari | Ausrichtung/Zoom | Demo-/Quellstand | Prüf-IDs | Befund |
 |---|---|---|---|---|---|---|
-| — | — | — | — | — | — | Noch nicht durchgeführt |
+| 10.11.2026 | iPhone, Modell nicht separat angegeben | Safari, Versionen nicht separat angegeben | Nicht separat angegeben | GitHub-Spielquelle d9673f7; Sites d69f138; Deployment appgdep_6af31bad97cc81918a19793421df6ae5 | I01–I14, Gesamtbestätigung | Erfolgreich; Branchabschluss und Merge nach main freigegeben |
 
-## Demo und spätere Rückführung
+## Demo und Rückführung
 
-Die App-Quelle dieses Branchs wird in eine eigene private Sites-Quelle gespiegelt. Veröffentlichung und Geräteabnahme sind getrennte Zustände: Eine erfolgreiche Veröffentlichung bestätigt keinen Safari-Spieltest. Zugang bleibt owner-private. Die Hosting-Konfiguration, sichtbare Testkennung und dieses Protokoll bleiben auf dem Testbranch; spätere spielrelevante Korrekturen werden gezielt per Pull Request nach main zurückgeführt.
+Die bestätigte private Demo verwendet GitHub-Spielquelle `d9673f701ce4aaa5b3aff41173b4fb23af73c72f`, Sites-Quelle `d69f138b7e49da60dd9dad53c4a8026e941c5354` und Deployment `appgdep_6af31bad97cc81918a19793421df6ae5`. Dokumentationscommit `9c0d806` ergänzte danach ausschliesslich die geplante Schlüsselmechanik. Der gesamte Testbranch wird nach Nutzerfreigabe nach main übernommen, einschliesslich bestehender Hosting-Zuordnung und sichtbarer Basiskennung. Zugang bleibt owner-private; es wird keine neue Site und kein neuer Entwicklungsbranch eröffnet. Der Merge löst keine automatische Neuveröffentlichung aus.
 
+## Historischer Prüfverlauf
+
+Frühere offene Gerätebefunde in den folgenden Abschnitten sind durch die Nutzerabnahme vom 10.11.2026 abgeschlossen. Die damaligen Einschränkungen automatisierter Prüfungen bleiben nachvollziehbar.
 
 ## Automatische Spielrotation – 10.11.2026
 
