@@ -351,7 +351,7 @@ test("pause, touch restart, win and timeout still work across repeated scene res
   expect((await sceneState(page)).timer).toBe("03:00");
 });
 
-test("neutral speech stays at its world position, pauses and resets with the attempt", async ({ page }, testInfo) => {
+test("neutral speech follows its speaker, pauses and resets with the attempt", async ({ page }, testInfo) => {
   await page.evaluate(() => {
     const s = window.__game.scene.getScene("graybox");
     const person = s.neutralPeople[28];
@@ -399,19 +399,29 @@ test("neutral speech stays at its world position, pauses and resets with the att
   const moving = await readSpeech();
   expect(moving.elapsed).toBeGreaterThan(first.elapsed);
   expect([moving.speakerX, moving.speakerY]).not.toEqual([first.speakerX, first.speakerY]);
-  expect(moving.bubbleWorld).toEqual(first.bubbleWorld);
+  expect(moving.bubbleWorld).not.toEqual(first.bubbleWorld);
+  const expectSpeakerAnchor = state => {
+    const anchor = state.active.find(b => b.personIndex === 28).anchor;
+    expect(anchor.x).toBeCloseTo(state.speakerX, 2);
+    expect(anchor.y).toBeCloseTo(state.speakerY - 10, 2);
+  };
+  expectSpeakerAnchor(moving);
   await page.evaluate(() => {
-    const camera = window.__game.scene.getScene("graybox").cameras.main;
+    const scene = window.__game.scene.getScene("graybox");
+    scene.tweens.killAll();
+    for (const person of scene.neutralPeople) person.nextMoveAt = Infinity;
+    const camera = scene.cameras.main;
     camera.setScroll(camera.scrollX + 16, camera.scrollY + 16);
   });
   await page.clock.runFor(50);
-  expect((await readSpeech()).bubbleWorld).toEqual(first.bubbleWorld);
+  expectSpeakerAnchor(await readSpeech());
   expect((await readSpeech()).bubbleScreen).not.toEqual(first.bubbleScreen);
   await page.keyboard.down("ArrowRight");
   await page.clock.runFor(250);
   await page.keyboard.up("ArrowRight");
   expect((await readSpeech()).player).not.toEqual(first.player);
-  expect((await readSpeech()).bubbleWorld).toEqual(first.bubbleWorld);
+  expectSpeakerAnchor(await readSpeech());
+  expect((await readSpeech()).speakerX).toBe(moving.speakerX);
   await page.screenshot({ path: testInfo.outputPath("neutral-speech.png"), fullPage: true });
   await page.keyboard.press("Escape");
   await page.clock.runFor(1000);

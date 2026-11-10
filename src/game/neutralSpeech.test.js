@@ -14,10 +14,9 @@ test("nearby eligible people speak concurrently for exactly 2 seconds with indep
   updateNeutralSpeech(state, 1500, people, player, () => true, () => 0);
   assert.equal(state.active.length, 2);
   assert.equal(state.active.find(b => b.personIndex === 0).text, NEUTRAL_SAYINGS[0]);
-  const anchor = { ...state.active.find(b => b.personIndex === 0).anchor };
   people[0].tile = { x: 20, y: 20 };
   updateNeutralSpeech(state, 2000, people, { x: 15, y: 15 });
-  assert.deepEqual(state.active.find(b => b.personIndex === 0).anchor, anchor);
+  assert.deepEqual(state.active.find(b => b.personIndex === 0).anchor, { x: 328, y: 318 });
   people[0].tile = { x: 2, y: 0 };
   updateNeutralSpeech(state, 3499, people, player);
   assert.equal(state.active.length, 2);
@@ -31,6 +30,22 @@ test("nearby eligible people speak concurrently for exactly 2 seconds with indep
   updateNeutralSpeech(state, 16500, people, player, () => true, () => 1);
   assert.equal(state.active.length, 2);
   assert.equal(state.active.find(b => b.personIndex === 0).text, NEUTRAL_SAYINGS[7]);
+});
+
+test("active speech follows fractional sprite movement without renewing its text, expiry or cooldown", () => {
+  const state = createNeutralSpeech(0);
+  const speaker = { tile: { x: 4, y: 5 }, sprite: { x: 72, y: 88 } };
+  updateNeutralSpeech(state, 1500, [speaker], speaker.tile, () => true, () => 0);
+  const bubble = state.active[0];
+  const text = bubble.text, expiry = bubble.expiresAt, cooldown = state.personReadyAt[0];
+  speaker.sprite.x += 6.25; speaker.sprite.y -= 2.5;
+  updateNeutralSpeech(state, 1700, [speaker], { x: 30, y: 30 }, () => false);
+  assert.deepEqual(bubble.anchor, { x: 78.25, y: 75.5 });
+  assert.equal(bubble.text, text);
+  assert.equal(bubble.expiresAt, expiry);
+  assert.equal(state.personReadyAt[0], cooldown);
+  updateNeutralSpeech(state, 3500, [speaker], { x: 30, y: 30 });
+  assert.deepEqual(state.active, []);
 });
 
 test("pause shifts every bubble deadline and a new attempt resets all state", () => {

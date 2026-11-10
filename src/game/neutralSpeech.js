@@ -26,6 +26,13 @@ export function createNeutralSpeech(now) {
 
 export function updateNeutralSpeech(state, now, people, playerTile, eligible = () => true, random = Math.random) {
   state.active = state.active.filter(bubble => now < bubble.expiresAt);
+  for (const bubble of state.active) {
+    const person = people[bubble.personIndex];
+    bubble.anchor = {
+      x: person.sprite?.x ?? (person.tile.x + 0.5) * TILE_SIZE,
+      y: (person.sprite?.y ?? (person.tile.y + 0.5) * TILE_SIZE) - 10,
+    };
+  }
   if (now < state.readyAt) return;
   const candidates = people.map((person, index) => ({
     person, index, distance: Math.abs(person.tile.x - playerTile.x) + Math.abs(person.tile.y - playerTile.y),

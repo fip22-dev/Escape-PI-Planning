@@ -96,7 +96,35 @@ try {
  pass('Visible viewport offsets and Safari bar resizing keep the canvas inside the visible area');
  for(const key of ['width','height','offsetLeft','offsetTop']) delete vv[key];
  vv.dispatchEvent(new win.Event('resize')); await until(()=>Math.abs(canvas.getBoundingClientRect().width-874)<2);
+ await tap(160,151); await until(()=>game.scene.isActive('graybox'));
+ const talkingScene=game.scene.getScene('graybox'), speaker=talkingScene.neutralPeople[28];
+ talkingScene.updateSearcherDetection=()=>false;
+ talkingScene.tweens.killAll();
+ for(const person of talkingScene.neutralPeople) person.nextMoveAt=Infinity;
+ talkingScene.cameras.main.stopFollow(); talkingScene.cameras.main.centerOn(speaker.sprite.x,speaker.sprite.y-30);
+ talkingScene.playerTile={...speaker.tile}; talkingScene.player.setPosition(speaker.sprite.x,speaker.sprite.y);
+ talkingScene.neutralSpeech.active=[]; talkingScene.neutralSpeech.readyAt=talkingScene.time.now;
+ for(let i=0;i<talkingScene.neutralPeople.length;i++) talkingScene.neutralSpeech.personReadyAt[i]=i===28?0:Infinity;
+ await until(()=>talkingScene.neutralSpeech.active.some(b=>b.personIndex===28) && talkingScene.speechBubbles[28].text.visible);
+ const speech=talkingScene.neutralSpeech.active.find(b=>b.personIndex===28), label=talkingScene.speechBubbles[28].text;
+ const original={x:label.x,y:label.y,expiry:speech.expiresAt,text:speech.text};
+ await new Promise(resolve=>talkingScene.tweens.add({targets:speaker.sprite,x:speaker.sprite.x+16,y:speaker.sprite.y+8,duration:400,onComplete:resolve}));
+ await until(()=>Math.abs(speech.anchor.x-speaker.sprite.x)<0.01 && Math.abs(speech.anchor.y-(speaker.sprite.y-10))<0.01);
+ assert(Math.abs(label.x-original.x-16)<1 && Math.abs(label.y-original.y-8)<1,'bubble did not follow rendered NPC');
+ assert(speech.expiresAt===original.expiry && speech.text===original.text,'movement renewed the bubble');
+ const step=new Promise(resolve=>talkingScene.tweens.add({targets:speaker.sprite,x:speaker.sprite.x+10,duration:400,onComplete:resolve}));
+ await wait(80); talkingScene.pauseGame();
+ const paused={x:speaker.sprite.x,labelX:label.x,anchorX:speech.anchor.x};
+ await wait(200);
+ assert(speaker.sprite.x===paused.x && label.x===paused.labelX && speech.anchor.x===paused.anchorX,'speech/NPC moved during pause');
+ talkingScene.resumeGame(); await step;
+ await until(()=>Math.abs(speech.anchor.x-speaker.sprite.x)<0.01);
+ assert(speech.expiresAt>original.expiry,'pause did not preserve the remaining display time');
+ await until(()=>talkingScene.neutralSpeech.active.length===0);
+ doc.querySelector('[data-action="restart"]').click(); await wait(100);
+ assert(talkingScene.neutralSpeech.active.length===0 && Object.keys(talkingScene.neutralSpeech.personReadyAt).length===0,'restart kept old speech');
+ pass('Speech follows smooth NPC movement, freezes in pause, expires and resets correctly');
  document.title='PASS – mobile rotation browser checks';
- results.insertAdjacentHTML('afterend','<h2>All 10 browser checks passed</h2>');
+ results.insertAdjacentHTML('afterend','<h2>All 11 browser checks passed</h2>');
 } catch(error) { results.insertAdjacentHTML('beforeend',`<li style="color:red">FAIL: ${error.stack}</li>`); document.title='FAIL – mobile rotation browser checks'; }
 </script></body></html>
