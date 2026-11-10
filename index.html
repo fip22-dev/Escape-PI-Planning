@@ -24,9 +24,12 @@
         <div id="game-container"></div>
       </section>
       <nav class="touch-controls" aria-label="Spielsteuerung">
-        <div class="touch-joystick" role="group" aria-label="Joystick zum Bewegen" aria-describedby="joystick-help">
-          <span class="joystick-track" aria-hidden="true"></span>
-          <span class="joystick-thumb" aria-hidden="true"></span>
+        <div class="touch-dpad" role="group" aria-label="Steuerkreuz zum Bewegen" aria-describedby="dpad-help">
+          <span class="dpad-zone" data-pad-direction="up" aria-hidden="true">↑</span>
+          <span class="dpad-zone" data-pad-direction="left" aria-hidden="true">←</span>
+          <span class="dpad-centre" aria-hidden="true">●</span>
+          <span class="dpad-zone" data-pad-direction="right" aria-hidden="true">→</span>
+          <span class="dpad-zone" data-pad-direction="down" aria-hidden="true">↓</span>
         </div>
         <div class="touch-actions">
           <button type="button" data-action="pause">Pause / Weiter</button>
@@ -34,7 +37,7 @@
         </div>
       </nav>
       <footer class="controls">
-        <span id="joystick-help">Joystick ziehen und halten zum Laufen · loslassen zum Stoppen · auch mit WASD oder Pfeiltasten</span>
+        <span id="dpad-help">Steuerkreuz halten und zum Richtungswechsel gleiten · loslassen zum Stoppen · auch mit WASD oder Pfeiltasten</span>
         <span>Die Kamera folgt deiner Spielfigur.</span>
       </footer>
     </main>

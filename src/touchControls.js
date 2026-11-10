@@ -1,15 +1,15 @@
-import { bindJoystick } from "./joystick.js";
+import { bindDirectionPad } from "./directionPad.js";
 
 export function bindTouchControls({ onPause, onRestart }) {
   const abort = new AbortController();
-  const joystick = bindJoystick(document.querySelector(".touch-joystick"));
+  const pad = bindDirectionPad(document.querySelector(".touch-dpad"));
   const listen = (target, event, callback) => target.addEventListener(event, callback, { signal: abort.signal });
-  const clear = () => joystick.clear();
+  const clear = () => pad.clear();
   listen(document.querySelector('[data-action="pause"]'), 'click', () => { clear(); onPause(); });
   listen(document.querySelector('[data-action="restart"]'), 'click', () => { clear(); onRestart(); });
   return {
-    readDirection: () => joystick.readDirection(),
+    readDirection: () => pad.readDirection(),
     clear,
-    destroy() { joystick.destroy(); abort.abort(); },
+    destroy() { pad.destroy(); abort.abort(); },
   };
 }

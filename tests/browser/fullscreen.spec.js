@@ -126,7 +126,7 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   await tapCanvas(160, 151);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
   await expectFits(page);
-  const stick = await page.locator('.touch-joystick').boundingBox();
+  const stick = await page.locator('.touch-dpad').boundingBox();
   await page.mouse.move(stick.x + stick.width / 2, stick.y + stick.height / 2);
   await page.mouse.down();
   await page.mouse.move(stick.x + stick.width / 2, stick.y + stick.height / 2 + 30);
