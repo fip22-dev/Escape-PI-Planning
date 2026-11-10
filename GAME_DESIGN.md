@@ -253,7 +253,7 @@ Für Beta-Tests soll das Spiel zwei leicht auffindbare Möglichkeiten anbieten: 
 
 ## Dialoge bei Entdeckung – implementierte Texte
 
-**Teilweise erledigt – implementiert, Nutzerabnahme offen:** Je Rollenfamilie sind ein unveränderter Ersttext und drei Wiederholungstexte vorhanden. Die zwölf zusätzlichen Texte und die Reihum-Auswahl sind vom Nutzer freigegeben und auf feature/role-dialogue-variants implementiert.
+**Erledigt – implementiert und vom Nutzer abgenommen:** Je Rollenfamilie sind ein unveränderter Ersttext und drei Wiederholungstexte vorhanden. Die zwölf zusätzlichen Texte und die Reihum-Auswahl sind vom Nutzer freigegeben und auf feature/role-dialogue-variants implementiert.
 
 Die Dialogüberschrift zeigt den ausgeschriebenen Rollennamen: **Release Train Engineer**, **People & Transformation**, **Business Owner**, **Product Manager**, **Product Owner** (zusätzlich mit Teamkürzel) oder **Scrum Master**. Die kurzen Rollenmarkierungen an den Figuren bleiben bestehen.
 
@@ -270,7 +270,7 @@ Beim ersten Erwischtwerden erhält jede Rollenfamilie einen eigenen Einstiegsdia
 
 ### Zusätzliche Wiederholungsdialoge – freigegebene und implementierte Texte
 
-**Teilweise erledigt – integriert:** Die folgenden zwölf Texte sind vom Nutzer freigegeben und ins Spiel eingebaut; Technische Browserprüfung und private Demo-Veröffentlichung sind abgeschlossen; die Nutzerabnahme steht aus. Prüfergebnisse im Entwicklungsplan.
+**Erledigt – integriert und abgenommen:** Die folgenden zwölf Texte sind vom Nutzer freigegeben und ins Spiel eingebaut; Technische Browserprüfung und private Demo-Veröffentlichung sind abgeschlossen; lokaler Spieltest und iPhone-Abnahme sind vom Nutzer bestätigt. Prüfergebnisse im Entwicklungsplan.
 
 | Rolle | Neue Variante A | Neue Variante B |
 |---|---|---|
