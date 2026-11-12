@@ -35,6 +35,7 @@ export class IntroScene extends Phaser.Scene {
     this.startPending = false;
     this.buildHomeMenu();
     this.handleMenuKey = event => {
+      if (document.querySelector('.feedback-dialog[open]')) return;
       if (event.repeat) return;
       const key = event.code || event.key;
       const keyCode = event.keyCode;
@@ -138,7 +139,7 @@ export class IntroScene extends Phaser.Scene {
   buildHomeMenu() {
     this.clearMenu();
     this.view = "home";
-    this.selection = Math.min(this.selection, 3);
+    this.selection = Math.min(this.selection, 4);
     this.add.text(160, 14, "ESCAPE PI PLANNING", {
       resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "16px", fontStyle: "bold", color: C.cream,
       stroke: "#203735", strokeThickness: 3,
@@ -147,17 +148,17 @@ export class IntroScene extends Phaser.Scene {
       resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: "8px", color: C.cream,
       align: "center", lineSpacing: 1,
     }).setOrigin(0.5).setDepth(10);
-    this.add.rectangle(160, 184, 198, 92, C.panel, 0.97).setStrokeStyle(2, C.gold).setDepth(10);
-    this.homeItems = ["SPIEL STARTEN", "SO GEHT'S", "EINSTELLUNGEN", "INFOS & CREDITS"];
-    this.homeRows = this.homeItems.map((label, index) => this.add.rectangle(160, 151 + index * 20, 180, 16, C.panel)
+    this.add.rectangle(160, 181, 198, 102, C.panel, 0.97).setStrokeStyle(2, C.gold).setDepth(10);
+    this.homeItems = ["SPIEL STARTEN", "SO GEHT'S", "EINSTELLUNGEN", "BESTENLISTE", "INFOS & CREDITS"];
+    this.homeRows = this.homeItems.map((label, index) => this.add.rectangle(160, 141 + index * 20, 180, 16, C.panel)
       .setDepth(11).setInteractive({ useHandCursor: true })
       .on("pointerover", () => { this.selection = index; this.updateHomeSelection(); })
       .on("pointerdown", () => { this.selection = index; this.confirmSelection(); }));
-    this.homeLabels = this.homeItems.map((label, index) => this.add.text(160, 151 + index * 20, label, {
+    this.homeLabels = this.homeItems.map((label, index) => this.add.text(160, 141 + index * 20, label, {
       resolution: RENDER_SCALE, fontFamily: "Courier New, monospace", fontSize: index === 0 ? "11px" : "10px",
       fontStyle: index === 0 ? "bold" : "normal", color: C.cream,
     }).setOrigin(0.5).setDepth(12));
-    this.homeArrow = this.add.text(75, 151, "▶", {
+    this.homeArrow = this.add.text(75, 141, "▶", {
       resolution: RENDER_SCALE, fontFamily: "monospace", fontSize: "8px", color: C.gold,
     }).setOrigin(0.5).setDepth(12);
     this.add.text(160, 235, "WASD / ↑↓ wählen · Enter starten · Esc zurück", {
@@ -203,7 +204,7 @@ export class IntroScene extends Phaser.Scene {
       label.setColor(index === this.selection ? "#ffe3a1" : C.cream);
       label.setScale(1);
     });
-    this.homeArrow?.setY(151 + this.selection * 20);
+    this.homeArrow?.setY(141 + this.selection * 20);
   }
 
   moveSelection(event) {
@@ -235,6 +236,7 @@ export class IntroScene extends Phaser.Scene {
         this.time.delayedCall(0, () => this.scene.start("graybox", { showStartGuide: true }));
       } else if (this.selection === 1) this.showPanel("help");
       else if (this.selection === 2) this.showPanel("settings");
+      else if (this.selection === 3) window.dispatchEvent(new CustomEvent('game:leaderboard', {detail:{}}));
       else this.showPanel("credits");
     } else if (this.view === "settings") {
       if (this.selection < 2) {

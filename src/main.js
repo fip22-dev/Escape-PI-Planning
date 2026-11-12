@@ -6,6 +6,7 @@ import { bindFullscreen } from "./fullscreen.js";
 import { bindRotatedLayout } from "./rotatedLayout.js";
 import { bindGameSurface } from "./gameSurface.js";
 import { bindFeedback } from "./feedback.js";
+import { bindLeaderboard } from "./leaderboard.js";
 import "./style.css";
 
 window.addEventListener("game:mode", event => {
@@ -61,5 +62,6 @@ const fullscreen = bindFullscreen({
   },
 });
 const feedback = bindFeedback(game);
+const leaderboard = bindLeaderboard(game);
 
-window.addEventListener("beforeunload", () => { feedback.destroy(); fullscreen.destroy(); gameSurface.destroy(); rotatedLayout.destroy(); game.destroy(true); });
+window.addEventListener("beforeunload", () => { leaderboard.destroy(); feedback.destroy(); fullscreen.destroy(); gameSurface.destroy(); rotatedLayout.destroy(); game.destroy(true); });

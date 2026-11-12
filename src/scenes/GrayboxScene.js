@@ -7,6 +7,7 @@ import { advanceCaughtDialog, createCaughtDialog } from "../game/caughtDialog.js
 import { createNeutralSpeech, updateNeutralSpeech, shiftNeutralSpeechTime, isMeetingSpeaker } from "../game/neutralSpeech.js";
 import { chooseTouchStep } from "../game/touchMovement.js";
 import { bindTouchControls } from "../touchControls.js";
+import { createRunId, winningRun } from "../game/leaderboard.js";
 import { createFloorPlan, MAP_HEIGHT, MAP_WIDTH, TILE_SIZE, TILE_TYPES } from "../game/map.js";
 import { createRoomObjects, objectAt } from "../game/objects.js";
 import { timerWarningPresentation } from "../game/gameLoop.js";
@@ -92,6 +93,7 @@ export class GrayboxScene extends Phaser.Scene {
     this.lastMoveAt = 0;
     this.touchHeading = null;
     this.escapeStartedAt = null;
+    this.leaderboardRunId = createRunId();
     this.gameResult = null;
     this.isPaused = false;
     this.pauseChoiceYes = false;
@@ -916,6 +918,10 @@ export class GrayboxScene extends Phaser.Scene {
       : "Pech gehabt – Zeit abgelaufen.\nVersuch neu starten?");
     this.resultPanel.setVisible(true);
     this.resultText.setVisible(true);
+    if (result === 'win') {
+      const run = winningRun(this);
+      if (run) window.dispatchEvent(new CustomEvent('game:leaderboard', {detail:{run}}));
+    }
     if (result === "timeout") {
       this.resultChoiceYes = false;
       this.updateResultChoice();

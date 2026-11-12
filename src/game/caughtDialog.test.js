@@ -12,6 +12,7 @@ import * as pixels from "./pixelArt.js";
 import * as doors from "./doors.js";
 import * as teamKeys from "./teamKeys.js";
 import { chooseTouchStep } from "./touchMovement.js";
+import * as leaderboard from './leaderboard.js';
 
 test("repeat variants cycle independently by family and advance only on confirmation", () => {
   const seen = new Set();
@@ -82,7 +83,7 @@ function createScene() {
   }
   const controls = { clear() {}, destroy() {}, readDirection: () => null };
   const Phaser = { Scene: class {}, Input: { Keyboard: { KeyCodes: {} } }, Scenes: { Events: { SHUTDOWN: "shutdown" } } };
-  const bindings = { Phaser, chooseTouchStep, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors, ...teamKeys,
+  const bindings = { Phaser, chooseTouchStep, ...dialogs, ...map, ...objects, ...loop, ...detection, ...movement, ...speech, ...pixels, ...doors, ...teamKeys, ...leaderboard,
     configureRendering() {}, routeRenderLayers() {}, RENDER_SCALE: 4,
     document: { querySelector: () => null }, CustomEvent: class {},
     getAudioEngine: () => ({ startMusic() {}, play() {}, getSettings: () => ({ music: true, sounds: true }) }),

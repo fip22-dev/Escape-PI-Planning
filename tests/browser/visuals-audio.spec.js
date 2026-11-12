@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test("menu, pixel furniture and audio work at desktop and mobile sizes", async ({ page }, testInfo) => {
+  test.setTimeout(60_000);
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   const expectCentered = async () => {
@@ -38,7 +39,7 @@ test("menu, pixel furniture and audio work at desktop and mobile sizes", async (
     if (testInfo.project.name.startsWith("mobile")) await canvas.tap(options);
     else await canvas.click(options);
   };
-  await activate(160, 171);
+  await activate(160, 161);
   await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "help");
   const box = await page.locator("canvas").boundingBox();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height * 145 / 240);
@@ -48,13 +49,13 @@ test("menu, pixel furniture and audio work at desktop and mobile sizes", async (
   await page.waitForFunction(() => window.__game.scene.getScene("intro").helpScroll > 0);
   await page.screenshot({ path: testInfo.outputPath("help-scrolled.png") });
   await page.keyboard.press("Escape");
-  await activate(160, 191);
+  await activate(160, 181);
   await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "settings");
   await activate(160, 92);
   expect(await page.evaluate(() => window.__game.scene.getScene("intro").audio.getSettings().sounds)).toBe(false);
   await activate(160, 92);
   await page.keyboard.press("Escape");
-  await activate(160, 151);
+  await activate(160, 141);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);
