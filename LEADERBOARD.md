@@ -1,6 +1,6 @@
 # Gemeinsame Bestenliste
 
-Stand: 12.11.2026. **Teilweise erledigt – implementiert und technisch geprüft auf feature/leaderboard; reale Nutzer-/iPhone-Abnahme und Merge offen.** Eigener PR, unabhängig von der noch offenen KI-Issue-Automation. Die bisherige private Demo bleibt zunächst auf dem abgenommenen Feedback-Stand.
+Stand: 12.11.2026. **Erledigt – Implementierung und technische Prüfung, Mergefreigabe am 12.11.2026; Integration über PR #25.** Reale iPhone-Prüfung nach separatem Demo-Update noch offen. Eigener PR, unabhängig von der noch offenen KI-Issue-Automation. Die bisherige private Demo bleibt zunächst auf dem abgenommenen Feedback-Stand.
 
 ## Verhalten
 
@@ -35,6 +35,6 @@ $env:LEADERBOARD_LIVE_TEST='1'
 npx playwright test tests/browser/leaderboard-live.spec.js --project=chromium
 ```
 
-**Offen:** reale PC-/iPhone-Nutzerabnahme, Merge und gesondertes Demo-Update. Die bestehende Demo bleibt unverändert auf dem abgenommenen Feedback-Stand. Die separate Function und Tabellen sind bereits im dedizierten InsForge-Projekt bereitgestellt.
+**Offen:** gesondertes Demo-Update und reale iPhone-Prüfung. Die bestehende Demo bleibt unverändert auf dem abgenommenen Feedback-Stand. Die separate Function und Tabellen sind bereits im dedizierten InsForge-Projekt bereitgestellt.
 
 **Erledigt – Siegerdialog angepasst am 12.11.2026:** Auf Nutzerwunsch genau zwei Aktionen: «Zeit eintragen» und «Zurück ins Hauptmenü». Der zusätzliche Weg ohne Eintrag direkt zur Liste entfällt; die Liste bleibt im Hauptmenü erreichbar. Neun Bestenlisten-Browserfälle in Chromium, Firefox und mobilem Chromium sowie Produktionsbuild erfolgreich; mobile Darstellung visuell kontrolliert. Reale Nutzerabnahme der Erweiterung bleibt offen.
