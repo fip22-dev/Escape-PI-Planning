@@ -1,6 +1,6 @@
 # Betrieb des Feedback-Eingangs
 
-Stand: 12.11.2026. **Teilweise erledigt:** Backend bereitgestellt und echter Browser-Versand bestätigt. Das Spielformular liegt auf `feature/insforge-feedback-setup`; Merge, Veröffentlichung des Spiels und reale iPhone-/Safari-Abnahme sind noch offen. KI-Analyse und Draft-PR-Automation sind nicht aktiviert.
+Stand: 12.11.2026. **Teilweise erledigt:** Backend bereitgestellt und echter Browser-Versand bestätigt. Das Spielformular liegt auf `feature/insforge-feedback-setup`; Merge und reale iPhone-/Safari-Abnahme sind noch offen. Die bestehende private Demo ist mit dem Feature-Stand aktualisiert; Nutzer bestätigt den bisherigen lokalen Stand als gut. KI-Analyse und Draft-PR-Automation sind nicht aktiviert.
 
 ## Architektur und lokale Nutzung
 
@@ -10,7 +10,9 @@ Das statische Spiel ruft `https://6r53f4ec.function2.insforge.app/game-feedback`
 
 ## Ressourcen und Zugang
 
-**In Arbeit – manuelle Nutzerabnahme am 12.11.2026:** Feature-Testserver mit `--host 0.0.0.0 --port 5173` gestartet. Zusätzlich ist `http://192.168.1.13:5173` als lokale WLAN-Test-Origin freigeschaltet; Backend nach Secret-Änderung erneut bereitgestellt. Spiel HTTP 200 und CORS-Preflight HTTP 204 mit passender Origin bestätigt. iPhone muss im gleichen WLAN sein; der PC und Testserver müssen laufen. Die Adresse ist vom lokalen Netzwerk/DHCP abhängig und keine dauerhafte Veröffentlichung. Reale Nutzerabnahme steht noch aus.
+**Erledigt – Demo-Veröffentlichung am 12.11.2026:** https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site ist mit «Bug / Feature melden» und dem gesamten Feedback-Feature aktualisiert. Sites-Quelle `5dc745e5432b0516048a02abf314e224b3b01bad`, Version `appgprj_6af23d83574c81919296181569f39729~appgver_195b245321948191bb46ed8d7be876a3`, Deployment `appgdep_6af5f6a3ce9c81919eec1583aa13cd17` erfolgreich. Owner-private Zugang erhalten; funktioniert auch ausserhalb des Heimnetzes ohne laufenden PC. Die Site-Origin war bereits im Backend freigeschaltet. 71 Funktionstests und Build im Veröffentlichungssnapshot sowie beide gezielten mobilen Formularprüfungen erfolgreich. Reale iPhone-Abnahme noch offen.
+
+**In Arbeit – manuelle Nutzerabnahme am 12.11.2026:** Feature-Testserver mit `--host 0.0.0.0 --port 5173` gestartet. Zusätzlich ist `http://192.168.1.13:5173` als lokale WLAN-Test-Origin freigeschaltet; Backend nach Secret-Änderung erneut bereitgestellt. Spiel HTTP 200 und CORS-Preflight HTTP 204 mit passender Origin bestätigt. iPhone muss im gleichen WLAN sein; der PC und Testserver müssen laufen. Die Adresse ist vom lokalen Netzwerk/DHCP abhängig und keine dauerhafte Veröffentlichung. Der bisherige lokale Stand wurde vom Nutzer als gut bestätigt; reale iPhone-/Safari-Abnahme ausserhalb des Heimnetzes bleibt offen.
 
 - InsForge-Projekt: `d2052f33-4ee5-408c-822a-44abdf9c9c53`, Region `eu-central`.
 - Function: `game-feedback`, Quellcode `functions/feedback.js`, SDK fest auf `1.5.2`.
@@ -63,4 +65,4 @@ $env:FEEDBACK_LIVE_TEST='1'
 npx playwright test tests/browser/feedback-live.spec.js --project=chromium
 ```
 
-**Offen:** reale iPhone-/Safari-Prüfung einschliesslich Bildschirmtastatur, Orientierung und Grossansicht; Nutzerabnahme und Spielveröffentlichung; Plattformlog-Aufbewahrung und abschliessender Datenschutzhinweis vor öffentlicher Beta. KI-Dienst/Budget, automatische Analyse und Draft-PRs sind separat noch nicht eingerichtet. Der aktuelle Formularhinweis bezeichnet KI deshalb ausdrücklich als geplant und noch nicht aktiv.
+**Offen:** reale iPhone-/Safari-Prüfung einschliesslich Bildschirmtastatur, Orientierung und Grossansicht; abschliessende iPhone-Abnahme, Merge und öffentliche Spielveröffentlichung; Plattformlog-Aufbewahrung und abschliessender Datenschutzhinweis vor öffentlicher Beta. KI-Dienst/Budget, automatische Analyse und Draft-PRs sind separat noch nicht eingerichtet. Der aktuelle Formularhinweis bezeichnet KI deshalb ausdrücklich als geplant und noch nicht aktiv.

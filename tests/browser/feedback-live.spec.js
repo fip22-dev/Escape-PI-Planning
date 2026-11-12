@@ -11,7 +11,7 @@ test("live browser submission creates one labelled GitHub test issue", async ({
   await page.goto("/");
   await expect(page.locator("canvas")).toBeVisible();
   await page
-    .getByRole("button", { name: "Bug melden / Feature wünschen", exact: true })
+    .getByRole("button", { name: "Bug / Feature melden", exact: true })
     .click();
   await page.getByRole("button", { name: "Bug", exact: true }).click();
   await page

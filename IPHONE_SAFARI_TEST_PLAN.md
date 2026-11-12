@@ -1,8 +1,14 @@
 # iPhone-/Safari-Geräteabnahme
 
+## Aktueller Feedback-Stand – 12.11.2026
+
+**Erledigt – privates Demo-Update:** Die bestehende Demo https://escape-pi-iphone-safari-philippe.electgleam1.chatgpt.site enthält jetzt den Feature-Stand mit InsForge-Feedback und dem Button «Bug / Feature melden». Sites-Quellcommit `5dc745e5432b0516048a02abf314e224b3b01bad`, Version `appgprj_6af23d83574c81919296181569f39729~appgver_195b245321948191bb46ed8d7be876a3`, Deployment `appgdep_6af5f6a3ce9c81919eec1583aa13cd17` mit Status succeeded. Site-ID und owner-private Zugriff erhalten; kein Merge nach main. Build, 71 Funktionstests im Snapshot und beide mobilen Formular-Browserfälle erfolgreich. Kein zusätzlicher Browseraufruf der geschützten Live-Demo durch den Agenten; native Sites-Rückmeldung bestätigt die Bereitstellung.
+
+**Teilweise erledigt – Nutzerabnahme:** Der Nutzer bestätigt den bisherigen lokalen Stand als gut und hat die neue Beschriftung sowie das Demo-Update beauftragt. **Offen:** Reale Safari-Prüfung ausserhalb des Heimnetzes: Button in Startansicht/Spiel/Grossansicht, Eingabe und Bildschirmtastatur, Rotation, Abbrechen mit Entwurfserhalt sowie eine klar als Test markierte Bug-/Feature-Meldung bis zur bestätigten Issue-Nummer. Die Demo läuft unabhängig vom PC; der private Zugang benötigt weiterhin die Anmeldung des Eigentümers.
+
 ## Abschluss – 10.11.2026
 
-**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands. `feature/iphone-safari-testing` ist über [PR #15](https://github.com/fip22-dev/Escape-PI-Planning/pull/15) am 10.11.2026 nach `main` gemergt und abgeschlossen. Kein neuer Entwicklungsbranch wird eröffnet. Die geplante Team-Schlüssel-Mechanik einschliesslich „So geht’s“ bleibt **Offen** und ist nicht implementiert.
+**Erledigt – iPhone-/Safari-Abnahme am 10.11.2026:** Der Nutzer bestätigt den erfolgreichen Test des aktuellen Stands. `feature/iphone-safari-testing` ist über [PR #15](https://github.com/fip22-dev/Escape-PI-Planning/pull/15) am 10.11.2026 nach `main` gemergt und abgeschlossen. Kein neuer Entwicklungsbranch wird eröffnet. Die Team-Schlüssel-Mechanik einschliesslich Kurzanleitung ist inzwischen implementiert und vom Nutzer abgenommen (siehe Folgeabschnitte). Der historische Abschluss vom 10.11.2026 ersetzt nicht die noch offene Geräteabnahme des neuen Feedback-Standes.
 
 Die Prüfliste ist aufgrund der ausdrücklichen Gesamtbestätigung des Nutzers abgeschlossen. Dies ist eine reale Nutzerabnahme, keine neu durch den Agenten ausgeführte Safari-Prüfung. Gerätemodell, genaue iOS-/Safari-Version, Zoom, Lautstärke und Einzelbefunde wurden nicht separat mitgeteilt und werden nicht ergänzt. Frühere offene Vermerke weiter unten bleiben als historischer Prüfverlauf erhalten.
 

@@ -120,7 +120,7 @@ export function bindFeedback(game) {
   const renderChoice = () => {
     kind = null;
     locked = false;
-    const c = base("Bug melden / Feature wünschen");
+    const c = base("Bug / Feature melden");
     const actions = document.createElement("div");
     actions.className = "feedback-actions";
     c.append(actions);

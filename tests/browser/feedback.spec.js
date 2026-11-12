@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
 });
 const open = async (page) => {
   await page
-    .getByRole("button", { name: "Bug melden / Feature wünschen", exact: true })
+    .getByRole("button", { name: "Bug / Feature melden", exact: true })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
 };
