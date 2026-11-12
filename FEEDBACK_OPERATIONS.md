@@ -10,6 +10,8 @@ Das statische Spiel ruft `https://6r53f4ec.function2.insforge.app/game-feedback`
 
 ## Ressourcen und Zugang
 
+**In Arbeit – manuelle Nutzerabnahme am 12.11.2026:** Feature-Testserver mit `--host 0.0.0.0 --port 5173` gestartet. Zusätzlich ist `http://192.168.1.13:5173` als lokale WLAN-Test-Origin freigeschaltet; Backend nach Secret-Änderung erneut bereitgestellt. Spiel HTTP 200 und CORS-Preflight HTTP 204 mit passender Origin bestätigt. iPhone muss im gleichen WLAN sein; der PC und Testserver müssen laufen. Die Adresse ist vom lokalen Netzwerk/DHCP abhängig und keine dauerhafte Veröffentlichung. Reale Nutzerabnahme steht noch aus.
+
 - InsForge-Projekt: `d2052f33-4ee5-408c-822a-44abdf9c9c53`, Region `eu-central`.
 - Function: `game-feedback`, Quellcode `functions/feedback.js`, SDK fest auf `1.5.2`.
 - Tabellen: `feedback_submissions`, `feedback_limits` und `feedback_settings`, jeweils mit RLS und ohne Zugriffsrechte für `anon` oder `authenticated`.
