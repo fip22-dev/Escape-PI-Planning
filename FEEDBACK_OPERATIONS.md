@@ -1,6 +1,6 @@
 # Betrieb des Feedback-Eingangs
 
-Stand: 12.11.2026. **Teilweise erledigt:** Backend bereitgestellt und echter Browser-Versand bestätigt. Das Spielformular liegt auf `feature/insforge-feedback-setup`; Die lokale und iPhone-Abnahme sind vom Nutzer bestätigt; Merge ist noch offen. Die bestehende private Demo ist mit dem Feature-Stand aktualisiert; Nutzer bestätigt den bisherigen lokalen Stand als gut. KI-Analyse und Draft-PR-Automation sind nicht aktiviert.
+Stand: 12.11.2026. **Teilweise erledigt:** Backend bereitgestellt und echter Browser-Versand bestätigt. Der Feedback-Eingang wurde auf `feature/insforge-feedback-setup` umgesetzt und ist lokal sowie auf iPhone vom Nutzer abgenommen. Die Integration in den Hauptstand erfolgt über PR #22. Die bestehende private Demo ist mit dem Feature-Stand aktualisiert; Nutzer bestätigt den bisherigen lokalen Stand als gut. KI-Analyse und Draft-PR-Automation sind nicht aktiviert.
 
 ## Architektur und lokale Nutzung
 
@@ -65,4 +65,4 @@ $env:FEEDBACK_LIVE_TEST='1'
 npx playwright test tests/browser/feedback-live.spec.js --project=chromium
 ```
 
-**Offen:** Merge und öffentliche Spielveröffentlichung; Plattformlog-Aufbewahrung und abschliessender Datenschutzhinweis vor öffentlicher Beta. KI-Dienst/Budget, automatische Analyse und Draft-PRs sind separat noch nicht eingerichtet. Der aktuelle Formularhinweis bezeichnet KI deshalb ausdrücklich als geplant und noch nicht aktiv.
+**Offen:** öffentliche Spielveröffentlichung; Plattformlog-Aufbewahrung und abschliessender Datenschutzhinweis vor öffentlicher Beta. KI-Dienst/Budget, automatische Analyse und Draft-PRs sind separat noch nicht eingerichtet. Der aktuelle Formularhinweis bezeichnet KI deshalb ausdrücklich als geplant und noch nicht aktiv.

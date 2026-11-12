@@ -1,6 +1,6 @@
 # Feedback im Spiel und automatische Lösungsvorschläge
 
-Stand: 12.11.2026. **Teilweise erledigt – Issue-Eingang implementiert und technisch geprüft. Offen – Merge/öffentliche Veröffentlichung und KI-/PR-Automation.** Der Nutzer wählt Variante 2: Formulare im Spiel erstellen über einen Backend-Dienst GitHub-Issues ohne GitHub-Anmeldung der Spieler. Dies ersetzt die Planung externer GitHub-Formulare. Beschriftung und Platzierung des Einstiegs sind vom Nutzer festgelegt; die einfache Formularausgestaltung ist als Planung dokumentiert. Die lokale und iPhone-Abnahme ist am 12.11.2026 vom Nutzer bestätigt; einzelne Geräte- und Testdetails wurden nicht separat genannt. Aktuelle Betriebsgrenzen und Prüfungen stehen in FEEDBACK_OPERATIONS.md.
+Stand: 12.11.2026. **Teilweise erledigt – Issue-Eingang implementiert und technisch geprüft. Offen – öffentliche Veröffentlichung und KI-/PR-Automation.** Der Nutzer wählt Variante 2: Formulare im Spiel erstellen über einen Backend-Dienst GitHub-Issues ohne GitHub-Anmeldung der Spieler. Dies ersetzt die Planung externer GitHub-Formulare. Beschriftung und Platzierung des Einstiegs sind vom Nutzer festgelegt; die einfache Formularausgestaltung ist als Planung dokumentiert. Die lokale und iPhone-Abnahme ist am 12.11.2026 vom Nutzer bestätigt; einzelne Geräte- und Testdetails wurden nicht separat genannt. Aktuelle Betriebsgrenzen und Prüfungen stehen in FEEDBACK_OPERATIONS.md.
 
 ## Späterer Umsetzungsauftrag
 
@@ -91,7 +91,7 @@ Issue-Eingang und PR-Publikation über geeignete App-Identitäten; Folge-Workflo
 
 **Erledigt – Secrets und lesender GitHub-Verbindungstest am 12.11.2026:** GITHUB_APP_PRIVATE_KEY, GITHUB_APP_ID, GITHUB_INSTALLATION_ID und GITHUB_REPOSITORY wurden per CLI im InsForge-Secret-Speicher angelegt. Der Schlüssel ist nach erkanntem Windows-CLI-Transportfehler als vollständige Base64-PEM-Fassung hinterlegt und zurückgelesen geprüft. Der PEM-Inhalt wurde weder ausgegeben noch ins Repository kopiert. Die App escape-pi-planning-issue (5715580), Installation 180952248 für fip22-dev, verwendet ausgewählte Repositorys und die Berechtigungen Issues:write sowie Metadata:read. Ein explizit auf Escape-PI-Planning begrenztes Installationstoken konnte Repository-Metadaten und Issues lesen und wurde danach widerrufen. Das Zielrepository ist öffentlich, Issues sind aktiviert. Schreibberechtigung und tatsächliche Issue-Anlage aus der bereitgestellten Function sind inzwischen mit #18/#19 und dem Browserpfad #20 bestätigt; Test-Issues geschlossen.
 
-**Teilweise erledigt:** Datenbank, Backend-Funktion, Formulare, Origins, Limits und Wartung implementiert. Technische Prüfungen und echter Browser-Versand erfolgreich; Bisheriger lokaler Stand vom Nutzer bestätigt; private Demo am 12.11.2026 aktualisiert. iPhone-Abnahme vom Nutzer bestätigt; Merge offen. Siehe FEEDBACK_OPERATIONS.md. Eine Bestenliste bleibt eine spätere Erweiterung. GitHub Pages ist weiterhin das geplante, noch nicht eingerichtete Hosting des statischen Spiels.
+**Teilweise erledigt:** Datenbank, Backend-Funktion, Formulare, Origins, Limits und Wartung implementiert. Technische Prüfungen und echter Browser-Versand erfolgreich; Bisheriger lokaler Stand vom Nutzer bestätigt; private Demo am 12.11.2026 aktualisiert. iPhone-Abnahme vom Nutzer bestätigt; Integration über PR #22. Siehe FEEDBACK_OPERATIONS.md. Eine Bestenliste bleibt eine spätere Erweiterung. GitHub Pages ist weiterhin das geplante, noch nicht eingerichtete Hosting des statischen Spiels.
 
 ## Vorbereiteter GitHub-Zugang und Wiederaufnahme
 
@@ -109,7 +109,7 @@ Issue-Eingang und PR-Publikation über geeignete App-Identitäten; Folge-Workflo
 
 App-Name: escape-pi-planning-issue. Der PEM-Schlüssel bleibt beim Nutzer und gehört weder in Chat noch Repository. Im InsForge-Secret-Speicher als `GITHUB_APP_PRIVATE_KEY` hinterlegt; Konfiguration `GITHUB_APP_ID=5715580` und `GITHUB_INSTALLATION_ID=180952248`. Kein Client Secret für den geplanten Installationstoken-Ablauf erforderlich.
 
-**Offen – nächster Arbeitsschritt:** Den abgenommenen Feature-Stand über PR #22 nach main übernehmen; danach KI-Analyse einrichten oder öffentliche Spielveröffentlichung vorbereiten. KI-Zugang, Budget und KI-/PR-Automation separat einrichten. Backend, atomare Versandzustände, Formulare und echte Issue-Anlage sind technisch geprüft.
+**Offen – nächster Arbeitsschritt nach Abschluss von PR #22:** KI-Analyse einrichten oder öffentliche Spielveröffentlichung vorbereiten. KI-Zugang, Budget und KI-/PR-Automation separat einrichten. Backend, atomare Versandzustände, Formulare und echte Issue-Anlage sind technisch geprüft.
 
 Aktueller GitHub-Navigationsweg für weitere Schlüssel: persönliche Settings → Developer settings → GitHub Apps → Edit → Credentials → Key pairs → New key. Die alte Bezeichnung «Private keys → Generate a private key» kann in anderen Ansichten noch vorkommen. [GitHub-Schlüsselverwaltung](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/managing-private-keys-for-github-apps).
 
