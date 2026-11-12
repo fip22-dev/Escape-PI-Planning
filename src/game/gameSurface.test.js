@@ -8,8 +8,9 @@ test("game surface dismisses game selection and context menus while preserving o
   const selection = { rangeCount: 1, anchorNode: inside, focusNode: inside,
     removeAllRanges() { this.rangeCount = 0; } };
   globalThis.window = { getSelection: () => selection };
-  globalThis.document = new EventTarget();
+  globalThis.document = Object.assign(new EventTarget(), { querySelector: () => null });
   const target = new EventTarget();
+  target.closest = () => null;
   target.contains = node => node === inside;
   let binding;
   try {
@@ -43,11 +44,11 @@ test("touch buttons cancel native gestures and activate once without ghost-click
   const previousWindow = globalThis.window, previousDocument = globalThis.document;
   const target = new EventTarget();
   let clicks = 0, cancellations = 0;
-  const button = { dataset: {}, disabled: false, closest: () => button, click: () => { clicks++; } };
-  target.closest = () => button;
+  const button = { dataset: {}, disabled: false, closest: selector => selector === '.feedback-dialog' ? null : button, click: () => { clicks++; } };
+  target.closest = selector => selector === '.feedback-dialog' ? null : button;
   target.contains = () => false;
   globalThis.window = { getSelection: () => ({ rangeCount: 0 }) };
-  globalThis.document = Object.assign(new EventTarget(), { elementFromPoint: () => button });
+  globalThis.document = Object.assign(new EventTarget(), { elementFromPoint: () => button, querySelector: () => null });
   const binding = bindGameSurface(target, { onCancel: () => { cancellations++; } });
   const touch = (type, x = 5) => {
     const event = new Event(type, { cancelable: true });

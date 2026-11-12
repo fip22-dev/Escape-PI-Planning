@@ -56,6 +56,8 @@ test("menu, pixel furniture and audio work at desktop and mobile sizes", async (
   await page.keyboard.press("Escape");
   await activate(160, 151);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);
   expect(await page.evaluate(() => window.__game.scene.getScene("graybox").cameras.main.worldView.width)).toBe(320);
   await page.keyboard.press("Escape");
   expect(await page.evaluate(() => window.__game.scene.getScene("graybox").isPaused)).toBe(true);

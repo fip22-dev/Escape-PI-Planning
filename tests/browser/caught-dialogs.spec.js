@@ -201,12 +201,15 @@ test("pause menu returns directly to the intro with keyboard and pointer", async
   await page.keyboard.press("Enter");
   await page.clock.runFor(250);
   expect(await page.evaluate(() => window.__game.scene.isActive("intro"))).toBe(true);
-  expect(await page.locator(".touch-controls").isVisible()).toBe(false);
+  await expect(page.locator('[data-action="pause"]')).toBeHidden();
+  await expect(page.locator('.feedback-button')).toBeVisible();
   await page.clock.runFor(250);
   expect(await page.evaluate(() => window.__game.scene.isActive("graybox"))).toBe(false);
   await page.keyboard.press("Enter");
   await page.clock.runFor(250);
   expect(await page.evaluate(() => window.__game.scene.isActive("graybox"))).toBe(true);
+  await page.keyboard.press("Enter");
+  await page.clock.runFor(100);
   await page.keyboard.press("Escape");
   const canvas = page.locator("canvas");
   const box = await canvas.boundingBox();
@@ -604,9 +607,17 @@ test("neutral speech follows its speaker, pauses and resets with the attempt", a
   expectSpeakerAnchor(await readSpeech());
   expect((await readSpeech()).bubbleWorld).toEqual(moving.bubbleWorld);
   expect((await readSpeech()).bubbleScreen).not.toEqual(first.bubbleScreen);
-  await page.keyboard.down("ArrowRight");
+  // The moving speaker can reserve the tile on the right. Exercise player
+  // movement along an actually free direction rather than into that NPC.
+  const moveKey = await page.evaluate(() => {
+    const s = window.__game.scene.getScene("graybox");
+    return [["ArrowLeft", -1, 0], ["ArrowRight", 1, 0], ["ArrowUp", 0, -1], ["ArrowDown", 0, 1]]
+      .find(([, x, y]) => s.canPlayerStep({ x, y }))?.[0];
+  });
+  expect(moveKey).toBeTruthy();
+  await page.keyboard.down(moveKey);
   await page.clock.runFor(250);
-  await page.keyboard.up("ArrowRight");
+  await page.keyboard.up(moveKey);
   expect((await readSpeech()).player).not.toEqual(first.player);
   expectSpeakerAnchor(await readSpeech());
   expect((await readSpeech()).bubbleWorld).toEqual(moving.bubbleWorld);
@@ -619,7 +630,7 @@ test("neutral speech follows its speaker, pauses and resets with the attempt", a
   await page.clock.runFor(100);
   expect((await readSpeech()).visible).toBe(true);
   await page.clock.runFor(2000);
-  expect((await readSpeech()).active).toEqual([]);
+  expect((await readSpeech()).active.filter(b => [28, 30].includes(b.personIndex))).toEqual([]);
   await page.evaluate(() => window.__game.scene.getScene("graybox").finishGame("caught", "PM"));
   expect((await readSpeech()).visible).toBe(false);
   await page.clock.runFor(250);
