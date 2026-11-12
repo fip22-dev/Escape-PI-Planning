@@ -177,7 +177,6 @@ export function bindLeaderboard(game) {
       c,
       "Bei gleicher Zeit steht der früher gespeicherte Run zuerst. Jeder Eintrag gehört zu einem Run; Namen sind nicht exklusiv.",
     );
-    button(c, "Aktualisieren", loadBoard);
     const back = button(c, "Zurück ins Hauptmenü", close, true);
     back.focus();
   };

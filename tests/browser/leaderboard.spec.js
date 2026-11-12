@@ -79,8 +79,15 @@ test("main menu shows fastest runs, supports keyboard selection and survives loa
   await boot(page);
   expect(
     await page.evaluate(() => window.__game.scene.getScene("intro").homeItems),
-  ).toHaveLength(5);
+  ).toEqual([
+    "SPIEL STARTEN",
+    "SO GEHT'S",
+    "EINSTELLUNGEN",
+    "BESTENLISTE",
+    "INFOS & CREDITS",
+  ]);
   await page.screenshot({ path: info.outputPath("main-menu-leaderboard.png") });
+  await page.keyboard.press("ArrowUp");
   await page.keyboard.press("ArrowUp");
   await page.keyboard.press("Enter");
   await expect(
@@ -189,12 +196,10 @@ test("only a win offers name entry; save shows own rank and retry preserves run 
   expect(posts[0].elapsedMs).toBe(65432);
   await expect(page.getByRole("row", { name: "Dein Run" })).toBeVisible();
   await page.screenshot({ path: info.outputPath("leaderboard-saved.png") });
-  await page
-    .getByRole("button", { name: "Aktualisieren", exact: true })
-    .click();
   await expect(
-    page.getByText("Dein Run: Platz 2 · 01:05.432", { exact: true }),
-  ).toBeVisible();
+    page.getByRole("button", { name: "Aktualisieren", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("dialog").getByRole("button")).toHaveCount(1);
   await page
     .getByRole("button", { name: "Zurück ins Hauptmenü", exact: true })
     .click();

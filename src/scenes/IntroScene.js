@@ -149,7 +149,7 @@ export class IntroScene extends Phaser.Scene {
       align: "center", lineSpacing: 1,
     }).setOrigin(0.5).setDepth(10);
     this.add.rectangle(160, 181, 198, 102, C.panel, 0.97).setStrokeStyle(2, C.gold).setDepth(10);
-    this.homeItems = ["SPIEL STARTEN", "SO GEHT'S", "EINSTELLUNGEN", "INFOS & CREDITS", "BESTENLISTE"];
+    this.homeItems = ["SPIEL STARTEN", "SO GEHT'S", "EINSTELLUNGEN", "BESTENLISTE", "INFOS & CREDITS"];
     this.homeRows = this.homeItems.map((label, index) => this.add.rectangle(160, 141 + index * 20, 180, 16, C.panel)
       .setDepth(11).setInteractive({ useHandCursor: true })
       .on("pointerover", () => { this.selection = index; this.updateHomeSelection(); })
@@ -236,7 +236,7 @@ export class IntroScene extends Phaser.Scene {
         this.time.delayedCall(0, () => this.scene.start("graybox", { showStartGuide: true }));
       } else if (this.selection === 1) this.showPanel("help");
       else if (this.selection === 2) this.showPanel("settings");
-      else if (this.selection === 4) window.dispatchEvent(new CustomEvent('game:leaderboard', {detail:{}}));
+      else if (this.selection === 3) window.dispatchEvent(new CustomEvent('game:leaderboard', {detail:{}}));
       else this.showPanel("credits");
     } else if (this.view === "settings") {
       if (this.selection < 2) {
