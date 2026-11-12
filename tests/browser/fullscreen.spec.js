@@ -121,11 +121,11 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
     }, { x, y });
     await page.touchscreen.tap(point.x, point.y);
   };
-  await tapCanvas(160, 171);
+  await tapCanvas(160, 161);
   await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "help");
   await tapCanvas(160, 194);
   await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "home");
-  await tapCanvas(160, 151);
+  await tapCanvas(160, 141);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
   await tapCanvas(160, 120);
   await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);
@@ -141,7 +141,7 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   await page.screenshot({ path: testInfo.outputPath("portrait-rotated-pause.png") });
   await tapCanvas(160, 124);
   await page.waitForFunction(() => window.__game.scene.isActive("intro"));
-  await tapCanvas(160, 151);
+  await tapCanvas(160, 141);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
   await tapCanvas(160, 120);
   await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);

@@ -331,3 +331,9 @@ body.has-expanded-game { overflow: hidden; overscroll-behavior: none; }
 .touch-actions .feedback-button { min-height: 44px; max-width: 260px; white-space: normal; }
 .page .feedback-dialog, .page .feedback-dialog * { -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important; }
 .page .feedback-dialog { top: calc(var(--feedback-top, 0px) + 12px); bottom: auto; margin: 0 auto; max-height: min(calc(100dvh - 24px), var(--feedback-height, 100dvh)); }
+.leaderboard-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-variant-numeric: tabular-nums; }
+.leaderboard-table caption { text-align: left; color: #ffe066; font-weight: 600; margin-bottom: 8px; }
+.leaderboard-table th, .leaderboard-table td { padding: 10px 6px; border-bottom: 1px solid #71857366; text-align: left; }
+.leaderboard-table td:nth-child(2) { overflow-wrap: anywhere; }
+.leaderboard-table th:last-child, .leaderboard-table td:last-child { white-space: nowrap; text-align: right; }
+.leaderboard-table .is-own-run { background: #e8ce7922; color: #ffe066; }
