@@ -178,19 +178,14 @@ export function bindLeaderboard(game) {
       "Bei gleicher Zeit steht der früher gespeicherte Run zuerst. Jeder Eintrag gehört zu einem Run; Namen sind nicht exklusiv.",
     );
     button(c, "Aktualisieren", loadBoard);
-    const back = button(
-      c,
-      run ? "Zum Hauptmenü" : "Zurück zum Hauptmenü",
-      close,
-      true,
-    );
+    const back = button(c, "Zurück ins Hauptmenü", close, true);
     back.focus();
   };
   const loadBoard = async () => {
     const version = ++generation;
     const c = base("Bestenliste");
     paragraph(c, "Bestenliste wird geladen …");
-    button(c, run ? "Zum Hauptmenü" : "Zurück zum Hauptmenü", close);
+    button(c, "Zurück ins Hauptmenü", close);
     try {
       const { response, data } = await fetchData();
       if (!dialog.open || version !== generation) return;
@@ -209,7 +204,7 @@ export function bindLeaderboard(game) {
         "Die Bestenliste konnte nicht geladen werden. Bitte die Verbindung prüfen und erneut versuchen.",
       );
       button(content, "Erneut laden", loadBoard, true);
-      button(content, run ? "Zum Hauptmenü" : "Zurück zum Hauptmenü", close);
+      button(content, "Zurück ins Hauptmenü", close);
     }
   };
   const renderEntry = (error = "") => {
@@ -250,8 +245,7 @@ export function bindLeaderboard(game) {
     submit.className = "primary";
     submit.textContent = locked ? "Erneut speichern" : "Zeit eintragen";
     form.append(submit);
-    button(c, "Ohne Eintrag zur Bestenliste", loadBoard);
-    button(c, "Zum Hauptmenü", close);
+    button(c, "Zurück ins Hauptmenü", close);
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       if (busy) return;

@@ -4,7 +4,7 @@ Stand: 12.11.2026. **Teilweise erledigt – implementiert und technisch geprüft
 
 ## Verhalten
 
-Nach einem erfolgreichen Run mit sieben Schlüsseln und gestartetem Fluchttimer erscheint ein HTML-Dialog mit der benötigten Zeit und dem Feld «Name / Pseudonym». Eintragen ist freiwillig: «Zeit eintragen» speichert, «Ohne Eintrag zur Bestenliste» zeigt die Liste ohne Speicherung. Anschliessend wird die gemeinsame Top 20 angezeigt, ein eigener Eintrag dort hervorgehoben und der eigene Rang auch ausserhalb der Top 20 genannt. «Zum Hauptmenü» beendet den Ergebnisablauf. Kein Eintrag nach Fang, Timeout oder Abbruch.
+Nach einem erfolgreichen Run mit sieben Schlüsseln und gestartetem Fluchttimer erscheint ein HTML-Dialog mit der benötigten Zeit und dem Feld «Name / Pseudonym». Der Siegerdialog bietet genau zwei Aktionen: «Zeit eintragen» speichert; «Zurück ins Hauptmenü» beendet den Run ohne Eintrag. Eintragen ist freiwillig. Anschliessend wird die gemeinsame Top 20 angezeigt, ein eigener Eintrag dort hervorgehoben und der eigene Rang auch ausserhalb der Top 20 genannt. «Zurück ins Hauptmenü» beendet den Ergebnisablauf. Kein Eintrag nach Fang, Timeout oder Abbruch.
 
 Im Hauptmenü öffnet ein fünfter Menüpunkt «Bestenliste» jederzeit die Liste. Laden, leere Liste, Verbindungsfehler und erneuter Versuch erhalten klare Anzeigen. Namen werden als Text dargestellt. Dialoge bleiben in mobiler Grossansicht aufrecht, scrollbar und von Spielkürzeln getrennt.
 
@@ -36,3 +36,5 @@ npx playwright test tests/browser/leaderboard-live.spec.js --project=chromium
 ```
 
 **Offen:** reale PC-/iPhone-Nutzerabnahme, Merge und gesondertes Demo-Update. Die bestehende Demo bleibt unverändert auf dem abgenommenen Feedback-Stand. Die separate Function und Tabellen sind bereits im dedizierten InsForge-Projekt bereitgestellt.
+
+**Erledigt – Siegerdialog angepasst am 12.11.2026:** Auf Nutzerwunsch genau zwei Aktionen: «Zeit eintragen» und «Zurück ins Hauptmenü». Der zusätzliche Weg ohne Eintrag direkt zur Liste entfällt; die Liste bleibt im Hauptmenü erreichbar. Neun Bestenlisten-Browserfälle in Chromium, Firefox und mobilem Chromium sowie Produktionsbuild erfolgreich; mobile Darstellung visuell kontrolliert. Reale Nutzerabnahme der Erweiterung bleibt offen.

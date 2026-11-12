@@ -21,6 +21,7 @@ const boot = async (page) => {
 };
 const menuBoard = async (page) => {
   await page.evaluate(() => {
+    document.activeElement?.blur?.();
     const s = window.__game.scene.getScene("intro");
     s.selection = s.homeItems.indexOf("BESTENLISTE");
     s.updateHomeSelection();
@@ -158,6 +159,7 @@ test("only a win offers name entry; save shows own rank and retry preserves run 
   });
   await boot(page);
   await win(page);
+  await expect(page.getByRole("dialog").getByRole("button")).toHaveCount(2);
   await expect(
     page.getByText("Deine Zeit: 01:05.432", { exact: true }),
   ).toBeVisible();
@@ -194,7 +196,7 @@ test("only a win offers name entry; save shows own rank and retry preserves run 
     page.getByText("Dein Run: Platz 2 · 01:05.432", { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Zum Hauptmenü", exact: true })
+    .getByRole("button", { name: "Zurück ins Hauptmenü", exact: true })
     .click();
   await page.waitForFunction(() => window.__game.scene.isActive("intro"));
   await page.evaluate(() =>
@@ -230,8 +232,10 @@ test("winning score can be skipped and expanded portrait list remains upright", 
   await page.locator(".fullscreen-button").click();
   await win(page);
   await page
-    .getByRole("button", { name: "Ohne Eintrag zur Bestenliste" })
+    .getByRole("button", { name: "Zurück ins Hauptmenü", exact: true })
     .click();
+  await page.waitForFunction(() => window.__game.scene.isActive("intro"));
+  await menuBoard(page);
   await expect(
     page.getByText(
       "Noch keine Zeiten eingetragen. Die erste Bestzeit wartet auf dich!",
@@ -243,7 +247,7 @@ test("winning score can be skipped and expanded portrait list remains upright", 
   expect(box.width).toBeLessThanOrEqual(640);
   await page.screenshot({ path: info.outputPath("leaderboard-expanded.png") });
   await page
-    .getByRole("button", { name: "Zum Hauptmenü", exact: true })
+    .getByRole("button", { name: "Zurück ins Hauptmenü", exact: true })
     .click();
   await page.waitForFunction(() => window.__game.scene.isActive("intro"));
 });

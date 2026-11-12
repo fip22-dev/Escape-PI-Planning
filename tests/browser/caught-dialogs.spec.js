@@ -133,7 +133,7 @@ test("team keys collect by movement, lock both exit lanes, survive pause and res
   expect(await page.evaluate(() => window.__game.scene.getScene("graybox").gameResult)).toBe("win");
   await expect(page.getByRole('heading', {name:'Geschafft!', exact:true})).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("seven-keys-win.png") });
-  await page.getByRole('button',{name:'Zum Hauptmenü',exact:true}).click();
+  await page.getByRole('button',{name:'Zurück ins Hauptmenü',exact:true}).click();
   await page.clock.runFor(100);
   await page.evaluate(() => window.__game.scene.getScene("intro").scene.start("graybox"));
   await page.clock.runFor(100);
