@@ -1,10 +1,10 @@
 # Feedback im Spiel und automatische Lösungsvorschläge
 
-Stand: 11.11.2026. **Erledigt – Konzept dokumentiert. Offen – Implementierung, Einrichtung und Abnahme.** Der Nutzer wählt Variante 2: Formulare im Spiel erstellen über einen Backend-Dienst GitHub-Issues ohne GitHub-Anmeldung der Spieler. Dies ersetzt die Planung externer GitHub-Formulare. Beschriftung und Platzierung des Einstiegs sind vom Nutzer festgelegt; die einfache Formularausgestaltung ist als Planung dokumentiert. Die Implementierung ist noch nicht abgenommen; Betriebsgrenzen sind Planungsdefaults.
+Stand: 12.11.2026. **Teilweise erledigt – Issue-Eingang implementiert und technisch geprüft. Offen – reale Geräte-/Nutzerabnahme, Spielveröffentlichung und KI-/PR-Automation.** Der Nutzer wählt Variante 2: Formulare im Spiel erstellen über einen Backend-Dienst GitHub-Issues ohne GitHub-Anmeldung der Spieler. Dies ersetzt die Planung externer GitHub-Formulare. Beschriftung und Platzierung des Einstiegs sind vom Nutzer festgelegt; die einfache Formularausgestaltung ist als Planung dokumentiert. Die reale Geräte-/Nutzerabnahme steht aus. Aktuelle Betriebsgrenzen und Prüfungen stehen in FEEDBACK_OPERATIONS.md.
 
 ## Späterer Umsetzungsauftrag
 
-«Feedback und Issue-Automation gemäss FEEDBACK_AUTOMATION_PLAN.md umsetzen» umfasst Formulare, Backend, GitHub-Anbindung, Analyse, testbare Draft-PRs und die folgenden Prüfungen. Heute ausschliesslich Dokumentation direkt auf main, ausdrücklich vom Nutzer erlaubt. Spätere Implementierung wieder auf einem Feature-Branch gemäss AGENTS.md. Keine Infrastruktur, Issues, Workflows oder kostenpflichtigen Dienste durch diesen Planungsschritt anlegen.
+«Feedback und Issue-Automation gemäss FEEDBACK_AUTOMATION_PLAN.md umsetzen» umfasst Formulare, Backend, GitHub-Anbindung, Analyse, testbare Draft-PRs und die folgenden Prüfungen. Die Planung vom 11.11.2026 umfasste nur Dokumentation auf main. Am 12.11.2026 hat der Nutzer ein eigenes InsForge-Projekt erstellt und dessen lokale Verknüpfung beauftragt; Einrichtung auf feature/insforge-feedback-setup. Formulare, Datenbank, Issue-Eingang und Wartung sind inzwischen umgesetzt; KI-/PR-Workflows bleiben offen.
 
 Merge und Veröffentlichung bleiben manuelle Entscheidungen. Anhänge, Screenshots als Upload, Kontaktfelder, E-Mail-Antworten und ein öffentliches Feedback-Portal gehören nicht zur ersten Version.
 
@@ -44,7 +44,7 @@ Beide Formulare besitzen damit genau zwei inhaltliche Pflichtfelder. Die bereits
 
 Ausklappbarer Abschnitt «Technische Angaben» mit aktivierter, abschaltbarer Option «Technische Angaben mitsenden». Vor Absenden genau anzeigen: Build-Kennung, Browser-/Betriebssystemfamilie soweit erkennbar (automatisch erkannt, sonst unbekannt), Viewport, Ausrichtung, Eingabeart und aktuelle Spielansicht. Beim Bug zusätzlich Raum/Position, verbleibende Sekunden und Schlüsselanzahl als Momentaufnahme beim Öffnen. Keine Cookies, Tokens, vollständigen URLs, Referrer, Konsolenlogs, Namen oder E-Mail-Adressen. Bei abgeschalteter Option nur Formularinhalt, Typ und zufällige Meldungs-ID senden. Keine Übermittlung während des Ausfüllens.
 
-Hinweis: «Deine Meldung wird als GitHub-Issue gespeichert und automatisch mit KI analysiert. Bitte keine persönlichen oder vertraulichen Angaben eintragen. Bei einem öffentlichen Repository ist der Inhalt öffentlich sichtbar; bei einem privaten sehen ihn Personen mit Zugriff.» Pflichtbestätigung: «Ich habe den Hinweis zur Speicherung und automatischen Analyse gelesen». Dies ersetzt keine gegebenenfalls erforderliche Datenschutzerklärung des Betreibers.
+Aktuell implementierter Hinweis: «Deine Meldung wird als öffentliches GitHub-Issue gespeichert. Eine spätere automatische KI-Analyse ist geplant und noch nicht aktiv. Bitte keine persönlichen oder vertraulichen Angaben eintragen. Zum Absenden brauchst du kein GitHub-Konto.» Pflichtbestätigung: «Ich habe den Hinweis zur Speicherung und geplanten automatischen Analyse gelesen». Nach Einrichtung der KI-Verarbeitung den Hinweis entsprechend aktualisieren. Dies ersetzt keine gegebenenfalls erforderliche Datenschutzerklärung des Betreibers.
 
 Unten «Abbrechen» sowie primär «Bug senden» beziehungsweise «Feature senden». Validierung bei Absenden, dann nach Korrekturen; Eingaben bei Fehlern erhalten. Während Versand «Wird gesendet …» und Absenden sperren. Erfolg erst nach bestätigter GitHub-Anlage: «Danke! Deine Meldung wurde als Issue #123 gespeichert.» Dazu «Issue auf GitHub öffnen» und «Zurück». Bei privatem Repository ergänzen: «Zum Öffnen ist GitHub-Zugriff nötig. Deine Meldung ist bereits angekommen.» Kein Versprechen einer Lösung oder Bearbeitungsfrist.
 
@@ -52,15 +52,15 @@ Abbrechen mit geändertem Inhalt fragt «Entwurf verwerfen?» mit «Weiter bearb
 
 ## Backend und Betrieb
 
-Sites-Demo und später GitHub Pages benötigen einen separaten HTTPS-Dienst; das statische Spiel enthält keine GitHub-Secrets. Technischer Default: kleiner Node.js-Dienst auf einem verwalteten Serverless-Host mit atomarem KV-Speicher für Versandzustände und Limits. Hostwahl beim Umsetzungsauftrag anhand verfügbarer Zugänge; Betreiberzugang, Domain/Origins, GitHub-App und KI-Zugang sind notwendige Einrichtungsabhängigkeiten. Anbieter und Modell sind damit noch nicht provisioniert oder als verfügbar bestätigt.
+Sites-Demo und später GitHub Pages benötigen einen separaten HTTPS-Dienst; das statische Spiel enthält keine GitHub-Secrets. Festgelegt ist ein eigenes InsForge-Projekt mit Backend-Funktion und PostgreSQL für atomare Versandzustände und Limits. Das Projekt ist verknüpft; Function, Datenbankstruktur, GitHub-Secrets und erlaubte Origins sind eingerichtet und technisch geprüft. KI-Zugang bleibt offen. KI-Anbieter und Modell sind noch nicht eingerichtet.
 
-`POST /api/feedback`: JSON mit `schemaVersion: 1`, `submissionId` (UUID), `kind` (`bug`/`feature`), `title`, `description`, `consent: true`, optional `technical`. Serverseitig Schema, Trim, Pflichtwerte, Längen (Titel 5–120, Beschreibung 10–5000 Zeichen nach Trim), Enums und maximal 24 KiB Body prüfen; unbekannte Felder ablehnen. Client bestimmt weder Repository noch Labels, Priorität, Prompt oder Workflow. Keine beliebigen Datei-/URL-Abrufe. CORS nur für konfigurierte Demo-/Produktions-/Test-Origins; CORS ersetzt keine Missbrauchsbegrenzung.
+`POST https://6r53f4ec.function2.insforge.app/game-feedback`: JSON mit `schemaVersion: 1`, `submissionId` (UUIDv7, maximal sieben Tage alt), `kind` (`bug`/`feature`), `title`, `description`, `consent: true`, optional `technical` und leeres Honeypot-Feld `website`. Serverseitig Schema, Trim, Pflichtwerte, Längen (Titel 5–120, Beschreibung 10–5000 Zeichen nach Trim), Enums und maximal 24 KiB Body prüfen; unbekannte Felder ablehnen. Client bestimmt weder Repository noch Labels, Priorität, Prompt oder Workflow. Keine beliebigen Datei-/URL-Abrufe. CORS nur für konfigurierte Demo-/Produktions-/Test-Origins; CORS ersetzt keine Missbrauchsbegrenzung.
 
 Antworten: 201 mit `issueNumber`, `issueUrl`, `submissionId` nach Anlage; 200 für bereits bestätigte gleiche Meldung; 202 mit Wiederholungsfrist bei laufender/ungeklärter Anlage; 400 ungültig, 409 gleiche ID mit anderem Inhalt, 413 zu gross, 429 mit Retry-After, 503 vorübergehend nicht verfügbar. Keine internen GitHub-Fehler oder Secrets zum Browser.
 
 Atomare Sperre je Meldungs-ID, Zustände pending/created/uncertain. GitHub-Issue-API hat keinen hier vorausgesetzten Idempotenzschlüssel: nach Timeout nicht blind erneut erstellen. Eindeutigen Submission-Marker im Issue suchen, bei Unklarheit 202 und serverseitigen Abgleich verwenden; keine Exactly-once-Garantie behaupten. Unbehebbare Unklarheit zur manuellen Klärung protokollieren.
 
-Defaults: fünf neue Meldungen je zehn Minuten pro kurzlebigem HMAC der IP und 100 neue Meldungen täglich insgesamt; Statusabfragen separat begrenzen. Roh-IP nicht dauerhaft speichern; Hash nach 24 Stunden löschen. Versandzuordnung sieben Tage aufbewahren; danach alte IDs anhand Marker abgleichen oder mit 409 verständlich ablehnen. Logs ohne Formulardaten/Secrets maximal sieben Tage; GitHub-Issues bleiben bis manueller Löschung. Honeypot, serverseitige Limits und abschaltbarer Versand. Datenschutz, KI-Datenverarbeitung und Aufbewahrung vor Beta-Freischaltung sichtbar dokumentieren.
+Implementierte Limits: fünf neue Meldungen je festem Zehn-Minuten-Zeitfenster insgesamt und 100 neue Meldungen pro UTC-Tag. Ohne belegte vertrauenswürdige Client-IP gilt ein gemeinsamer täglicher HMAC-Zähler; keine IP-Verarbeitung. Status-/Wiederholungsabfragen: 60 je Zehn-Minuten-Fenster. Quoten nach 24 Stunden bereinigen. Versandzuordnung sieben Tage aufbewahren; danach alte IDs anhand Marker abgleichen oder mit 409 verständlich ablehnen. Logs enthalten keine Formulardaten/Secrets; Plattformlog-Aufbewahrung vor öffentlicher Beta noch prüfen; GitHub-Issues bleiben bis manueller Löschung. Honeypot, serverseitige Limits und abschaltbarer Versand. Datenschutz, KI-Datenverarbeitung und Aufbewahrung vor Beta-Freischaltung sichtbar dokumentieren.
 
 ## Issue-Format und GitHub-Zugang
 
@@ -85,9 +85,19 @@ Issue-Text ist auch für den Coding-Agenten untrusted input: keine darin enthalt
 
 Issue-Eingang und PR-Publikation über geeignete App-Identitäten; Folge-Workflows nicht blind auf GITHUB_TOKEN-Ereignisse stützen. GitHub schränkt diese ein. Interne Tests und tatsächlich ausgelöste PR-CI separat nachweisen; aktuelle Triggerregeln bei Umsetzung erneut prüfen.
 
+## InsForge-Einrichtung
+
+**Teilweise erledigt – Backend-Einrichtung am 12.11.2026:** Eigenes Projekt Escape-PI-Planning, ID d2052f33-4ee5-408c-822a-44abdf9c9c53, Region eu-central, API-Basis https://6r53f4ec.eu-central.insforge.app. CLI-Anmeldung erneuert und Repository erfolgreich verknüpft; CLI current bestätigt Projekt und Region. Die lokale Datei .insforge/project.json ist durch .gitignore ausgeschlossen. Die CLI hat den InsForge-Abschnitt in AGENTS.md ergänzt. Für diese Sitzung wurde Node.js v22.23.5 portabel im temporären Ordner eingerichtet und das Archiv gegen die offizielle SHA256-Liste geprüft; keine systemweite Installation.
+
+**Erledigt – Secrets und lesender GitHub-Verbindungstest am 12.11.2026:** GITHUB_APP_PRIVATE_KEY, GITHUB_APP_ID, GITHUB_INSTALLATION_ID und GITHUB_REPOSITORY wurden per CLI im InsForge-Secret-Speicher angelegt. Der Schlüssel ist nach erkanntem Windows-CLI-Transportfehler als vollständige Base64-PEM-Fassung hinterlegt und zurückgelesen geprüft. Der PEM-Inhalt wurde weder ausgegeben noch ins Repository kopiert. Die App escape-pi-planning-issue (5715580), Installation 180952248 für fip22-dev, verwendet ausgewählte Repositorys und die Berechtigungen Issues:write sowie Metadata:read. Ein explizit auf Escape-PI-Planning begrenztes Installationstoken konnte Repository-Metadaten und Issues lesen und wurde danach widerrufen. Das Zielrepository ist öffentlich, Issues sind aktiviert. Schreibberechtigung und tatsächliche Issue-Anlage aus der bereitgestellten Function sind inzwischen mit #18/#19 und dem Browserpfad #20 bestätigt; Test-Issues geschlossen.
+
+**Teilweise erledigt:** Datenbank, Backend-Funktion, Formulare, Origins, Limits und Wartung implementiert. Technische Prüfungen und echter Browser-Versand erfolgreich; reale Geräte-/Nutzerabnahme und Spielveröffentlichung offen. Siehe FEEDBACK_OPERATIONS.md. Eine Bestenliste bleibt eine spätere Erweiterung. GitHub Pages ist weiterhin das geplante, noch nicht eingerichtete Hosting des statischen Spiels.
+
 ## Vorbereiteter GitHub-Zugang und Wiederaufnahme
 
-**Teilweise erledigt – GitHub-App vorbereitet am 11.11.2026:** Der Nutzer hat die App erstellt, installiert und einen privaten Schlüssel als PEM heruntergeladen. Installation und Berechtigungen wurden hier noch nicht per API geprüft. Nicht geheime Kennungen:
+**Prüfhinweis 12.11.2026:** Alle vier GITHUB-Secrets sind laut CLI aktiv. InsForge `memory remember` war durch den aktuellen Tarif blockiert (AI nur in kostenpflichtigen Plänen); der Einrichtungsstand ist deshalb in diesen MD-Dateien festgehalten. Kein Tarifwechsel vorgenommen.
+
+**Erledigt – GitHub-App eingerichtet und geprüft am 12.11.2026:** Der Nutzer hat die App erstellt, installiert und einen privaten Schlüssel als PEM heruntergeladen. Installation und Berechtigungen wurden am 12.11.2026 per API bestätigt; lesender Zugriff sowie tatsächliche Issue-Anlage inzwischen erfolgreich. Nicht geheime Kennungen:
 
 | Einstellung | Wert |
 | --- | --- |
@@ -97,21 +107,21 @@ Issue-Eingang und PR-Publikation über geeignete App-Identitäten; Folge-Workflo
 | Installation-ID | 180952248 |
 | Installationsverwaltung | https://github.com/settings/installations/180952248 |
 
-App-Name noch nicht mitgeteilt. Der PEM-Schlüssel bleibt beim Nutzer und gehört weder in Chat noch Repository. Später im Backend-Secret-Speicher als `GITHUB_APP_PRIVATE_KEY` hinterlegen; Konfiguration `GITHUB_APP_ID=5715580` und `GITHUB_INSTALLATION_ID=180952248`. Kein Client Secret für den geplanten Installationstoken-Ablauf erforderlich.
+App-Name: escape-pi-planning-issue. Der PEM-Schlüssel bleibt beim Nutzer und gehört weder in Chat noch Repository. Im InsForge-Secret-Speicher als `GITHUB_APP_PRIVATE_KEY` hinterlegt; Konfiguration `GITHUB_APP_ID=5715580` und `GITHUB_INSTALLATION_ID=180952248`. Kein Client Secret für den geplanten Installationstoken-Ablauf erforderlich.
 
-**Offen – nächster Arbeitsschritt:** Backend-Host und Secret-Speicher festlegen, Repository-Auswahl und Issues:write/Metadata:read prüfen, PEM direkt im Secret-Speicher hinterlegen, kurzlebiges Installationstoken erzeugen und zunächst lesenden Zugriff auf das Zielrepository prüfen. Danach ein bewusst als Test gekennzeichnetes Issue erstellen und Ergebnis dokumentieren. Ein installiertes App-Objekt belegt noch keinen erfolgreichen Zugriffstest. Formulare und KI-/PR-Automation bleiben bis zum späteren Umsetzungsauftrag offen.
+**Offen – nächster Arbeitsschritt:** PC-/iPhone-Abnahme des Feature-Stands, danach Merge und Spielveröffentlichung. KI-Zugang, Budget und KI-/PR-Automation separat einrichten. Backend, atomare Versandzustände, Formulare und echte Issue-Anlage sind technisch geprüft.
 
 Aktueller GitHub-Navigationsweg für weitere Schlüssel: persönliche Settings → Developer settings → GitHub Apps → Edit → Credentials → Key pairs → New key. Die alte Bezeichnung «Private keys → Generate a private key» kann in anderen Ansichten noch vorkommen. [GitHub-Schlüsselverwaltung](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/managing-private-keys-for-github-apps).
 
 ## Umsetzungsreihenfolge und Abnahme
 
-Die App-Vorbereitung ist **Teilweise erledigt**, siehe oben. Die folgenden Implementierungs- und Abnahmeschritte sind **Offen**:
+Gesamtstatus **Teilweise erledigt**. Aktueller Stand der Umsetzung:
 
-1. Zugänge, Repository-Sichtbarkeit, Backend/KV und KI-Dienst prüfen; Apps, Labels, Secrets, Datenschutz und Kostenlimits einrichten.
-2. Backend implementieren; Schema, Limits und Versandzustände mit gemockter GitHub-API prüfen. Echtes Test-Issue später bewusst als Test anlegen.
-3. Gemeinsamen Button bei den Bedienelementen, Typauswahl, Formulare, Spielpause und Eingabeausnahmen implementieren; Desktop/mobile Browser automatisiert sowie echtes iPhone/Safari manuell prüfen.
-4. Analyse mit Test-Issues aktivieren, dann isolierte Patch-/Testphase und Publisher. Je einen klaren Bug und ein kleines Feature bis zum Draft-PR nachweisen.
-5. End-to-end abnehmen, Betriebsdokumentation aktualisieren, danach Beta-Freischaltung. Demo/Pages erhalten Backend-URL (kein Secret).
+1. **Teilweise erledigt:** Projekt, öffentliches Repository, App, Labels, Secrets, Origins und Versandquoten eingerichtet; Datenschutzhinweis/Log-Aufbewahrung für öffentliche Beta sowie KI-Dienst/Kostenlimit offen.
+2. **Erledigt – technischer Backend-Eingang:** Schema, Limits, Versandzustände, parallele SQL-Claims, Zugriffssperren und echte Test-Issues geprüft. Wartungszeitplan aktiv, geschützter Aufruf erfolgreich.
+3. **Teilweise erledigt:** Button, Typauswahl, Formulare, Spielpause und Eingabeausnahmen implementiert und in Chromium, Firefox sowie mobilem Chromium geprüft. Reale iPhone-/Safari-Abnahme offen.
+4. **Offen:** Analyse mit Test-Issues aktivieren, dann isolierte Patch-/Testphase und Publisher. Je einen klaren Bug und ein kleines Feature bis zum Draft-PR nachweisen.
+5. **Teilweise erledigt:** Echter Chromium-End-to-end-Versand und Betriebsdokumentation vorhanden. Reale Nutzerabnahme und Beta-Veröffentlichung offen. Das Spiel enthält ausschliesslich die öffentliche Backend-URL, keine Secrets.
 
 Abnahme: Button mit exakter Beschriftung «Bug melden / Feature wünschen» ausserhalb des Spielfeldes bei der Steuerung in Startansicht und Spiel erreichbar, einschliesslich mobiler Grossansicht; keine zusätzlichen Menüeinträge. Typauswahl führt zum richtigen Formular; Zurück, Typwechsel und Abbrechen verlieren keine Entwürfe ohne Bestätigung. Beide Formulare zeigen ausschliesslich Titel und Beschreibung als inhaltliche Pflichtfelder; Hilfetexte verlangen keine weiteren strukturierten Antworten. Beide Typen mit korrekten Inhalten/Labels ohne GitHub-Konto absendbar; Metadaten abwählbar, keine Daten vor Absenden; private Links erklärt; Pflichtwerte/Limits serverseitig geprüft; Doppelklick, Timeout nach GitHub-Erfolg und Retry ohne zweites Issue im geprüften Zeitraum; unklarer Ausgang ehrlich angezeigt; offline/429/503 verständlich, Text bleibt erhalten. Spielzustand/Timer bleiben erhalten; Schreiben, Fokus, Scrollen, Bildschirmtastatur, Safe Areas und Rotation funktionieren in normaler/grosser Hoch-/Queransicht.
 

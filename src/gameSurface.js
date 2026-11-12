@@ -5,6 +5,7 @@ export function bindGameSurface(target, { onCancel = () => {} } = {}) {
   let lastTouchButton = null;
   let ignoreClickUntil = 0;
   const clearSelection = () => {
+    if (document.querySelector('.feedback-dialog[open]')) return;
     const selection = window.getSelection();
     const intersects = selection?.rangeCount && (target.contains(selection.anchorNode) || target.contains(selection.focusNode)
       || Array.from({ length: selection.rangeCount }, (_, i) => selection.getRangeAt?.(i))
@@ -15,11 +16,12 @@ export function bindGameSurface(target, { onCancel = () => {} } = {}) {
     }
   };
   for (const event of ["selectstart", "contextmenu", "dragstart"]) {
-    target.addEventListener(event, event => { event.preventDefault(); clearSelection(); onCancel(); }, { signal: abort.signal });
+    target.addEventListener(event, event => { if (document.querySelector('.feedback-dialog[open]')) return; event.preventDefault(); clearSelection(); onCancel(); }, { signal: abort.signal });
   }
   // Cancel Safari's native long-press/double-tap handling after canvas listeners
   // have received the event. Buttons are activated explicitly on touch release.
   target.addEventListener("touchstart", event => {
+    if (event.target.closest('.feedback-dialog')) return;
     if (!event.target.closest("canvas, button, .touch-controls, .game-toolbar")) return;
     if (event.cancelable) event.preventDefault();
     clearSelection();

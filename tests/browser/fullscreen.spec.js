@@ -20,6 +20,8 @@ async function startGame(page) {
   await page.locator(".fullscreen-button").evaluate(button => button.blur());
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);
 }
 
 async function expectFits(page) {
@@ -125,6 +127,8 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   await page.waitForFunction(() => window.__game.scene.getScene("intro").view === "home");
   await tapCanvas(160, 151);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
+  await tapCanvas(160, 120);
+  await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);
   await expectFits(page);
   const stick = await page.locator('.touch-dpad').boundingBox();
   await page.mouse.move(stick.x + stick.width / 2, stick.y + stick.height / 2);
@@ -139,6 +143,8 @@ test("mobile expanded view rotates portrait, maps touch input and survives orien
   await page.waitForFunction(() => window.__game.scene.isActive("intro"));
   await tapCanvas(160, 151);
   await page.waitForFunction(() => window.__game.scene.isActive("graybox"));
+  await tapCanvas(160, 120);
+  await page.waitForFunction(() => !window.__game.scene.getScene("graybox").startGuideVisible);
   await page.locator('[data-action="pause"]').tap();
   await page.setViewportSize({ width: 844, height: 390 });
   await expect(stage).not.toHaveClass(/is-rotated/);

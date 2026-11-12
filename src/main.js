@@ -5,6 +5,7 @@ import { RENDER_SCALE, VIEW_WIDTH, VIEW_HEIGHT } from "./game/rendering.js";
 import { bindFullscreen } from "./fullscreen.js";
 import { bindRotatedLayout } from "./rotatedLayout.js";
 import { bindGameSurface } from "./gameSurface.js";
+import { bindFeedback } from "./feedback.js";
 import "./style.css";
 
 window.addEventListener("game:mode", event => {
@@ -59,5 +60,6 @@ const fullscreen = bindFullscreen({
     requestAnimationFrame(refreshLayout);
   },
 });
+const feedback = bindFeedback(game);
 
-window.addEventListener("beforeunload", () => { fullscreen.destroy(); gameSurface.destroy(); rotatedLayout.destroy(); game.destroy(true); });
+window.addEventListener("beforeunload", () => { feedback.destroy(); fullscreen.destroy(); gameSurface.destroy(); rotatedLayout.destroy(); game.destroy(true); });

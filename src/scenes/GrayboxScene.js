@@ -243,6 +243,7 @@ export class GrayboxScene extends Phaser.Scene {
     });
     this.input.on("pointerdown", this.restartIfFinished, this);
     this.handleWindowEscape = (event) => {
+      if (document.querySelector('.feedback-dialog[open]')) return;
       const audioSetting = event.code === "KeyM" ? "music"
         : event.code === "KeyT" ? "sounds" : null;
       if (this.isPaused && audioSetting) {

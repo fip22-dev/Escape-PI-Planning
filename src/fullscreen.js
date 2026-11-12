@@ -59,6 +59,7 @@ export function bindFullscreen({ target, button, status, onLayoutChange }) {
     }
   };
   const onKey = event => {
+    if (document.querySelector('.feedback-dialog[open]')) return;
     const editable = event.target?.closest?.("input, textarea, select, [contenteditable=true]");
     if (editable || event.altKey || event.ctrlKey || event.metaKey) return;
     const fullscreenKey = event.code === "KeyF"

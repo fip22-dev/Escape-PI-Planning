@@ -6,6 +6,32 @@
   text-rendering: optimizeLegibility;
 }
 
+/* Native modal dialogs occupy the top layer, outside the rotated game stage. */
+.feedback-dialog { position: fixed; inset: 0; width: min(640px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)); overflow: auto; overscroll-behavior: contain; border: 1px solid #819885; border-radius: 12px; background: #172f29; color: #f5f0dc; font: 16px/1.5 system-ui, sans-serif; box-shadow: 0 20px 70px #0009; }
+.feedback-dialog::backdrop { background: #081511bf; }
+.feedback-dialog, .feedback-dialog * { -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important; }
+.feedback-dialog h2 { color: #ffe066; margin: 0 0 16px; font-size: 24px; }
+.feedback-dialog form { display: grid; gap: 8px; }
+.feedback-dialog label { font-weight: 600; }
+.feedback-dialog input:not([type=checkbox]), .feedback-dialog textarea { width: 100%; min-width: 0; padding: 10px; background: #0e211c; color: #f5f0dc; border: 1px solid #9bad99; border-radius: 6px; font: inherit; }
+.feedback-dialog textarea { resize: vertical; }
+.feedback-dialog button, .feedback-dialog summary, .feedback-dialog a { min-height: 44px; }
+.feedback-dialog button { padding: 10px 16px; margin: 4px; border: 1px solid #819885; border-radius: 7px; color: #f5f0dc; background: #294343; font: 600 15px system-ui, sans-serif; cursor: pointer; }
+.feedback-dialog button.primary { background: #e8ce79; color: #142124; border-color: #ffe066; }
+.feedback-dialog button:disabled { opacity: .6; cursor: wait; }
+.feedback-dialog :focus-visible { outline: 3px solid #ffe066; outline-offset: 3px; }
+.feedback-dialog [aria-invalid=true] { border-color: #ffb2a4; }
+.feedback-dialog .check { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; font-weight: 400; }
+.feedback-dialog input[type=checkbox] { flex: 0 0 22px; width: 22px; height: 22px; margin-top: 2px; accent-color: #e8ce79; }
+.feedback-dialog small { color: #c8d0c3; }
+.feedback-dialog .field-error { color: #ffb2a4; font-size: 14px; }
+.feedback-dialog .feedback-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+.feedback-dialog .feedback-notice { padding: 12px; border-left: 3px solid #e8ce79; background: #ffffff08; font-size: 14px; }
+.feedback-dialog .technical-preview { white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.5 monospace; }
+.feedback-dialog a { display: block; color: #ffe066; overflow-wrap: anywhere; }
+.feedback-dialog .feedback-status { margin-bottom: 0; }
+.feedback-dialog .feedback-honeypot { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
 * {
   box-sizing: border-box;
 }
@@ -295,3 +321,13 @@ body.has-expanded-game { overflow: hidden; overscroll-behavior: none; }
   transform-origin: top left;
   transform: translateX(var(--mobile-width)) rotate(90deg);
 }
+
+/* Keep the shared feedback entry available even when movement controls hide. */
+.page.is-menu .touch-controls { display: flex; justify-content: flex-end; }
+.page.is-menu .touch-dpad, .page.is-menu [data-action] { display: none; }
+.page.is-expanded .touch-controls { display: flex; }
+.page.is-expanded.is-menu { grid-template-rows: 36px minmax(0, 1fr) auto; }
+.page.is-expanded.is-mobile-landscape.is-menu .touch-controls { display: flex; position: absolute; z-index: 4; right: max(12px, var(--stage-safe-right)); bottom: max(8px, var(--stage-safe-bottom)); width: min(260px, 65%); padding: 0; }
+.touch-actions .feedback-button { min-height: 44px; max-width: 260px; white-space: normal; }
+.page .feedback-dialog, .page .feedback-dialog * { -webkit-user-select: text !important; user-select: text !important; -webkit-touch-callout: default !important; touch-action: auto !important; }
+.page .feedback-dialog { top: calc(var(--feedback-top, 0px) + 12px); bottom: auto; margin: 0 auto; max-height: min(calc(100dvh - 24px), var(--feedback-height, 100dvh)); }
