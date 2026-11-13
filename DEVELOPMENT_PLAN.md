@@ -1,5 +1,9 @@
 # Escape PI Planning – Development Plan
 
+## Datenschutzentwurf für spätere Umsetzung
+
+**Teilweise erledigt – 13.11.2026:** Kurzer Hinweistext in [PRIVACY_DRAFT.md](PRIVACY_DRAFT.md) abgelegt und mit den Betriebsdokumenten abgeglichen. **Offen:** Betreiber/Kontakt, Speicherländer und Plattformlog-Aufbewahrung prüfen, Text finalisieren und später separat einbauen. Noch keine Integration ins Spiel oder öffentliche Veröffentlichung. Reine Dokumentation; Verweise und Diff geprüft, keine Spieltests erforderlich.
+
 ## Bestenliste – eigener Feature-PR
 
 **Erledigt – implementiert, technisch geprüft und am 13.11.2026 auf dem iPhone abgenommen:** Eigener Branch feature/leaderboard vom aktuellen main 688dbd2, keine offenen PRs zum Start. Gemeinsame Top 20, freiwilliger Name nach Sieg, jederzeitiger Hauptmenü-Aufruf, aktive Run-Zeit ohne Pausen, atomare einmalige Speicherung je Run und separate InsForge-Function umgesetzt. 76 Funktionstests, Build und 33 relevante Browserfälle über Regressionslauf und gezielte Wiederholungen erfolgreich, sechs Plattform-Skips. Die Liste wird beim Öffnen neu geladen; das alte Neustart-Panel wird hinter dem Siegerdialog ausgeblendet. Tatsächlicher Schlüssel-bis-Sieg-Ablauf in allen drei Browserprofilen geprüft. Echter Browser-Backend-Pfad sowie Parallelität, Quoten, Retry, Sortierung/Gleichstand und Zugriffssperren erfolgreich; alle eigenen QA-Zeilen entfernt. Screenshots visuell kontrolliert, bekannter Bundlehinweis. **Erledigt – Demo-Update:** main 1a40693 am 12.11.2026 privat veröffentlicht; PR #25 ist gemergt. **Erledigt – iPhone-Abnahme am 13.11.2026:** Vom Nutzer erfolgreich bestätigt. Regeln und genaue Prüfungen: [LEADERBOARD.md](LEADERBOARD.md).
