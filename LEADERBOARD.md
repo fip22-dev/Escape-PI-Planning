@@ -1,6 +1,6 @@
 # Gemeinsame Bestenliste
 
-Stand: 12.11.2026. **Erledigt – Implementierung und technische Prüfung, Mergefreigabe am 12.11.2026; Integration über PR #25.** Reale iPhone-Prüfung nach separatem Demo-Update noch offen. Eigener PR, unabhängig von der noch offenen KI-Issue-Automation. Die bisherige private Demo bleibt zunächst auf dem abgenommenen Feedback-Stand.
+Stand: 13.11.2026. **Erledigt – Implementierung und technische Prüfung, Mergefreigabe am 12.11.2026; Integration über PR #25.** Reale iPhone-Abnahme am 13.11.2026 vom Nutzer erfolgreich bestätigt. Eigener PR, unabhängig von der noch offenen KI-Issue-Automation. Die private Demo enthält seit dem 12.11.2026 den integrierten Bestenlisten-Stand main 1a40693.
 
 ## Verhalten
 
@@ -35,6 +35,9 @@ $env:LEADERBOARD_LIVE_TEST='1'
 npx playwright test tests/browser/leaderboard-live.spec.js --project=chromium
 ```
 
-**Offen:** gesondertes Demo-Update und reale iPhone-Prüfung. Die bestehende Demo bleibt unverändert auf dem abgenommenen Feedback-Stand. Die separate Function und Tabellen sind bereits im dedizierten InsForge-Projekt bereitgestellt.
+**Erledigt – privates Demo-Update am 12.11.2026:** main 1a40693 veröffentlicht. **Erledigt – iPhone-Abnahme am 13.11.2026:** Vom Nutzer erfolgreich bestätigt. Die separate Function und Tabellen sind bereits im dedizierten InsForge-Projekt bereitgestellt.
 
-**Erledigt – Siegerdialog angepasst am 12.11.2026:** Auf Nutzerwunsch genau zwei Aktionen: «Zeit eintragen» und «Zurück ins Hauptmenü». Der zusätzliche Weg ohne Eintrag direkt zur Liste entfällt; die Liste bleibt im Hauptmenü erreichbar. Neun Bestenlisten-Browserfälle in Chromium, Firefox und mobilem Chromium sowie Produktionsbuild erfolgreich; mobile Darstellung visuell kontrolliert. Reale Nutzerabnahme der Erweiterung bleibt offen.
+**Erledigt – Siegerdialog angepasst am 12.11.2026:** Auf Nutzerwunsch genau zwei Aktionen: «Zeit eintragen» und «Zurück ins Hauptmenü». Der zusätzliche Weg ohne Eintrag direkt zur Liste entfällt; die Liste bleibt im Hauptmenü erreichbar. Neun Bestenlisten-Browserfälle in Chromium, Firefox und mobilem Chromium sowie Produktionsbuild erfolgreich; mobile Darstellung visuell kontrolliert. Die iPhone-Nutzerabnahme der Erweiterung ist am 13.11.2026 erfolgreich bestätigt.
+
+
+**Erledigt – iPhone-Nutzerabnahme am 13.11.2026:** Der Nutzer bestätigt alle drei Abläufe erfolgreich: Bestenliste im Hauptmenü öffnen und Darstellung prüfen; Spielrunde gewinnen, Namen eintragen und gespeicherte Zeit kontrollieren; alternativ nach einem Sieg zurück ins Hauptmenü wechseln. Grundlage: private Demo mit main 1a40693, Deployment appgdep_6af62951d31881919df84f186b9f9c00. Gerätemodell und iOS-/Safari-Version wurden nicht separat angegeben. Keine zusätzliche Safari-Prüfung durch den Agenten.
