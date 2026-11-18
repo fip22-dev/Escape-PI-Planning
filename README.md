@@ -39,7 +39,7 @@ Die bestehende private Demo und `.openai/hosting.json` bleiben erhalten. Abnahme
 
 ## Feedback und Issue-Automation
 
-**Teilweise erledigt – 12.11.2026:** Der gemeinsame Button «Bug / Feature melden» öffnet Bug-/Feature-Formulare mit Titel, Beschreibung und Hinweisbestätigung. Das InsForge-Backend erstellt öffentliche GitHub-Issues ohne Spieleranmeldung; Datenbank, Secrets, Quoten und Wartungszeitplan sind eingerichtet. Echter Bug-/Feature-Versand sowie Browser-Versand sind bestätigt; Wiederholungen liefern dasselbe Issue. Der abgenommene Feedback-Eingang wird über [PR #22](https://github.com/fip22-dev/Escape-PI-Planning/pull/22) in den Hauptstand übernommen. **Offen:** öffentliche Veröffentlichung des Spiels sowie KI-Analyse und Draft-PR-Automation. Die bestehende private iPhone-Demo ist am 12.11.2026 mit dem Feature-Stand und der Beschriftung «Bug / Feature melden» aktualisiert. Der bisherige lokale Stand ist vom Nutzer als gut bestätigt; iPhone-/Safari-Abnahme am 12.11.2026 vom Nutzer bestätigt. GitHub Pages ist noch nicht eingerichtet.
+**Teilweise erledigt – 12.11.2026:** Der gemeinsame Button «Bug / Feature melden» öffnet Bug-/Feature-Formulare mit Titel, Beschreibung und Hinweisbestätigung. Das InsForge-Backend erstellt öffentliche GitHub-Issues ohne Spieleranmeldung; Datenbank, Secrets, Quoten und Wartungszeitplan sind eingerichtet. Echter Bug-/Feature-Versand sowie Browser-Versand sind bestätigt; Wiederholungen liefern dasselbe Issue. Der abgenommene Feedback-Eingang wird über [PR #22](https://github.com/fip22-dev/Escape-PI-Planning/pull/22) in den Hauptstand übernommen. **Offen:** öffentliche Veröffentlichung des Spiels sowie KI-Analyse und Draft-PR-Automation. Die bestehende private iPhone-Demo ist am 12.11.2026 mit dem Feature-Stand und der Beschriftung «Bug / Feature melden» aktualisiert. Der bisherige lokale Stand ist vom Nutzer als gut bestätigt; iPhone-/Safari-Abnahme am 12.11.2026 vom Nutzer bestätigt. GitHub Pages ist noch nicht aktiviert; ein manueller Deployment-Workflow ist vorbereitet.
 
 Einrichtung, Betrieb, Abschalten, Prüfungen und verbleibende Grenzen stehen in [FEEDBACK_OPERATIONS.md](FEEDBACK_OPERATIONS.md); der Gesamtplan in [FEEDBACK_AUTOMATION_PLAN.md](FEEDBACK_AUTOMATION_PLAN.md). Für lokalen Zugriff verwendet das Spiel den öffentlichen Endpunkt; keine Secrets im Frontend. Optional kann VITE_FEEDBACK_URL beim Build die Endpunkt-URL ersetzen. Der aktuelle Hinweis nennt KI ausdrücklich als geplant, noch nicht aktiv.
 
@@ -167,7 +167,7 @@ Auf dem Phone gilt dieser Abgleich für Entwicklungssitzungen mit Repository-Zug
 - Entwicklung erfolgt auf einem Feature-Branch.
 - Änderungen werden als zusammenhängende Commits bereitgestellt und vor dem Merge nach `main` geprüft.
 - `main` ist der vorgesehene Stand für eine spätere Veröffentlichung.
-- GitHub Pages ist noch nicht eingerichtet.
+- GitHub-Pages-Vorbereitung: Der Vite-Unterpfad und ein manueller Deployment-Workflow sind vorbereitet. GitHub Pages ist noch nicht aktiviert oder veröffentlicht. Vor dem Start bleiben Datenschutzfreigabe und Bestätigung der Bestenlisten-CORS-Origin im InsForge-Backend offen.
 
 ## Neutrale Sprechblasen – aktueller Feature-Stand
 

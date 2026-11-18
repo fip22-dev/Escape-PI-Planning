@@ -9,6 +9,11 @@ import { bindFeedback } from "./feedback.js";
 import { bindLeaderboard } from "./leaderboard.js";
 import "./style.css";
 
+if (import.meta.env.VITE_BUILD_LABEL) {
+  const buildLabel = document.querySelector(".test-build-label");
+  if (buildLabel) buildLabel.textContent = import.meta.env.VITE_BUILD_LABEL;
+}
+
 window.addEventListener("game:mode", event => {
   document.querySelector(".page")?.classList.toggle("is-menu", event.detail?.mode === "menu");
   // Showing/hiding the page header moves the canvas without resizing the
