@@ -14,7 +14,7 @@ Namen sind nicht exklusiv: ohne Account kann niemand einen Namen beanspruchen, u
 
 ## Backend und Grenzen
 
-Eigenständige Function `game-leaderboard` unter `https://6r53f4ec.function2.insforge.app/game-leaderboard`, Quelle `functions/leaderboard.js`. `GET` liefert die Top 20; optional `?runId=<UUID>` aktualisiert zusätzlich den eigenen Rang. `POST` nimmt ausschliesslich `{runId,name,elapsedMs,ruleset}` bis 2 KiB an. Kein Admin-Key im Frontend. CORS erlaubt nur `LEADERBOARD_ALLOWED_ORIGINS`; öffentliche URL im Spiel, optionaler Build-Override `VITE_LEADERBOARD_URL`.
+Eigenständige Function `game-leaderboard` unter `https://6r53f4ec.function2.insforge.app/game-leaderboard`, Quelle `functions/leaderboard.js`. `GET` liefert die Top 20; optional `?runId=<UUID>` aktualisiert zusätzlich den eigenen Rang. `POST` nimmt ausschliesslich `{runId,name,elapsedMs,ruleset}` bis 2 KiB an. Kein Admin-Key im Frontend. CORS erlaubt nur `LEADERBOARD_ALLOWED_ORIGINS`; vor einer GitHub-Pages-Veröffentlichung muss `https://fip22-dev.github.io` dort enthalten und im Backend bestätigt sein. Öffentliche URL im Spiel, optionaler Build-Override `VITE_LEADERBOARD_URL`.
 
 Neue Tabellen `leaderboard_runs`, `leaderboard_limits`, `leaderboard_settings` mit RLS und ohne direkte Rechte für anon/authenticated. Administrative RPCs `leaderboard_read` und `leaderboard_submit`; serverseitige Prüfung, atomare UUID-/Quota-Prüfung, keine Änderungen an Feedback-Tabellen. Gemeinsame Begrenzung: 20 neue Einträge je festem Zehn-Minuten-Fenster und 1000 pro UTC-Tag; keine IP-Verarbeitung. Wiederholung gleicher ID/Inhalt gibt denselben Run zurück, anderer Inhalt 409. In `leaderboard_settings` stoppt `enabled=false` neue Speicherungen sofort; Lesen bleibt möglich.
 
