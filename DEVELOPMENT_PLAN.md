@@ -2,7 +2,7 @@
 
 ## Datenschutzentwurf für spätere Umsetzung
 
-**Teilweise erledigt – 13.11.2026:** Kurzer Hinweistext in [PRIVACY_DRAFT.md](PRIVACY_DRAFT.md) abgelegt und mit den Betriebsdokumenten abgeglichen. **Offen:** Betreiber/Kontakt, Speicherländer und Plattformlog-Aufbewahrung prüfen, Text finalisieren und später separat einbauen. Noch keine Integration ins Spiel oder öffentliche Veröffentlichung. Reine Dokumentation; Verweise und Diff geprüft, keine Spieltests erforderlich.
+**Teilweise erledigt – 18.11.2026:** Betreiber Philippe Waber ist im Entwurf genannt; keine E-Mail-Adresse ist eingetragen. Die Anbieterangaben wurden geprüft: Der InsForge-Endpunkt weist auf `eu-central` (laut Anbieter Frankfurt), GitHub und InsForge beschreiben technische Nutzungsdaten, aber eine feste, projektbezogene Aufbewahrungsdauer für Logs ist nicht bestätigt. Die InsForge-CLI konnte in dieser Umgebung keine Projektmetadaten liefern; zwei veröffentlichte InsForge-Datenschutzerklärungen nennen abweichende Log-Fristen. Anwendungsdaten-Aufbewahrung ist in den Betriebsdokumenten festgehalten. **Offen:** Kontaktweg ohne E-Mail-Adresse und Löschablauf für Bestenlisteneinträge/öffentliche Issues festlegen, Projektregion/Backups und Anbieter-Logfristen verbindlich bestätigen, Text finalisieren und später in Spiel/Formulare integrieren. Noch keine öffentliche Veröffentlichung. Quellen und Grenzen stehen in [PRIVACY_DRAFT.md](PRIVACY_DRAFT.md). Reine Dokumentation; `git diff --check` geprüft, keine Spieltests erforderlich.
 
 ## Bestenliste – eigener Feature-PR
 
